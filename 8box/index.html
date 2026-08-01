@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorbon Chocolate - Mystery Box Challenge</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #3b0d19;
+            --gold-accent: #d4af37;
+            --gold-light: #fbeea2;
+            --bg-color: #120509;
+            --text-color: #ffffff;
+            --shelf-wood: #2c160a;
+            --font-heading: 'Cinzel', serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+        }
+
+        /* Hero / Landing Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background: radial-gradient(circle at center, #2e0813 0%, var(--bg-color) 70%);
+            position: relative;
+        }
+
+        .hero-logo {
+            max-width: 280px;
+            width: 80%;
+            filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.5));
+            margin-bottom: 25px;
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: clamp(1.8rem, 4vw, 3.2rem);
+            color: var(--gold-accent);
+            margin-bottom: 15px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .hero-desc {
+            max-width: 600px;
+            font-size: clamp(0.95rem, 2vw, 1.15rem);
+            line-height: 1.6;
+            color: #d1c0c6;
+            margin-bottom: 30px;
+        }
+
+        /* Scroll Down Hint Animation */
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--gold-light);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .scroll-arrow {
+            width: 20px;
+            height: 20px;
+            border-right: 3px solid var(--gold-accent);
+            border-bottom: 3px solid var(--gold-accent);
+            transform: rotate(45deg);
+            animation: bounce 1.8s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(45deg); }
+            40% { transform: translateY(-10px) rotate(45deg); }
+            60% { transform: translateY(-5px) rotate(45deg); }
+        }
+
+        /* Playground / Main Game Section */
+        .game-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 15px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .game-status {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            backdrop-filter: blur(5px);
+        }
+
+        .game-status strong {
+            color: var(--gold-accent);
+            font-size: 1.1rem;
+        }
+
+        /* Shelf and 3D Boxes Grid */
+        .shelf-container {
+            width: 100%;
+            perspective: 1000px;
+            margin-bottom: 25px;
+        }
+
+        .shelf-rack {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .shelf-board {
+            height: 18px;
+            background: linear-gradient(90deg, #180a04, var(--shelf-wood), #180a04);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.9), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            transform: rotateX(20deg);
+        }
+
+        .box-wrapper {
+            height: 150px;
+            perspective: 600px;
+            cursor: pointer;
+        }
+
+        .box-3d {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .box-3d.revealed {
+            transform: rotateY(180deg);
+        }
+
+        .box-3d.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            filter: grayscale(80%);
+            pointer-events: none;
+        }
+
+        .box-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--gold-accent);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+        }
+
+        .box-front {
+            background: radial-gradient(circle, #4a1525 0%, #20070e 100%);
+            padding: 8px;
+        }
+
+        .box-vector-img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+            transition: transform 0.2s ease;
+        }
+
+        .box-wrapper:hover .box-vector-img {
+            transform: scale(1.08);
+        }
+
+        .box-number {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: var(--gold-accent);
+            color: #000;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .box-back {
+            background: linear-gradient(135deg, #ffffff, #f4e8c1);
+            color: var(--primary-color);
+            transform: rotateY(180deg);
+            text-align: center;
+            padding: 10px;
+        }
+
+        .candy-count {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .candy-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* Action Controls */
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-accept {
+            background: linear-gradient(45deg, var(--gold-accent), var(--gold-light));
+            color: #000;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-accept:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Coupon Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .coupon-card {
+            background: linear-gradient(135deg, #2b0813, #4a1525);
+            border: 2px solid var(--gold-accent);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+
+        .coupon-logo {
+            max-width: 140px;
+            margin-bottom: 15px;
+            filter: brightness(0) invert(1);
+        }
+
+        .coupon-card h2 {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            color: var(--gold-accent);
+            letter-spacing: 1px;
+        }
+
+        .prize-count {
+            font-family: var(--font-heading);
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: var(--gold-light);
+            margin: 10px 0;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+        }
+
+        .coupon-input-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--gold-accent);
+            text-align: center;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            margin-top: 15px;
+            outline: none;
+        }
+
+        .coupon-code {
+            display: block;
+            margin-top: 12px;
+            opacity: 0.7;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-download {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid var(--gold-accent);
+        }
+
+        .btn-instagram {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .shelf-rack {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .box-wrapper {
+                height: 130px;
+            }
+
+            .game-status {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .shelf-rack {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .box-wrapper {
+                height: 110px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Landing Section -->
+    <section class="hero-section">
+        <img src="boxes.png" alt="Sorbon Logo" class="hero-logo">
+        <h1 class="hero-title">Mystery Box Challenge</h1>
+        <p class="hero-desc">
+            Test your luck across 8 mystery boxes filled with premium Sorbon chocolates. 
+            Open boxes, review your offers, and accept the best reward before time runs out!
+        </p>
+        <a href="#playground" class="scroll-hint">
+            <span>Scroll To Play</span>
+            <div class="scroll-arrow"></div>
+        </a>
+    </section>
+
+    <!-- Main Playground Section -->
+    <section id="playground" class="game-section">
+        <div class="game-status">
+            <span>Chances Remaining: <strong id="chances-count">8</strong></span>
+            <span>Current Offer: <strong id="current-offer-count">-</strong> Chocolates</span>
+        </div>
+
+        <div class="shelf-container">
+            <div class="shelf-rack" id="shelf">
+                <!-- 8 3D Box items dynamically generated -->
+            </div>
+            <div class="shelf-board"></div>
+        </div>
+
+        <div class="action-bar">
+            <button id="btn-accept" class="btn btn-accept" disabled>Accept Current Offer</button>
+        </div>
+    </section>
+
+    <!-- Coupon Modal -->
+    <div id="coupon-modal" class="modal hidden">
+        <div class="modal-content">
+            <div id="coupon-card" class="coupon-card">
+                <img src="SorbonLogo.png" alt="Sorbon Logo" class="coupon-logo">
+                <h2>CONGRATULATIONS!</h2>
+                <p style="font-size: 0.85rem; margin-top: 5px;">You have won a premium box of</p>
+                <div class="prize-count"><span id="final-candies-count">0</span></div>
+                <p style="font-size: 0.85rem;">Sorbon Chocolates</p>
+                <div class="coupon-input-group">
+                    <input type="text" id="user-name-input" placeholder="Enter Your Name" required>
+                </div>
+                <small class="coupon-code" id="coupon-id">CODE: SRB-XXXXXX</small>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="btn-download" class="btn btn-download">Download Coupon</button>
+                <a id="btn-instagram" href="https://instagram.com/sorbonsweet" target="_blank" class="btn btn-instagram">Submit on Instagram</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Web Audio Synthesizer
+         */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playRevealSound() {
+            initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(280, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(750, audioCtx.currentTime + 0.15);
+            osc.frequency.exponentialRampToValueAtTime(450, audioCtx.currentTime + 0.3);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function animateBoxFlip(boxElement, callback) {
+            playRevealSound();
+            boxElement.classList.add('revealed');
+            setTimeout(() => {
+                if (callback) callback();
+            }, 800);
+        }
+
+        /**
+         * Game Logic Initialization
+         */
+        const TOTAL_BOXES = 8;
+        let boxValues = [];
+        let currentTurn = 0;
+        let activeBoxIndex = null;
+
+        const shelfElement = document.getElementById('shelf');
+        const chancesCountElement = document.getElementById('chances-count');
+        const currentOfferElement = document.getElementById('current-offer-count');
+        const btnAccept = document.getElementById('btn-accept');
+        const couponModal = document.getElementById('coupon-modal');
+        const finalCandiesCount = document.getElementById('final-candies-count');
+        const couponIdElement = document.getElementById('coupon-id');
+        const userNameInput = document.getElementById('user-name-input');
+        const btnDownload = document.getElementById('btn-download');
+
+        function initGame() {
+            boxValues = [];
+            currentTurn = 0;
+            activeBoxIndex = null;
+            shelfElement.innerHTML = '';
+
+            for (let i = 0; i < TOTAL_BOXES; i++) {
+                boxValues.push(Math.floor(Math.random() * 100) + 1);
+            }
+
+            for (let i = 0; i < TOTAL_BOXES; i++) {
+                const boxWrapper = document.createElement('div');
+                boxWrapper.className = 'box-wrapper';
+                boxWrapper.dataset.index = i;
+
+                boxWrapper.innerHTML = `
+                    <div class="box-3d" id="box-${i}">
+                        <div class="box-face box-front">
+                            <span class="box-number">${i + 1}</span>
+                            <img src="boxes.png" alt="Mystery Box" class="box-vector-img">
+                        </div>
+                        <div class="box-face box-back">
+                            <div class="candy-count">${boxValues[i]}</div>
+                            <div class="candy-label">Chocolates</div>
+                        </div>
+                    </div>
+                `;
+
+                // Handle direct click on box
+                boxWrapper.addEventListener('click', () => handleBoxClick(i));
+                shelfElement.appendChild(boxWrapper);
+            }
+
+            updateUI();
+        }
+
+        function handleBoxClick(index) {
+            const boxElem = document.getElementById(`box-${index}`);
+
+            // Ignore if already revealed or disabled
+            if (boxElem.classList.contains('revealed') || boxElem.classList.contains('disabled')) {
+                return;
+            }
+
+            // Disable all previous unselected boxes
+            if (activeBoxIndex !== null) {
+                document.getElementById(`box-${activeBoxIndex}`).classList.add('disabled');
+            }
+
+            activeBoxIndex = index;
+            currentTurn++;
+
+            animateBoxFlip(boxElem, () => {
+                currentOfferElement.textContent = boxValues[index];
+                btnAccept.disabled = false;
+
+                // Auto accept if no turns remaining
+                if (currentTurn >= TOTAL_BOXES) {
+                    setTimeout(() => {
+                        acceptOffer();
+                    }, 1000);
+                }
+            });
+
+            updateUI();
+        }
+
+        function acceptOffer() {
+            if (activeBoxIndex !== null) {
+                showCoupon(boxValues[activeBoxIndex]);
+            }
+        }
+
+        function updateUI() {
+            const remainingChances = TOTAL_BOXES - currentTurn;
+            chancesCountElement.textContent = remainingChances;
+        }
+
+        function showCoupon(amount) {
+            finalCandiesCount.textContent = amount;
+            const randomCode = 'SRB-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            couponIdElement.textContent = `CODE: ${randomCode}`;
+            couponModal.classList.remove('hidden');
+        }
+
+        // Image Download handler
+        btnDownload.addEventListener('click', () => {
+            const name = userNameInput.value.trim() || 'Valued Customer';
+            const couponCard = document.getElementById('coupon-card');
+
+            html2canvas(couponCard).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `${name}-Sorbon-Coupon.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+
+        btnAccept.addEventListener('click', acceptOffer);
+
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
