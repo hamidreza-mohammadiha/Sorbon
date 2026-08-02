@@ -6,7 +6,9 @@
     <title>مکانیزم‌های بازاریابی و فروش شکلات</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
-        /* ===== CHOCOLATE COLOR PALETTE ===== */
+        /* ============================================================
+               CHOCOLATE COLOR PALETTE & ROOT
+               ============================================================ */
         :root {
             --bg: #fdf6f0;
             --card: #ffffff;
@@ -31,6 +33,8 @@
             --hover-lift: #f5e6d3;
             --flow-card-bg: #fffcf8;
             --flow-border: #dccfc0;
+            --reveal-bg: #faf3ed;
+            --reveal-border: #decfc0;
         }
 
         * {
@@ -46,11 +50,13 @@
             line-height: 1.6;
         }
 
-        /* ----- HEADER ----- */
+        /* ============================================================
+               HEADER
+               ============================================================ */
         header {
             background: linear-gradient(135deg, var(--header-from), var(--header-to));
             color: #fff8f0;
-            padding: 70px 20px;
+            padding: 50px 20px 60px;
             text-align: center;
             border-bottom: 6px solid var(--accent);
             position: relative;
@@ -79,9 +85,9 @@
             pointer-events: none;
         }
         header h1 {
-            font-size: 2.4rem;
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             letter-spacing: -0.5px;
             text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
             position: relative;
@@ -98,30 +104,36 @@
             font-weight: 400;
             position: relative;
             z-index: 1;
+            font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+            padding: 0 12px;
         }
         .header-logo {
             width: 55%;
             max-width: 200px;
             height: auto;
             display: block;
-            margin: 0 auto;
+            margin: 12px auto 0;
             position: relative;
             z-index: 1;
             filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
         }
 
-        /* ----- CONTAINER ----- */
+        /* ============================================================
+               CONTAINER
+               ============================================================ */
         .container {
             width: min(1300px, 95%);
-            margin: 40px auto;
+            margin: 30px auto;
         }
 
-        /* ----- SECTION TITLE ----- */
+        /* ============================================================
+               SECTION TITLE
+               ============================================================ */
         .section-title {
-            font-size: 1.8rem;
+            font-size: clamp(1.4rem, 3vw, 1.9rem);
             font-weight: 800;
             color: var(--primary);
-            margin-bottom: 24px;
+            margin-bottom: 22px;
             padding-right: 6px;
             border-right: 6px solid var(--accent);
             padding-right: 18px;
@@ -130,23 +142,29 @@
             color: var(--accent);
         }
 
-        /* ----- GRID ----- */
+        /* ============================================================
+               CARDS GRID
+               ============================================================ */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 22px;
         }
 
-        /* ----- CARDS ----- */
+        /* ============================================================
+               INDIVIDUAL CARD
+               ============================================================ */
         .card {
             background: var(--card);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            padding: 24px;
+            padding: 22px 20px 20px;
             transition: 0.3s ease;
             border: 1px solid var(--border);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .card::after {
             content: '';
@@ -159,59 +177,120 @@
             border-radius: 0 4px 4px 0;
         }
         .card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-4px);
             box-shadow: 0 18px 36px rgba(74, 44, 26, 0.15);
             background: var(--hover-lift);
         }
-        .card h2 {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 6px;
-            font-weight: 700;
-        }
+
+        /* ---- BADGE (English) ---- */
         .card .badge {
             display: inline-block;
             padding: 4px 14px;
             border-radius: 999px;
             background: var(--badge-bg);
             color: var(--badge-text);
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            letter-spacing: 0.3px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            align-self: flex-start;
+            border: 1px solid #d4c0b0;
         }
-        .card p {
+
+        /* ---- TITLE (hover trigger) ---- */
+        .card h2 {
+            font-size: 1.05rem;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: default;
+            position: relative;
+            padding-bottom: 6px;
+            border-bottom: 2px dotted transparent;
+            transition: border-color 0.25s;
+            margin-bottom: 6px;
+        }
+        .card h2::after {
+            content: '⤵';
+            font-size: 0.8rem;
+            margin-right: 6px;
+            color: var(--accent);
+            opacity: 0.4;
+            transition: opacity 0.3s;
+        }
+        .card:hover h2::after {
+            opacity: 0.9;
+        }
+        .card h2:hover {
+            border-bottom-color: var(--accent);
+        }
+
+        /* ---- Description ---- */
+        .card .desc {
             color: var(--muted);
             line-height: 1.55;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
+            margin-bottom: 10px;
+            font-size: 0.92rem;
         }
-        .card ul {
-            padding-right: 20px;
+
+        /* ---- REVEAL SECTIONS (hidden by default, shown on card hover) ---- */
+        .card .reveal {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.4s ease,
+                margin 0.3s ease;
+            margin-top: 0;
+            border-top: 1px solid transparent;
+            padding-top: 0;
+        }
+        .card:hover .reveal {
+            max-height: 800px;
+            opacity: 1;
+            margin-top: 14px;
+            border-top-color: var(--reveal-border);
+            padding-top: 14px;
+        }
+
+        .card .reveal-block {
+            background: var(--reveal-bg);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-right: 3px solid var(--accent);
+        }
+        .card .reveal-block:last-child {
+            margin-bottom: 0;
+        }
+        .card .reveal-block .label {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.78rem;
+            display: block;
+            margin-bottom: 4px;
+            letter-spacing: 0.2px;
+        }
+        .card .reveal-block ul {
+            padding-right: 18px;
             color: #374151;
             line-height: 1.7;
             list-style-type: disc;
+            font-size: 0.88rem;
         }
-        .card ul li {
-            margin-bottom: 2px;
-        }
-        .card ul strong {
-            color: var(--primary);
-            font-weight: 600;
-            display: block;
-            margin-top: 6px;
-            margin-bottom: 2px;
-        }
-        .card ul strong:first-of-type {
-            margin-top: 0;
+        .card .reveal-block ul li {
+            margin-bottom: 1px;
         }
 
-        /* ----- TABLE ----- */
+        /* ============================================================
+               TABLE
+               ============================================================ */
         .table-wrap {
             overflow-x: auto;
             margin-top: 40px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
+            -webkit-overflow-scrolling: touch;
         }
         table {
             width: 100%;
@@ -219,20 +298,23 @@
             background: white;
             border-radius: var(--radius);
             overflow: hidden;
+            min-width: 460px;
         }
         th {
             background: var(--table-header);
             color: #fff8f0;
-            padding: 16px;
+            padding: 14px 16px;
             text-align: right;
             font-weight: 600;
             letter-spacing: 0.3px;
             white-space: nowrap;
+            font-size: 0.9rem;
         }
         td {
-            padding: 14px 16px;
+            padding: 12px 16px;
             border-bottom: 1px solid #eee;
             color: var(--text);
+            font-size: 0.9rem;
         }
         tr:hover {
             background: #faf0e8;
@@ -244,17 +326,19 @@
             font-weight: 500;
         }
 
-        /* ===== ENHANCED FLOW ===== */
+        /* ============================================================
+               FLOW
+               ============================================================ */
         .flow {
-            margin-top: 50px;
+            margin-top: 48px;
             background: var(--flow-bg);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            padding: 40px 30px;
+            padding: 32px 20px 28px;
             border: 1px solid var(--border);
         }
         .flow .section-title {
-            margin-bottom: 30px;
+            margin-bottom: 28px;
             text-align: center;
             border-right: none;
             padding-right: 0;
@@ -265,42 +349,39 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: stretch;
-            gap: 8px 4px;
+            gap: 6px 2px;
         }
-
         .flow-step {
-            flex: 1 1 160px;
-            min-width: 140px;
-            max-width: 200px;
+            flex: 1 1 130px;
+            min-width: 110px;
+            max-width: 180px;
             background: var(--flow-card-bg);
-            border-radius: 16px;
-            padding: 20px 14px 18px;
+            border-radius: 14px;
+            padding: 16px 10px 14px;
             border: 1px solid var(--flow-border);
             box-shadow: 0 4px 12px rgba(74, 44, 26, 0.06);
             text-align: center;
             transition: 0.3s ease;
-            position: relative;
         }
         .flow-step:hover {
             transform: translateY(-4px);
             box-shadow: 0 10px 24px rgba(74, 44, 26, 0.10);
             border-color: var(--accent);
         }
-
         .flow-step .step-icon {
-            font-size: 2.2rem;
+            font-size: 2rem;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
         .flow-step .step-label {
             font-weight: 700;
             color: var(--primary);
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         .flow-step .step-desc {
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             color: var(--muted);
             line-height: 1.4;
         }
@@ -309,47 +390,48 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             color: var(--arrow-color);
             font-weight: 300;
-            padding: 0 2px;
             flex-shrink: 0;
-            width: 36px;
+            width: 30px;
             align-self: center;
         }
 
-        /* ----- FLOW SUB-ROWS (detail) ----- */
+        /* ---- flow detail ---- */
         .flow-detail {
-            margin-top: 32px;
+            margin-top: 28px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
             background: var(--flow-card-bg);
             border-radius: 14px;
-            padding: 20px 18px;
+            padding: 18px 16px;
             border: 1px dashed var(--border);
         }
         .flow-detail-item {
             text-align: center;
-            padding: 8px 4px;
+            padding: 4px 2px;
         }
         .flow-detail-item .label {
             font-weight: 600;
             color: var(--primary);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             display: block;
         }
         .flow-detail-item .value {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: var(--muted);
         }
 
-        /* ----- INTEGRATION NOTE ----- */
+        /* ============================================================
+               INTEGRATION NOTE
+               ============================================================ */
         .integration-note {
-            margin-top: 32px;
+            margin-top: 30px;
             background: linear-gradient(135deg, #f8efe8, #fdf6f0);
             border-radius: var(--radius);
-            padding: 24px 28px;
+            padding: 22px 24px;
             border-right: 6px solid var(--accent);
             border-left: 1px solid var(--border);
             border-top: 1px solid var(--border);
@@ -358,26 +440,28 @@
         .integration-note h3 {
             color: var(--primary);
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             margin-bottom: 6px;
         }
         .integration-note p {
             color: var(--muted);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             line-height: 1.7;
         }
         .integration-note strong {
             color: var(--secondary);
         }
 
-        /* ----- FOOTER ----- */
+        /* ============================================================
+               FOOTER – with abbreviation glossary
+               ============================================================ */
         footer {
             text-align: center;
-            padding: 50px 20px 30px;
+            padding: 40px 20px 28px;
             color: var(--muted);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-top: 1px solid var(--border);
-            margin-top: 20px;
+            margin-top: 16px;
         }
         footer .footer-brand {
             font-weight: 700;
@@ -387,7 +471,7 @@
         footer .footer-meta {
             font-size: 0.75rem;
             opacity: 0.6;
-            margin-top: 6px;
+            margin-top: 4px;
         }
         footer a {
             color: var(--secondary);
@@ -398,92 +482,192 @@
             color: var(--accent);
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 700px) {
-            header h1 {
-                font-size: 1.7rem;
-            }
-            header p {
-                font-size: 0.95rem;
-            }
-            .flow {
-                padding: 25px 16px;
-            }
-            .flow-step {
-                flex: 1 1 120px;
-                min-width: 100px;
-                padding: 14px 10px;
-            }
-            .flow-step .step-icon {
-                font-size: 1.8rem;
-            }
-            .flow-step .step-label {
-                font-size: 0.85rem;
-            }
-            .flow-arrow {
-                font-size: 1.2rem;
-                width: 24px;
-            }
-            .flow-detail {
-                grid-template-columns: 1fr 1fr;
-                padding: 16px 12px;
-            }
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            .table-wrap table {
-                font-size: 0.85rem;
-            }
-            .table-wrap th,
-            .table-wrap td {
-                padding: 10px 12px;
-            }
-            .card {
-                padding: 18px;
-            }
-            .card h2 {
-                font-size: 1rem;
-            }
-            .section-title {
-                font-size: 1.4rem;
-            }
-            .integration-note {
-                padding: 18px 16px;
-            }
+        /* ---- Abbreviation glossary ---- */
+        .glossary {
+            margin-top: 18px;
+            padding: 16px 18px;
+            background: #f5ede6;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 28px;
+            font-size: 0.75rem;
+            color: var(--text);
+        }
+        .glossary-item {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .glossary-item .abbr {
+            font-weight: 700;
+            color: var(--primary);
+            background: #e6d8cc;
+            padding: 0 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            letter-spacing: 0.3px;
+        }
+        .glossary-item .meaning {
+            color: var(--muted);
         }
 
-        @media (max-width: 480px) {
-            header {
-                padding: 40px 16px;
+        /* ============================================================
+               RESPONSIVE TWEAKS
+               ============================================================ */
+        @media (max-width: 760px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
             }
-            header h1 {
-                font-size: 1.4rem;
+            .card {
+                padding: 18px 16px 16px;
             }
-            .container {
-                width: 98%;
-                margin: 20px auto;
+            .card h2 {
+                font-size: 0.98rem;
+            }
+            .card .desc {
+                font-size: 0.88rem;
+            }
+            .card .reveal-block {
+                padding: 12px 14px;
+            }
+            .card .reveal-block ul {
+                font-size: 0.84rem;
+                padding-right: 16px;
+            }
+            .flow {
+                padding: 22px 14px 20px;
             }
             .flow-step {
                 flex: 1 1 100%;
                 max-width: 100%;
+                padding: 12px 8px;
             }
             .flow-arrow {
                 transform: rotate(90deg);
                 width: auto;
                 padding: 2px 0;
+                font-size: 1.2rem;
+            }
+            .flow-detail {
+                grid-template-columns: 1fr 1fr;
+                padding: 14px 12px;
+            }
+            .flow-detail-item .label {
+                font-size: 0.75rem;
+            }
+            .flow-detail-item .value {
+                font-size: 0.7rem;
+            }
+            .table-wrap table {
+                font-size: 0.8rem;
+                min-width: 360px;
+            }
+            .table-wrap th,
+            .table-wrap td {
+                padding: 10px 12px;
+            }
+            .section-title {
+                font-size: 1.3rem;
+                padding-right: 12px;
+            }
+            .integration-note {
+                padding: 18px 16px;
+            }
+            .integration-note h3 {
+                font-size: 0.95rem;
+            }
+            .integration-note p {
+                font-size: 0.85rem;
+            }
+            .glossary {
+                gap: 8px 16px;
+                font-size: 0.7rem;
+                padding: 12px 14px;
+            }
+            .glossary-item .abbr {
+                font-size: 0.65rem;
+            }
+            header {
+                padding: 36px 16px 44px;
+            }
+            header h1 {
+                font-size: 1.5rem;
+            }
+            header p {
+                font-size: 0.88rem;
+            }
+            .header-logo {
+                max-width: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 98%;
+                margin: 18px auto;
+            }
+            .card h2::after {
+                font-size: 0.7rem;
             }
             .flow-detail {
                 grid-template-columns: 1fr;
+                gap: 8px;
             }
             .flow .section-title {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
+            }
+            .flow-step .step-icon {
+                font-size: 1.6rem;
+            }
+            .flow-step .step-label {
+                font-size: 0.78rem;
+            }
+            .flow-step .step-desc {
+                font-size: 0.68rem;
+            }
+            .glossary {
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            footer .footer-brand {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ============================================================
+               UTILITY – smooth hover on touch devices (fallback)
+               ============================================================ */
+        @media (hover: none) {
+            .card .reveal {
+                max-height: 800px;
+                opacity: 1;
+                margin-top: 14px;
+                border-top-color: var(--reveal-border);
+                padding-top: 14px;
+            }
+            .card h2::after {
+                content: '⤵';
+                opacity: 0.7;
+            }
+            .card {
+                background: var(--card);
+            }
+            .card:hover {
+                transform: none;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
+    <!-- ================================================================
+    HEADER
+    ================================================================ -->
     <header>
         <h1>مکانیزم‌های <span class="highlight">بازاریابی</span> و <span class="highlight">فروش</span> شکلات</h1>
         <p>
@@ -491,202 +675,541 @@
             که توسط شرکت‌های پیشرو در صنعت شیرینی‌جات استفاده می‌شود.
         </p>
         <br />
-        <!-- Logo placeholder — replace "selection.png" with your own image -->
         <img
         src="selection.png"
         alt="Sorbon Confectionary"
         class="header-logo"
         />
-        <!-- <a href="https://hamidreza-mohammadiha.github.io/Sorbon/8box/" style="font-size: xx-large;"> 🍫 </a> -->
     </header>
 
-    <!-- ===== MAIN CONTENT ===== -->
+    <!-- ================================================================
+    MAIN CONTENT
+    ================================================================ -->
     <div class="container">
 
         <!-- ===== CARDS GRID ===== -->
         <h2 class="section-title">📊 <span>۱۲</span> سازوکار کلیدی</h2>
         <div class="grid">
 
-            <!-- 1. SFI -->
+            <!-- ==========================================================
+            1.  SFI  (Sales Force Incentives)
+            ========================================================== -->
             <div class="card">
-                <div class="badge">فروش داخلی</div>
+                <span class="badge">Internal Sales</span>
                 <h2>مشوق‌های فروش (SFI)</h2>
-                <p>ایجاد انگیزه در تیم فروش برای محصولات در مناطق منتخب</p>
-                <ul>
-                    <strong>مکانیزم انگیزشی</strong>
-                    <li>پورسانت — پاداش‌های نقدی</li>
-                    <li>مسابقات فروش (گروهی)</li>
-                    <li>لیدربرد سالانه (انفرادی)</li>
-                </ul>
-                <br />
-                <ul>
-                    <strong>شاخص عملکرد</strong>
-                    <li>Actual Coverage</li>
-                    <li>Daily Volume (AOP)</li>
-                    <li>Line per Invoice (LPI)</li>
-                </ul>
-                <br />
-                <ul>
-                    <strong>انواع جوایز</strong>
-                    <li>هدایای نقدی</li>
-                    <li>اعتبار خرید</li>
-                    <li>سبد شکلات رایگان</li>
-                    <li>بلیط رایگان</li>
-                    <li>هدایای غیر نقدی</li>
-                </ul>
-                <br />
-                <ul>
-                    <strong>روش‌های ارتباطی</strong>
-                    <li>جلسات روزانه و هفتگی تیم فروش</li>
-                    <li>فیش حقوقی ثابت و متغیر</li>
-                    <li>ابزار دیجیتال ثبت سفارش</li>
-                    <li>فاکتور کاغذی سفارشات</li>
-                    <li>پیامک‌های هوشمند</li>
-                </ul>
+                <p class="desc">ایجاد انگیزه در تیم فروش برای محصولات در مناطق منتخب</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>پورسانت — پاداش‌های نقدی</li>
+                            <li>مسابقات فروش (گروهی)</li>
+                            <li>لیدربرد سالانه (انفرادی)</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>Actual Coverage</li>
+                            <li>Daily Volume (AOP)</li>
+                            <li>Line per Invoice (LPI)</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>هدایای نقدی</li>
+                            <li>اعتبار خرید</li>
+                            <li>سبد شکلات رایگان</li>
+                            <li>بلیط رایگان</li>
+                            <li>هدایای غیر نقدی</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>جلسات روزانه و هفتگی تیم فروش</li>
+                            <li>فیش حقوقی ثابت و متغیر</li>
+                            <li>ابزار دیجیتال ثبت سفارش</li>
+                            <li>فاکتور کاغذی سفارشات</li>
+                            <li>پیامک‌های هوشمند</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 2. Sales Promotion -->
+            <!-- ==========================================================
+            2.  Sales Promotion
+            ========================================================== -->
             <div class="card">
-                <div class="badge">مصرف‌کننده</div>
+                <span class="badge">Consumer</span>
                 <h2>ترفیع فروش</h2>
-                <p>پیشنهادات موقتی که خرید فوری را تحریک می‌کنند.</p>
-                <ul>
-                    <li>تخفیف‌ها</li>
-                    <li>یکی بخر دو تا ببر</li>
-                    <li>کوپن‌ها</li>
-                    <li>بازگشت نقدی</li>
-                    <li>هدایای رایگان</li>
-                </ul>
+                <p class="desc">پیشنهادات موقتی که خرید فوری را تحریک می‌کنند.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>افزایش فروش فوری</li>
+                            <li>جذب مشتریان جدید</li>
+                            <li>ایجاد هیجان خرید</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>فروش روزانه</li>
+                            <li>نرخ تبدیل</li>
+                            <li>تعداد تراکنش</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>تخفیف‌های ویژه</li>
+                            <li>جوایز نقدی</li>
+                            <li>کارت هدیه</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>پیامک</li>
+                            <li>ایمیل</li>
+                            <li>اپلیکیشن</li>
+                            <li>پوستر در فروشگاه</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 3. Sampling -->
+            <!-- ==========================================================
+            3.  Sampling
+            ========================================================== -->
             <div class="card">
-                <div class="badge">آزمایش</div>
+                <span class="badge">Sampling</span>
                 <h2>نمونه‌سازی</h2>
-                <p>اجازه دادن به مصرف‌کنندگان برای تجربه محصول قبل از خرید.</p>
-                <ul>
-                    <li>چشیدن در فروشگاه</li>
-                    <li>رویدادها</li>
-                    <li>مراکز خرید</li>
-                    <li>فعال‌سازی در دانشگاه‌ها</li>
-                </ul>
+                <p class="desc">اجازه دادن به مصرف‌کنندگان برای تجربه محصول قبل از خرید.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>آشنایی با طعم</li>
+                            <li>کاهش ریسک خرید</li>
+                            <li>ایجاد اعتماد به برند</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>نرخ امتحان</li>
+                            <li>نرخ تبدیل به خرید</li>
+                            <li>بازخورد مصرف‌کننده</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>بسته‌های نمونه رایگان</li>
+                            <li>کد تخفیف</li>
+                            <li>هدایای برند</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>دعوت‌نامه</li>
+                            <li>پیامک</li>
+                            <li>شبکه‌های اجتماعی</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 4. Trade Marketing -->
+            <!-- ==========================================================
+            4.  Trade Marketing
+            ========================================================== -->
             <div class="card">
-                <div class="badge">خرده‌فروشی</div>
+                <span class="badge">Retail</span>
                 <h2>بازاریابی تجاری</h2>
-                <p>ایجاد ارزش برای خرده‌فروشان و توزیع‌کنندگان.</p>
-                <ul>
-                    <li>تخفیف‌های تجاری</li>
-                    <li>مشوق‌های خرده‌فروشی</li>
-                    <li>کمک هزینه‌های نمایش</li>
-                    <li>کمپین‌های مشترک</li>
-                </ul>
+                <p class="desc">ایجاد ارزش برای خرده‌فروشان و توزیع‌کنندگان.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>افزایش همکاری خرده‌فروشان</li>
+                            <li>بهبود روابط تجاری</li>
+                            <li>افزایش توزیع</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>رشد فروش در کانال</li>
+                            <li>سهم قفسه</li>
+                            <li>تعداد فروشگاه‌های فعال</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>تخفیف‌های تجاری</li>
+                            <li>پاداش عملکرد</li>
+                            <li>پشتیبانی بازاریابی</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>جلسات حضوری</li>
+                            <li>پورتال اختصاصی</li>
+                            <li>گزارش‌های عملکرد</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 5. In-Store Marketing -->
+            <!-- ==========================================================
+            5.  In-Store Marketing
+            ========================================================== -->
             <div class="card">
-                <div class="badge">فروشگاه</div>
+                <span class="badge">In‑Store</span>
                 <h2>بازاریابی درون‌فروشگاهی</h2>
-                <p>افزایش دیدپذیری محصول و تبدیل خریدار.</p>
-                <ul>
-                    <li>قفسه‌های انتهایی</li>
-                    <li>نمایشگرهای صندوق</li>
-                    <li>برچسب‌های قفسه</li>
-                    <li>مواد تبلیغاتی در نقطه فروش</li>
-                </ul>
+                <p class="desc">افزایش دیدپذیری محصول و تبدیل خریدار.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>جلب توجه خریدار در نقطه فروش</li>
+                            <li>افزایش خرید ناگهانی</li>
+                            <li>ارتقای تجربه خرید</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>میزان توقف در قفسه</li>
+                            <li>نرخ خرید</li>
+                            <li>تأثیر بر سبد خرید</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>هدایای تبلیغاتی</li>
+                            <li>تخفیف ویژه</li>
+                            <li>محصولات رایگان</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>بیلبورد</li>
+                            <li>برچسب قفسه</li>
+                            <li>صفحه نمایش</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 6. Merchandising -->
+            <!-- ==========================================================
+            6.  Merchandising
+            ========================================================== -->
             <div class="card">
-                <div class="badge">اجرا</div>
+                <span class="badge">Execution</span>
                 <h2>کالاچینی</h2>
-                <p>حفظ ارائه عالی محصول در قفسه.</p>
-                <ul>
-                    <li>رعایت پلانوگرام</li>
-                    <li>اول ورودی اول خروجی</li>
-                    <li>تکمیل قفسه</li>
-                    <li>اصلاح رو به جلو</li>
-                </ul>
+                <p class="desc">حفظ ارائه عالی محصول در قفسه.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>دسترسی آسان برای خریدار</li>
+                            <li>افزایش فروش از طریق نمایش</li>
+                            <li>بهبود تصویر برند</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>تکمیل قفسه</li>
+                            <li>رعایت پلانوگرام</li>
+                            <li>مدیریت موجودی</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>پاداش اجرا</li>
+                            <li>تقدیرنامه</li>
+                            <li>اعتبار خرید</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>دستورالعمل اجرایی</li>
+                            <li>چک لیست روزانه</li>
+                            <li>بازدید میدانی</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 7. Shopper Marketing -->
+            <!-- ==========================================================
+            7.  Shopper Marketing
+            ========================================================== -->
             <div class="card">
-                <div class="badge">خریدار</div>
+                <span class="badge">Shopper</span>
                 <h2>بازاریابی خریدار</h2>
-                <p>تأثیر بر تصمیمات خرید درون فروشگاه.</p>
-                <ul>
-                    <li>کالاچینی متقابل</li>
-                    <li>نمایشگرهای خرید تحمیلی</li>
-                    <li>قرارگیری در صندوق</li>
-                    <li>نمایشگرهای فصلی</li>
-                </ul>
+                <p class="desc">تأثیر بر تصمیمات خرید درون فروشگاه.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>تأثیر بر تصمیم خرید لحظه‌ای</li>
+                            <li>افزایش ارزش سبد خرید</li>
+                            <li>ارتباط احساسی با برند</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>نرخ تبدیل</li>
+                            <li>میانگین خرید</li>
+                            <li>سهم از کیف پول</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>تخفیف‌های شگفت‌انگیز</li>
+                            <li>هدایا</li>
+                            <li>کدهای تخفیف</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>پیام در فروشگاه</li>
+                            <li>اپلیکیشن</li>
+                            <li>کیوآر کد</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 8. Consumer Activation -->
+            <!-- ==========================================================
+            8.  Consumer Activation
+            ========================================================== -->
             <div class="card">
-                <div class="badge">تجربه</div>
+                <span class="badge">Experience</span>
                 <h2>فعال‌سازی مصرف‌کننده</h2>
-                <p>کمپین‌های تعاملی که مصرف‌کنندگان را درگیر می‌کند.</p>
-                <ul>
-                    <li>بازی‌های کیوآر</li>
-                    <li>چرخ گردون</li>
-                    <li>مسابقات</li>
-                    <li>نمایشگاه‌های سیار</li>
-                </ul>
+                <p class="desc">کمپین‌های تعاملی که مصرف‌کنندگان را درگیر می‌کند.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>ایجاد تجربه تعاملی و به‌یادماندنی</li>
+                            <li>افزایش ارتباط عاطفی</li>
+                            <li>تبدیل به سفیر برند</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>میزان مشارکت</li>
+                            <li>اشتراک‌گذاری اجتماعی</li>
+                            <li>نرخ تعامل</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>جوایز مسابقات</li>
+                            <li>محصولات رایگان</li>
+                            <li>هدایای انحصاری</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>شبکه‌های اجتماعی</li>
+                            <li>کیوآر کد</li>
+                            <li>رویدادهای حضوری</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 9. Loyalty Programs -->
+            <!-- ==========================================================
+            9.  Loyalty Programs
+            ========================================================== -->
             <div class="card">
-                <div class="badge">حفظ مشتری</div>
+                <span class="badge">Retention</span>
                 <h2>برنامه‌های وفاداری</h2>
-                <p>تشویق به خرید مجدد.</p>
-                <ul>
-                    <li>امتیازها</li>
-                    <li>جوایز</li>
-                    <li>عضویت</li>
-                    <li>باشگاه‌های ویژه</li>
-                </ul>
+                <p class="desc">تشویق به خرید مجدد.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>افزایش وفاداری و خرید مجدد</li>
+                            <li>ارزش‌گذاری به مشتری</li>
+                            <li>کاهش ریزش</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>نرخ بازگشت</li>
+                            <li>ارزش طول عمر مشتری</li>
+                            <li>تکرار خرید</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>امتیاز</li>
+                            <li>تخفیف ویژه</li>
+                            <li>هدایا</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>اپلیکیشن</li>
+                            <li>پیامک</li>
+                            <li>ایمیل</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 10. Category Management -->
+            <!-- ==========================================================
+            10. Category Management
+            ========================================================== -->
             <div class="card">
-                <div class="badge">راهبرد خرده‌فروشی</div>
+                <span class="badge">Retail Strategy</span>
                 <h2>مدیریت دسته‌بندی</h2>
-                <p>بهینه‌سازی دسته شیرینی‌جات برای خرده‌فروش و تولیدکننده.</p>
-                <ul>
-                    <li>ترکیب کالاها</li>
-                    <li>تخصیص قفسه</li>
-                    <li>تقویم ترفیعات</li>
-                    <li>سودآوری</li>
-                </ul>
+                <p class="desc">بهینه‌سازی دسته شیرینی‌جات برای خرده‌فروش و تولیدکننده.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>رشد کل دسته</li>
+                            <li>سودآوری</li>
+                            <li>همکاری استراتژیک</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>فروش کل دسته</li>
+                            <li>سهم بازار</li>
+                            <li>سودآوری دسته</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>همکاری استراتژیک</li>
+                            <li>داده‌های تحلیلی</li>
+                            <li>پشتیبانی تخصصی</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>جلسات مشترک</li>
+                            <li>داشبورد</li>
+                            <li>گزارش‌های دوره‌ای</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 11. Channel Marketing -->
+            <!-- ==========================================================
+            11. Channel Marketing
+            ========================================================== -->
             <div class="card">
-                <div class="badge">کانال‌ها</div>
+                <span class="badge">Channels</span>
                 <h2>بازاریابی کانالی</h2>
-                <p>تطابق بازاریابی با کانال فروش.</p>
-                <ul>
-                    <li>سوپرمارکت‌ها</li>
-                    <li>فروشگاه‌های رفاهی</li>
-                    <li>تجارت الکترونیک</li>
-                    <li>عمده‌فروشی</li>
-                </ul>
+                <p class="desc">تطابق بازاریابی با کانال فروش.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>تطابق با نیاز هر کانال</li>
+                            <li>بهبود عملکرد کانال</li>
+                            <li>افزایش پوشش</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>فروش به ازای هر کانال</li>
+                            <li>نرخ رشد کانال</li>
+                            <li>سهم کانال</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>تخفیف کانالی</li>
+                            <li>پشتیبانی ویژه</li>
+                            <li>بودجه بازاریابی</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>ارتباط مستقیم</li>
+                            <li>پورتال</li>
+                            <li>جلسات کانال</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- 12. Perfect Store -->
+            <!-- ==========================================================
+            12. Perfect Store
+            ========================================================== -->
             <div class="card">
-                <div class="badge">تعالی خرده‌فروشی</div>
+                <span class="badge">Retail Excellence</span>
                 <h2>فروشگاه ایده‌آل</h2>
-                <p>ارزیابی فروشگاه‌ها بر اساس استانداردهای اجرایی ایده‌آل.</p>
-                <ul>
-                    <li>در دسترس بودن</li>
-                    <li>دیدپذیری</li>
-                    <li>قیمت‌گذاری</li>
-                    <li>انطباق نمایش</li>
-                </ul>
+                <p class="desc">ارزیابی فروشگاه‌ها بر اساس استانداردهای اجرایی ایده‌آل.</p>
+                <div class="reveal">
+                    <div class="reveal-block">
+                        <span class="label">🔹 مکانیزم انگیزشی</span>
+                        <ul>
+                            <li>تعالی در اجرا و تجربه خرید</li>
+                            <li>افزایش رضایت خریدار</li>
+                            <li>ارتقای تصویر برند</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🔸 شاخص عملکرد</span>
+                        <ul>
+                            <li>امتیاز ارزیابی</li>
+                            <li>انطباق استاندارد</li>
+                            <li>کیفیت اجرا</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">🎁 انواع جوایز</span>
+                        <ul>
+                            <li>تقدیر</li>
+                            <li>پاداش عملکرد</li>
+                            <li>حمایت ویژه</li>
+                        </ul>
+                    </div>
+                    <div class="reveal-block">
+                        <span class="label">📞 روش‌های ارتباطی</span>
+                        <ul>
+                            <li>گزارش ارزیابی</li>
+                            <li>جلسه بازخورد</li>
+                            <li>دستورالعمل بهبود</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -719,62 +1242,48 @@
             </table>
         </div>
 
-        <!-- ===== ENHANCED FLOW ===== -->
+        <!-- ===== FLOW ===== -->
         <div class="flow">
             <h2 class="section-title">🌀 جریان <span>اجرایی</span> بازاریابی و فروش</h2>
 
-            <!-- main flow steps -->
             <div class="flow-steps">
-
                 <div class="flow-step">
                     <span class="step-icon">📋</span>
                     <span class="step-label">برنامه‌ریزی</span>
                     <span class="step-desc">تحلیل داده، هدف‌گذاری و بودجه‌بندی</span>
                 </div>
-
                 <div class="flow-arrow">◀</div>
-
                 <div class="flow-step">
                     <span class="step-icon">🚚</span>
                     <span class="step-label">توزیع</span>
                     <span class="step-desc">ارسال به انبارها و فروشگاه‌ها</span>
                 </div>
-
                 <div class="flow-arrow">◀</div>
-
                 <div class="flow-step">
                     <span class="step-icon">🏪</span>
                     <span class="step-label">اجرا در فروشگاه</span>
                     <span class="step-desc">کالاچینی، نمایش و قیمت‌گذاری</span>
                 </div>
-
                 <div class="flow-arrow">◀</div>
-
                 <div class="flow-step">
                     <span class="step-icon">🛒</span>
                     <span class="step-label">فروش</span>
                     <span class="step-desc">تعامل با خریدار و تبدیل</span>
                 </div>
-
                 <div class="flow-arrow">◀</div>
-
                 <div class="flow-step">
                     <span class="step-icon">📊</span>
                     <span class="step-label">اندازه‌گیری</span>
                     <span class="step-desc">ردیابی شاخص‌ها و بازخورد</span>
                 </div>
-
                 <div class="flow-arrow">◀</div>
-
                 <div class="flow-step">
                     <span class="step-icon">🔄</span>
                     <span class="step-label">بهینه‌سازی</span>
                     <span class="step-desc">اصلاح استراتژی بر اساس داده</span>
                 </div>
-
             </div>
 
-            <!-- detail sub-row -->
             <div class="flow-detail">
                 <div class="flow-detail-item">
                     <span class="label">🎯 شاخص کلیدی</span>
@@ -817,7 +1326,9 @@
     </div>
     <!-- end container -->
 
-    <!-- ===== FOOTER ===== -->
+    <!-- ================================================================
+    FOOTER with Abbreviation Glossary
+    ================================================================ -->
     <footer>
         <div class="footer-brand">🍫 Sorbon Confectionary Business</div>
         <div class="footer-meta">
@@ -825,7 +1336,40 @@
             <span style="margin:0 8px;">|</span>
             <a href="https://hamidreza-mohammadiha.github.io/Sorbon/8box/" target="_blank">🔄 نسخه تعاملی</a>
         </div>
-        <div style="margin-top:8px;font-size:0.7rem;opacity:0.4;">
+
+        <!-- Abbreviation Glossary -->
+        <div class="glossary">
+            <span class="glossary-item">
+                <span class="abbr">SFI</span>
+                <span class="meaning">مشوق‌های فروش</span>
+            </span>
+            <span class="glossary-item">
+                <span class="abbr">LPI</span>
+                <span class="meaning">تعداد قلم در هر فاکتور</span>
+            </span>
+            <span class="glossary-item">
+                <span class="abbr">AOP</span>
+                <span class="meaning">برنامه عملیاتی سالانه</span>
+            </span>
+            <span class="glossary-item">
+                <span class="abbr">NSV</span>
+                <span class="meaning">فروش خالص</span>
+            </span>
+            <span class="glossary-item">
+                <span class="abbr">POS</span>
+                <span class="meaning">نقطه فروش</span>
+            </span>
+            <span class="glossary-item">
+                <span class="abbr">Shopper</span>
+                <span class="meaning">خریدار در فروشگاه</span>
+            </span>
+            <span class="glossary-item">
+                <span class="abbr">Trade</span>
+                <span class="meaning">بازاریابی تجاری / خرده‌فروشی</span>
+            </span>
+        </div>
+
+        <div style="margin-top:12px;font-size:0.65rem;opacity:0.4;">
             طراحی و تدوین — واحد بازاریابی &bull; همه حقوق محفوظ است
         </div>
     </footer>
