@@ -1,543 +1,806 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>مکانیزم های بازاریابی و فروش شکلات</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xw92c7gg5x");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorbon Chocolate - Mystery Box Challenge</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
-        /* ===== CHOCOLATE COLOR PALETTE ===== */
         :root {
-            --bg: #fdf6f0;
-            --card: #ffffff;
-            --primary: #4a2c1a;
-            --secondary: #6b3a2a;
-            --accent: #c68e3c;
-            --accent-light: #e8c88a;
-            --text: #1a0e08;
-            --muted: #6b4f3a;
-            --border: #d4c4b0;
-            --shadow: 0 12px 30px rgba(74, 44, 26, 0.12);
-            --radius: 18px;
-            --badge-bg: #ede0d4;
-            --badge-text: #4a2c1a;
-            --header-from: #4a2c1a;
-            --header-to: #6b3a2a;
-            --table-header: #3b1e0a;
-            --flow-bg: #faf0e8;
-            --step-bg: #ede0d4;
-            --step-text: #3b1e0a;
-            --arrow-color: #8b5a2b;
-            --hover-lift: #f5e6d3;
+            --primary-color: #3b0d19;
+            --gold-accent: #d4af37;
+            --gold-light: #fbeea2;
+            --bg-color: #120509;
+            --text-color: #ffffff;
+            --shelf-wood: #2c160a;
+            --font-heading: 'Cinzel', serif;
+            --font-body: 'Montserrat', sans-serif;
+            --font-signature: 'Great Vibes', cursive;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden;
         }
 
-        /* ----- HEADER ----- */
-        header {
-            background: linear-gradient(135deg, var(--header-from), var(--header-to));
-            color: #fff8f0;
-            padding: 70px 20px;
+        /* Hero / Landing Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            border-bottom: 6px solid var(--accent);
-        }
-        header h1 {
-            font-size: 2.4rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        }
-        header p {
-            opacity: 0.92;
-            max-width: 800px;
-            margin: 0 auto;
-            font-weight: 400;
-        }
-
-        /* ----- CONTAINER ----- */
-        .container {
-            width: min(1300px, 95%);
-            margin: 40px auto;
-        }
-
-        /* ----- GRID ----- */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 22px;
-        }
-
-        /* ----- CARDS ----- */
-        .card {
-            background: var(--card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 24px;
-            transition: 0.3s ease;
-            border: 1px solid var(--border);
+            padding: 20px;
+            background: radial-gradient(circle at center, #2e0813 0%, var(--bg-color) 70%);
             position: relative;
-            overflow: hidden;
-        }
-        .card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 6px;
-            height: 100%;
-            background: var(--accent);
-            border-radius: 0 4px 4px 0;
-        }
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 18px 36px rgba(74, 44, 26, 0.15);
-            background: var(--hover-lift);
         }
 
-        .card h2 {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 6px;
-            font-weight: 700;
+        .hero-logo {
+            max-width: 280px;
+            width: 80%;
+            filter: drop-shadow(0 0 2px rgba(100, 175, 55, 0.5));
+            margin-bottom: 25px;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 4px 14px;
-            border-radius: 999px;
-            background: var(--badge-bg);
-            color: var(--badge-text);
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            letter-spacing: 0.3px;
+        .her-logo {
+            max-width: 280px;
+            width: 80%;
+            filter: drop-shadow(0 0 88px rgba(255, 248, 235, 0.9)) brightness(2.4);
+            margin-bottom: 25px;
         }
 
-        .card p {
-            color: var(--muted);
-            line-height: 1.55;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: clamp(1.8rem, 4vw, 3.2rem);
+            color: var(--gold-accent);
+            margin-bottom: 15px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
         }
 
-        .card ul {
-            padding-right: 20px;
-            color: #374151;
-            line-height: 1.7;
-            list-style-type: disc;
-        }
-        .card ul li {
-            margin-bottom: 2px;
-        }
-
-        /* ----- TABLE ----- */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 40px;
-            background: white;
-            box-shadow: var(--shadow);
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
-        th {
-            background: var(--table-header);
-            color: #fff8f0;
-            padding: 16px;
-            text-align: right;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #eee;
-            color: var(--text);
-        }
-        tr:hover {
-            background: #faf0e8;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* ----- FLOW ----- */
-        .flow {
-            margin-top: 50px;
-            background: var(--flow-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 40px 30px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-        .flow h2 {
+        /* Clickable Hero Description for Language Toggle */
+        .hero-desc {
+            max-width: 650px;
+            font-size: clamp(0.95rem, 2vw, 1.15rem);
+            line-height: 1.6;
+            color: #d1c0c6;
             margin-bottom: 30px;
-            color: var(--primary);
-            font-weight: 800;
-            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px dashed rgba(212, 175, 55, 0.3);
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+            user-select: none;
         }
 
-        .step {
-            display: inline-block;
-            padding: 14px 22px;
-            margin: 8px 6px;
-            border-radius: 14px;
-            background: var(--step-bg);
-            font-weight: 600;
-            color: var(--step-text);
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 8px rgba(74, 44, 26, 0.06);
+        .hero-desc:hover {
+            border-color: var(--gold-accent);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .lang-hint {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+        }
+
+        /* Scroll Down Hint Animation */
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--gold-light);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .scroll-arrow {
+            width: 20px;
+            height: 20px;
+            border-right: 3px solid var(--gold-accent);
+            border-bottom: 3px solid var(--gold-accent);
+            transform: rotate(45deg);
+            animation: bounce 1.8s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(45deg); }
+            40% { transform: translateY(-10px) rotate(45deg); }
+            60% { transform: translateY(-5px) rotate(45deg); }
+        }
+
+        /* Playground / Main Game Section */
+        .game-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 15px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .game-status {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 650px;
+            margin-bottom: 25px;
             font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            backdrop-filter: blur(5px);
         }
 
-        .arrow {
-            font-size: 24px;
-            color: var(--arrow-color);
-            font-weight: 300;
-            display: inline-block;
-            margin: 0 2px;
+        .game-status strong {
+            color: var(--gold-accent);
+            font-size: 1.1rem;
         }
 
-        /* ----- FOOTER ----- */
-        footer {
+        /* Shelf and 3D Boxes Grid */
+        .shelf-container {
+            width: 100%;
+            perspective: 1000px;
+            margin-bottom: 25px;
+        }
+
+        .shelf-rack {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .shelf-board {
+            height: 18px;
+            background: linear-gradient(90deg, #180a04, var(--shelf-wood), #180a04);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.9), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            transform: rotateX(20deg);
+        }
+
+        .box-wrapper {
+            height: 150px;
+            perspective: 600px;
+            cursor: pointer;
+        }
+
+        .box-3d {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .box-3d.revealed {
+            transform: rotateY(180deg);
+        }
+
+        .box-3d.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            filter: grayscale(80%);
+            pointer-events: none;
+        }
+
+        .box-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--gold-accent);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+        }
+
+        .box-front {
+            background: radial-gradient(circle, #4a1525 0%, #20070e 100%);
+            padding: 8px;
+        }
+
+        .box-vector-img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+            transition: transform 0.2s ease;
+        }
+
+        .box-wrapper:hover .box-vector-img {
+            transform: scale(1.08);
+        }
+
+        .box-number {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: var(--gold-accent);
+            color: #000;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .box-back {
+            background: linear-gradient(135deg, #ffffff, #f4e8c1);
+            color: var(--primary-color);
+            transform: rotateY(180deg);
             text-align: center;
-            padding: 50px 20px;
-            color: var(--muted);
+            padding: 10px;
+        }
+
+        .candy-count {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .candy-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* Action Controls */
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-family: var(--font-body);
             font-size: 0.9rem;
-            border-top: 1px solid var(--border);
-            margin-top: 20px;
+            font-weight: 700;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 700px) {
-            header h1 {
-                font-size: 1.7rem;
+        .btn-accept {
+            background: linear-gradient(45deg, var(--gold-accent), var(--gold-light));
+            color: #000;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-accept:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Coupon Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .coupon-card {
+            background: linear-gradient(135deg, #2b0813, #4a1525);
+            border: 2px solid var(--gold-accent);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            color: white;
+            position: relative;
+        }
+
+        .coupon-logo {
+            max-width: 130px;
+            margin-bottom: 12px;
+            filter: brightness(1) invert(0);
+        }
+
+        .coupon-card h2 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--gold-accent);
+            letter-spacing: 1px;
+        }
+
+        .prize-count {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--gold-light);
+            margin: 8px 0;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Head Chef Signature Area */
+        .chef-signature-box {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(212, 175, 55, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .signature-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #c9b1ba;
+        }
+
+        .chef-signature {
+            font-family: var(--font-signature);
+            font-size: 1.8rem;
+            color: var(--gold-accent);
+            line-height: 1.2;
+        }
+
+        .coupon-code {
+            display: block;
+            margin-top: 8px;
+            opacity: 0.7;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-download {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid var(--gold-accent);
+        }
+
+        .btn-brand-site {
+            background: linear-gradient(45deg, #61182c, #8b213f);
+            color: var(--gold-light);
+            border: 1px solid var(--gold-accent);
+        }
+
+        .btn-instagram {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+
+        /* Perfect Score 100/100 Star Celebration Overlay */
+        .celebration-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 200;
+            overflow: hidden;
+            display: none;
+        }
+
+        .star-particle {
+            position: absolute;
+            font-size: 2rem;
+            animation: floatStar 3s linear forwards;
+        }
+
+        @keyframes floatStar {
+            0% {
+                transform: translateY(100vh) scale(0) rotate(0deg);
+                opacity: 1;
             }
-            header p {
-                font-size: 0.95rem;
-            }
-            .flow {
-                padding: 25px 16px;
-            }
-            .step {
-                display: block;
-                margin: 12px auto;
-                width: fit-content;
-                font-size: 0.9rem;
-                padding: 12px 20px;
-            }
-            .arrow {
-                display: block;
-                transform: rotate(90deg);
-                margin: 4px auto;
-                font-size: 22px;
-            }
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            table {
-                font-size: 0.85rem;
-            }
-            th,
-            td {
-                padding: 10px 12px;
-            }
-            .card {
-                padding: 18px;
-            }
-            .card h2 {
-                font-size: 1rem;
+            100% {
+                transform: translateY(-10vh) scale(1.5) rotate(360deg);
+                opacity: 0;
             }
         }
 
-        @media (max-width: 480px) {
-            header {
-                padding: 40px 16px;
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .shelf-rack {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
-            header h1 {
-                font-size: 1.4rem;
+
+            .box-wrapper {
+                height: 130px;
             }
-            .container {
-                width: 98%;
-                margin: 20px auto;
+
+            .game-status {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
             }
-            .flow h2 {
-                font-size: 1.2rem;
+        }
+
+        @media (max-width: 400px) {
+            .shelf-rack {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
-            .step {
-                font-size: 0.8rem;
-                padding: 10px 16px;
+
+            .box-wrapper {
+                height: 110px;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
-    <header>
-      
-		<br>
-        <h2>مکانیزم های بازاریابی و فروش شکلات</h1>
-	<br>
-        <p>
-            خلاصه‌ای جامع از رایج‌ترین تکنیک‌های فروش، بازاریابی تجاری و بازاریابی خریداران
-            که توسط شرکت‌های پیشرو در صنعت شیرینی‌جات استفاده می‌شود.
-        </p>
-        <br>
-        <img
-    src="selection.png"
-    alt="Sorbon Logo"
-    style="
-        width: 55%;
-        max-width: 200px;
-        height: auto;
-        display: block;
-        margin: 0 auto;
-    "> 
-        <!-- <a href="https://hamidreza-mohammadiha.github.io/Sorbon/8box/" style="font-size: xx-large;"> 🍫 </a> -->
-	 
+    <!-- Landing Section -->
+    <section class="hero-section">
+        <img src="../Sorbon/8box/box.png" alt="Sorbon Logo" class="hero-logo">
+        <img style="width: 48%;" src="../Sorbon/8box/sor.png" alt="Sorbon Logo" class="her-logo">
+        <h1 class="hero-title">Mystery Box Challenge</h1>
+        
+        <!-- Clickable Introduction Text with Farsi Translation Toggle -->
+        <div id="hero-desc">
+            <span style="padding: 3%; font-style: italic;" class="game-status" id="hero-text-content">
+                Test your luck across 8 mystery boxes containing 1 to 100 premium Sorbon chocolates. Open boxes, evaluate your offer, and accept your reward before running out of choices!
+                <br>
+                <!-- <small style="font-family: Verdana, Geneva, Tahoma, sans-serif;" class="lang-hint">🌐 فارسی</small> -->
 
-    </header>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="container">
-
-        <!-- ===== CARDS GRID ===== -->
-        <div class="grid">
-
-            <!-- 1. SFI -->
-            <div class="card">
-                <div class="badge">فروش داخلی</div>
-                <h2>مشوق‌های فروش (SFI)</h2>
-                <p>ایجاد انگیزه در تیم فروش برای محصولات در مناطق منتخب</p>
-                <ul>
-					<Strong> مکانیزم انگیزشی</Strong>
-                    <li> (پورسانت) پاداش‌های نقدی </li>
-                    <li> مسابقات فروش (گروهی) </li>
-                    <li> لیدربرد سالانه (انفرادی) </li>
-                </ul>
-				<br>
-				<ul>
-					<Strong> شاخص عملکرد</Strong>
-                    <li>Actual Coverage </li>
-                    <li>Daily Volume (AOP) </li>
-					<li>Line per Invoice (LPI) </li>
-                </ul>
-				<br>
-				<ul>
-					<Strong> انواع جوایز</Strong>
-                    <li>هدایای نقدی</li>
-					<li>اعتبار خرید</li>
-					<li>سبد شکلات رایگان</li>
-                    <li>بلیط رایگان</li>
-					<li>هدایای غیر نقدی</li>
-                </ul>
-				<br>
-				<ul>
-					<Strong> روش های ارتباطی</Strong>
-                    <li>جلسات روزانه و هفتگی تیم فروش</li>
-					<li>فیش حقوقی ثابت و متغیر</li>
-					<li>ابزار دیجیتال ثبت سفارش</li>
-                    <li>فاکتور کاغذی سفارشات</li>
-					<li>پیامک های هوشمند</li>
-                </ul>
-				
-            </div>
-
-            <!-- 2. Sales Promotion -->
-            <div class="card">
-                <div class="badge">مصرف‌کننده</div>
-                <h2>ترفیع فروش</h2>
-                <p>پیشنهادات موقتی که خرید فوری را تحریک می‌کنند.</p>
-                <ul>
-                    <li>تخفیف‌ها</li>
-                    <li>یکی بخر دو تا ببر</li>
-                    <li>کوپن‌ها</li>
-                    <li>بازگشت نقدی</li>
-                    <li>هدایای رایگان</li>
-                </ul>
-            </div>
-
-            <!-- 3. Sampling -->
-            <div class="card">
-                <div class="badge">آزمایش</div>
-                <h2>نمونه‌سازی</h2>
-                <p>اجازه دادن به مصرف‌کنندگان برای تجربه محصول قبل از خرید.</p>
-                <ul>
-                    <li>چشیدن در فروشگاه</li>
-                    <li>رویدادها</li>
-                    <li>مراکز خرید</li>
-                    <li>فعال‌سازی در دانشگاه‌ها</li>
-                </ul>
-            </div>
-
-            <!-- 4. Trade Marketing -->
-            <div class="card">
-                <div class="badge">خرده‌فروشی</div>
-                <h2>بازاریابی تجاری</h2>
-                <p>ایجاد ارزش برای خرده‌فروشان و توزیع‌کنندگان.</p>
-                <ul>
-                    <li>تخفیف‌های تجاری</li>
-                    <li>مشوق‌های خرده‌فروشی</li>
-                    <li>کمک هزینه‌های نمایش</li>
-                    <li>کمپین‌های مشترک</li>
-                </ul>
-            </div>
-
-            <!-- 5. In-Store Marketing -->
-            <div class="card">
-                <div class="badge">فروشگاه</div>
-                <h2>بازاریابی درون‌فروشگاهی</h2>
-                <p>افزایش دیدپذیری محصول و تبدیل خریدار.</p>
-                <ul>
-                    <li>قفسه‌های انتهایی</li>
-                    <li>نمایشگرهای صندوق</li>
-                    <li>برچسب‌های قفسه</li>
-                    <li>مواد تبلیغاتی در نقطه فروش</li>
-                </ul>
-            </div>
-
-            <!-- 6. Merchandising -->
-            <div class="card">
-                <div class="badge">اجرا</div>
-                <h2>کالاچینی</h2>
-                <p>حفظ ارائه عالی محصول در قفسه.</p>
-                <ul>
-                    <li>رعایت پلانوگرام</li>
-                    <li>اول ورودی اول خروجی</li>
-                    <li>تکمیل قفسه</li>
-                    <li>اصلاح رو به جلو</li>
-                </ul>
-            </div>
-
-            <!-- 7. Shopper Marketing -->
-            <div class="card">
-                <div class="badge">خریدار</div>
-                <h2>بازاریابی خریدار</h2>
-                <p>تأثیر بر تصمیمات خرید درون فروشگاه.</p>
-                <ul>
-                    <li>کالاچینی متقابل</li>
-                    <li>نمایشگرهای خرید تحمیلی</li>
-                    <li>قرارگیری در صندوق</li>
-                    <li>نمایشگرهای فصلی</li>
-                </ul>
-            </div>
-
-            <!-- 8. Consumer Activation -->
-            <div class="card">
-                <div class="badge">تجربه</div>
-                <h2>فعال‌سازی مصرف‌کننده</h2>
-                <p>کمپین‌های تعاملی که مصرف‌کنندگان را درگیر می‌کند.</p>
-                <ul>
-                    <li>بازی‌های کیوآر</li>
-                    <li>چرخ گردون</li>
-                    <li>مسابقات</li>
-                    <li>نمایشگاه‌های سیار</li>
-                </ul>
-            </div>
-
-            <!-- 9. Loyalty Programs -->
-            <div class="card">
-                <div class="badge">حفظ مشتری</div>
-                <h2>برنامه‌های وفاداری</h2>
-                <p>تشویق به خرید مجدد.</p>
-                <ul>
-                    <li>امتیازها</li>
-                    <li>جوایز</li>
-                    <li>عضویت</li>
-                    <li>باشگاه‌های ویژه</li>
-                </ul>
-            </div>
-
-            <!-- 10. Category Management -->
-            <div class="card">
-                <div class="badge">راهبرد خرده‌فروشی</div>
-                <h2>مدیریت دسته‌بندی</h2>
-                <p>بهینه‌سازی دسته شیرینی‌جات برای خرده‌فروش و تولیدکننده.</p>
-                <ul>
-                    <li>ترکیب کالاها</li>
-                    <li>تخصیص قفسه</li>
-                    <li>تقویم ترفیعات</li>
-                    <li>سودآوری</li>
-                </ul>
-            </div>
-
-            <!-- 11. Channel Marketing -->
-            <div class="card">
-                <div class="badge">کانال‌ها</div>
-                <h2>بازاریابی کانالی</h2>
-                <p>تطابق بازاریابی با کانال فروش.</p>
-                <ul>
-                    <li>سوپرمارکت‌ها</li>
-                    <li>فروشگاه‌های رفاهی</li>
-                    <li>تجارت الکترونیک</li>
-                    <li>عمده‌فروشی</li>
-                </ul>
-            </div>
-
-            <!-- 12. Perfect Store -->
-            <div class="card">
-                <div class="badge">تعالی خرده‌فروشی</div>
-                <h2>فروشگاه ایده‌آل</h2>
-                <p>ارزیابی فروشگاه‌ها بر اساس استانداردهای اجرایی ایده‌آل.</p>
-                <ul>
-                    <li>در دسترس بودن</li>
-                    <li>دیدپذیری</li>
-                    <li>قیمت‌گذاری</li>
-                    <li>انطباق نمایش</li>
-                </ul>
-            </div>
-
+            </span>
         </div>
-        <!-- end grid -->
 
-        <!-- ===== TABLE ===== -->
-        <!-- <table>
-            <thead>
-                <tr>
-                    <th>استراتژی بازاریابی و فروش</th>
-                    <th>مخاطب هدف</th>
-                    <th>نتایج کلیدی</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>مشوق‌های فروش (SFI)</td><td>تیم فروش</td><td>بهبود عملکرد میدانی</td></tr>
-                <tr><td>ترفیع فروش</td><td>مصرف‌کننده</td><td>افزایش فروش کوتاه‌مدت</td></tr>
-                <tr><td>نمونه‌سازی</td><td>مصرف‌کننده</td><td>ایجاد امتحان محصول</td></tr>
-                <tr><td>بازاریابی تجاری</td><td>خرده‌فروشان</td><td>افزایش توزیع</td></tr>
-                <tr><td>بازاریابی درون‌فروشگاهی</td><td>خریدار</td><td>افزایش دیدپذیری</td></tr>
-                <tr><td>کالاچینی</td><td>خرده‌فروشی</td><td>بهبود اجرای قفسه</td></tr>
-                <tr><td>بازاریابی خریدار</td><td>خریدار</td><td>تأثیر بر تصمیمات خرید</td></tr>
-                <tr><td>فعال‌سازی مصرف‌کننده</td><td>مصرف‌کننده</td><td>ایجاد تعامل</td></tr>
-                <tr><td>برنامه‌های وفاداری</td><td>مشتری</td><td>افزایش خرید مجدد</td></tr>
-                <tr><td>مدیریت دسته‌بندی</td><td>خرده‌فروش</td><td>رشد کل دسته</td></tr>
-                <tr><td>بازاریابی کانالی</td><td>کانال‌های فروش</td><td>بهینه‌سازی عملکرد کانال</td></tr>
-                <tr><td>فروشگاه ایده‌آل</td><td>خرده‌فروشی</td><td>تضمین کیفیت اجرا</td></tr>
-            </tbody>
-        </table> -->
+        <a href="#playground" class="scroll-hint">
+            <span>Scroll To Play</span>
+            <div class="scroll-arrow"></div>
+        </a>
+    </section>
 
-        <!-- ===== FLOW ===== -->
+    <!-- Main Playground Section -->
+    <section id="playground" class="game-section">
+        <img style="width: 18%;" src="../Sorbon/8box/cone.png" alt="Sorbon Logo">
+        <div class="game-status">
+            
+            <span>Chances Remaining: <strong id="chances-count">8</strong></span>
+            <span>Current Box Range: <strong>1 - 100</strong></span>
+            <span>Offer: <strong id="current-offer-count">-</strong></span>
+        </div>
+                <div class="action-bar">
+            <button id="btn-accept" class="btn btn-accept" disabled>Accept Current Offer</button>
+        </div>
 
+        <div class="shelf-container">
+            <div class="shelf-rack" id="shelf">
+                <!-- 8 3D Box items dynamically generated -->
+            </div>
+            <div class="shelf-board"></div>
+        </div>
+
+
+    </section>
+
+    <!-- Coupon Modal -->
+    <div id="coupon-modal" class="modal hidden">
+        <div class="modal-content">
+            <div id="coupon-card" class="coupon-card">
+                <img src="../Sorbon/8box/cone.png" alt="Sorbon Logo" class="coupon-logo"><img src="../Sorbon/8box/h.png" alt="Sorbon Logo" class="coupon-logo">
+                <h2>CONGRATULATIONS!</h2>
+                <p style="font-size: 0.8rem; margin-top: 4px;">Verified Gift Certificate</p>
+                
+                <div class="prize-count"><span id="final-candies-count">0</span></div>
+                <p style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Sorbon Chocolates</p>
+                
+                <!-- Head Chef Signature -->
+                <div class="chef-signature-box">
+                    <span class="signature-title">Authorized Signature</span>
+                    <span class="chef-signature">Chef Pierre</span>
+                    <small style="font-size: 0.65rem; opacity: 0.8;">Head Chocolatier</small>
+                </div>
+
+                <small class="coupon-code" id="coupon-id">CODE: SRB-XXXXXX</small>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="btn-download" class="btn btn-download">Download Coupon</button>
+                <a id="btn-brand-site" href="https://sorbonsweet.com/" target="_blank" class="btn btn-brand-site">Sorbon Chocolates</a>
+                <!-- <a id="btn-instagram" href="https://instagram.com/sorbonsweet" target="_blank" class="btn btn-instagram">Submit on Instagram</a> -->
+            </div>
+        </div>
     </div>
-    <!-- end container -->
 
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <div style="color:var(--text-muted);font-size:0.8rem;"> <span>V1.0</span> · <span>July</span> <a href="https://hamidreza-mohammadiha.github.io/Sorbon/8box/" style="font-size: x-large;"> 🍫 </a> 2026</div>
-	<br>Sorbon Confectionary Business<br>
-    </footer>
+    <!-- Celebration Emoji Container for 100/100 Score -->
+    <div id="celebration-overlay" class="celebration-overlay"></div>
 
+    <script>
+        /**
+         * Farsi / English Translation Toggle Logic
+         */
+        let isFarsi = false;
+        const heroDescElem = document.getElementById('hero-desc');
+        const heroTextElem = document.getElementById('hero-text-content');
+
+        const textEN = "Test your luck across 8 mystery boxes containing 1 to 100 premium Sorbon chocolates. Open boxes, evaluate your offer, and accept your reward before running out of choices!";
+        const textFA = "شانس خود را در ۸ جعبه شگفت‌انگیز حاوی ۱ تا ۱۰۰ شکلات پرمیوم سوربن امتحان کنید. جعبه‌ها را باز کنید، پیشنهاد را بررسی کرده و پیش از اتمام فرصت‌ها، جایزه خود را قبول کنید!";
+
+        heroDescElem.addEventListener('click', () => {
+            isFarsi = !isFarsi;
+            heroTextElem.textContent = isFarsi ? textFA : textEN;
+            heroTextElem.style.direction = isFarsi ? 'rtl' : 'ltr';
+        });
+
+        /**
+         * Web Audio Synthesizer
+         */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playRevealSound() {
+            initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(280, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(750, audioCtx.currentTime + 0.15);
+            osc.frequency.exponentialRampToValueAtTime(450, audioCtx.currentTime + 0.3);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function animateBoxFlip(boxElement, callback) {
+            playRevealSound();
+            boxElement.classList.add('revealed');
+            setTimeout(() => {
+                if (callback) callback();
+            }, 800);
+        }
+
+        /**
+         * 100/100 Star Celebration Animation Logic
+         */
+        function triggerStarCelebration() {
+            const container = document.getElementById('celebration-overlay');
+            container.style.display = 'block';
+            container.innerHTML = '';
+
+            const starEmojis = ['⭐', '🌟', '✨', '👑', '🍫'];
+
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'star-particle';
+                particle.textContent = starEmojis[Math.floor(Math.random() * starEmojis.length)];
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.animationDelay = Math.random() * 1.5 + 's';
+                particle.style.animationDuration = (2 + Math.random() * 2) + 's';
+                container.appendChild(particle);
+            }
+
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 4500);
+        }
+
+        /**
+         * Game Logic Initialization
+         */
+        const TOTAL_BOXES = 8;
+        let boxValues = [];
+        let currentTurn = 0;
+        let activeBoxIndex = null;
+
+        const shelfElement = document.getElementById('shelf');
+        const chancesCountElement = document.getElementById('chances-count');
+        const currentOfferElement = document.getElementById('current-offer-count');
+        const btnAccept = document.getElementById('btn-accept');
+        const couponModal = document.getElementById('coupon-modal');
+        const finalCandiesCount = document.getElementById('final-candies-count');
+        const couponIdElement = document.getElementById('coupon-id');
+        const btnDownload = document.getElementById('btn-download');
+
+        function initGame() {
+            boxValues = [];
+            currentTurn = 0;
+            activeBoxIndex = null;
+            shelfElement.innerHTML = '';
+
+            for (let i = 0; i < TOTAL_BOXES; i++) {
+                // Range 1-100
+                boxValues.push(Math.floor(Math.random() * 100) + 1);
+            }
+
+            for (let i = 0; i < TOTAL_BOXES; i++) {
+                const boxWrapper = document.createElement('div');
+                boxWrapper.className = 'box-wrapper';
+                boxWrapper.dataset.index = i;
+
+                boxWrapper.innerHTML = `
+                    <div class="box-3d" id="box-${i}">
+                        <div class="box-face box-front">
+                            <span class="box-number">${i + 1}</span>
+                            <img src="../Sorbon/8box/box.png" alt="Mystery Box" class="box-vector-img">
+                        </div>
+                        <div class="box-face box-back">
+                            <div class="candy-count">${boxValues[i]}</div>
+                            <div class="candy-label">Chocolates</div>
+                        </div>
+                    </div>
+                `;
+
+                boxWrapper.addEventListener('click', () => handleBoxClick(i));
+                shelfElement.appendChild(boxWrapper);
+            }
+
+            updateUI();
+        }
+
+        function handleBoxClick(index) {
+            const boxElem = document.getElementById(`box-${index}`);
+
+            if (boxElem.classList.contains('revealed') || boxElem.classList.contains('disabled')) {
+                return;
+            }
+
+            if (activeBoxIndex !== null) {
+                document.getElementById(`box-${activeBoxIndex}`).classList.add('disabled');
+            }
+
+            activeBoxIndex = index;
+            currentTurn++;
+
+            animateBoxFlip(boxElem, () => {
+                currentOfferElement.textContent = boxValues[index];
+                btnAccept.disabled = false;
+
+                if (currentTurn >= TOTAL_BOXES) {
+                    setTimeout(() => {
+                        acceptOffer();
+                    }, 1000);
+                }
+            });
+
+            updateUI();
+        }
+
+        function acceptOffer() {
+            if (activeBoxIndex !== null) {
+                const finalAmount = boxValues[activeBoxIndex];
+
+                // Trigger 100/100 celebration if user gets maximum score
+                if (finalAmount === 100) {
+                    triggerStarCelebration();
+                }
+
+                showCoupon(finalAmount);
+            }
+        }
+
+        function updateUI() {
+            const remainingChances = TOTAL_BOXES - currentTurn;
+            chancesCountElement.textContent = remainingChances;
+        }
+
+        function showCoupon(amount) {
+            finalCandiesCount.textContent = amount;
+            const randomCode = 'SRB-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            couponIdElement.textContent = `CODE: ${randomCode}`;
+            couponModal.classList.remove('hidden');
+        }
+
+        // Image Canvas Download handler
+        btnDownload.addEventListener('click', () => {
+            const couponCard = document.getElementById('coupon-card');
+
+            html2canvas(couponCard).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Sorbon-Gift-Certificate.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+
+        btnAccept.addEventListener('click', acceptOffer);
+
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
 </body>
 </html>
