@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مکانیزم‌های بازاریابی و فروش شکلات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== CHOCOLATE COLOR PALETTE ===== */
+        :root {
+            --bg: #fdf6f0;
+            --card: #ffffff;
+            --primary: #4a2c1a;
+            --secondary: #6b3a2a;
+            --accent: #c68e3c;
+            --accent-light: #e8c88a;
+            --text: #1a0e08;
+            --muted: #6b4f3a;
+            --border: #d4c4b0;
+            --shadow: 0 12px 30px rgba(74, 44, 26, 0.12);
+            --radius: 18px;
+            --badge-bg: #ede0d4;
+            --badge-text: #4a2c1a;
+            --header-from: #4a2c1a;
+            --header-to: #6b3a2a;
+            --table-header: #3b1e0a;
+            --flow-bg: #faf0e8;
+            --step-bg: #ede0d4;
+            --step-text: #3b1e0a;
+            --arrow-color: #8b5a2b;
+            --hover-lift: #f5e6d3;
+            --flow-card-bg: #fffcf8;
+            --flow-border: #dccfc0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ----- HEADER ----- */
+        header {
+            background: linear-gradient(135deg, var(--header-from), var(--header-to));
+            color: #fff8f0;
+            padding: 70px 20px;
+            text-align: center;
+            border-bottom: 6px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(198, 142, 60, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -10%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 248, 240, 0.04);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        header h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        header h1 .highlight {
+            color: var(--accent-light);
+            font-weight: 700;
+        }
+        header p {
+            opacity: 0.92;
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+        .header-logo {
+            width: 55%;
+            max-width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+        }
+
+        /* ----- CONTAINER ----- */
+        .container {
+            width: min(1300px, 95%);
+            margin: 40px auto;
+        }
+
+        /* ----- SECTION TITLE ----- */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 24px;
+            padding-right: 6px;
+            border-right: 6px solid var(--accent);
+            padding-right: 18px;
+        }
+        .section-title span {
+            color: var(--accent);
+        }
+
+        /* ----- GRID ----- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 22px;
+        }
+
+        /* ----- CARDS ----- */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            transition: 0.3s ease;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 36px rgba(74, 44, 26, 0.15);
+            background: var(--hover-lift);
+        }
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+        .card .badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 999px;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+        }
+        .card p {
+            color: var(--muted);
+            line-height: 1.55;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        .card ul {
+            padding-right: 20px;
+            color: #374151;
+            line-height: 1.7;
+            list-style-type: disc;
+        }
+        .card ul li {
+            margin-bottom: 2px;
+        }
+        .card ul strong {
+            color: var(--primary);
+            font-weight: 600;
+            display: block;
+            margin-top: 6px;
+            margin-bottom: 2px;
+        }
+        .card ul strong:first-of-type {
+            margin-top: 0;
+        }
+
+        /* ----- TABLE ----- */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        th {
+            background: var(--table-header);
+            color: #fff8f0;
+            padding: 16px;
+            text-align: right;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eee;
+            color: var(--text);
+        }
+        tr:hover {
+            background: #faf0e8;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        td:first-child {
+            font-weight: 500;
+        }
+
+        /* ===== ENHANCED FLOW ===== */
+        .flow {
+            margin-top: 50px;
+            background: var(--flow-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px 30px;
+            border: 1px solid var(--border);
+        }
+        .flow .section-title {
+            margin-bottom: 30px;
+            text-align: center;
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .flow-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 8px 4px;
+        }
+
+        .flow-step {
+            flex: 1 1 160px;
+            min-width: 140px;
+            max-width: 200px;
+            background: var(--flow-card-bg);
+            border-radius: 16px;
+            padding: 20px 14px 18px;
+            border: 1px solid var(--flow-border);
+            box-shadow: 0 4px 12px rgba(74, 44, 26, 0.06);
+            text-align: center;
+            transition: 0.3s ease;
+            position: relative;
+        }
+        .flow-step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(74, 44, 26, 0.10);
+            border-color: var(--accent);
+        }
+
+        .flow-step .step-icon {
+            font-size: 2.2rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .flow-step .step-label {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .flow-step .step-desc {
+            font-size: 0.78rem;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: var(--arrow-color);
+            font-weight: 300;
+            padding: 0 2px;
+            flex-shrink: 0;
+            width: 36px;
+            align-self: center;
+        }
+
+        /* ----- FLOW SUB-ROWS (detail) ----- */
+        .flow-detail {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            background: var(--flow-card-bg);
+            border-radius: 14px;
+            padding: 20px 18px;
+            border: 1px dashed var(--border);
+        }
+        .flow-detail-item {
+            text-align: center;
+            padding: 8px 4px;
+        }
+        .flow-detail-item .label {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.85rem;
+            display: block;
+        }
+        .flow-detail-item .value {
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        /* ----- INTEGRATION NOTE ----- */
+        .integration-note {
+            margin-top: 32px;
+            background: linear-gradient(135deg, #f8efe8, #fdf6f0);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            border-right: 6px solid var(--accent);
+            border-left: 1px solid var(--border);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .integration-note h3 {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+        .integration-note p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .integration-note strong {
+            color: var(--secondary);
+        }
+
+        /* ----- FOOTER ----- */
+        footer {
+            text-align: center;
+            padding: 50px 20px 30px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+        footer .footer-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        footer .footer-meta {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 6px;
+        }
+        footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        footer a:hover {
+            color: var(--accent);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            header h1 {
+                font-size: 1.7rem;
+            }
+            header p {
+                font-size: 0.95rem;
+            }
+            .flow {
+                padding: 25px 16px;
+            }
+            .flow-step {
+                flex: 1 1 120px;
+                min-width: 100px;
+                padding: 14px 10px;
+            }
+            .flow-step .step-icon {
+                font-size: 1.8rem;
+            }
+            .flow-step .step-label {
+                font-size: 0.85rem;
+            }
+            .flow-arrow {
+                font-size: 1.2rem;
+                width: 24px;
+            }
+            .flow-detail {
+                grid-template-columns: 1fr 1fr;
+                padding: 16px 12px;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .table-wrap table {
+                font-size: 0.85rem;
+            }
+            .table-wrap th,
+            .table-wrap td {
+                padding: 10px 12px;
+            }
+            .card {
+                padding: 18px;
+            }
+            .card h2 {
+                font-size: 1rem;
+            }
+            .section-title {
+                font-size: 1.4rem;
+            }
+            .integration-note {
+                padding: 18px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 40px 16px;
+            }
+            header h1 {
+                font-size: 1.4rem;
+            }
+            .container {
+                width: 98%;
+                margin: 20px auto;
+            }
+            .flow-step {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+            .flow-arrow {
+                transform: rotate(90deg);
+                width: auto;
+                padding: 2px 0;
+            }
+            .flow-detail {
+                grid-template-columns: 1fr;
+            }
+            .flow .section-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <h1>مکانیزم‌های <span class="highlight">بازاریابی</span> و <span class="highlight">فروش</span> شکلات</h1>
+        <p>
+            خلاصه‌ای جامع از رایج‌ترین تکنیک‌های فروش، بازاریابی تجاری و بازاریابی خریداران
+            که توسط شرکت‌های پیشرو در صنعت شیرینی‌جات استفاده می‌شود.
+        </p>
+        <br />
+        <!-- Logo placeholder — replace "selection.png" with your own image -->
+        <img
+        src="selection.png"
+        alt="Sorbon Confectionary"
+        class="header-logo"
+        />
+        <!-- <a href="https://hamidreza-mohammadiha.github.io/Sorbon/8box/" style="font-size: xx-large;"> 🍫 </a> -->
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container">
+
+        <!-- ===== CARDS GRID ===== -->
+        <h2 class="section-title">📊 <span>۱۲</span> سازوکار کلیدی</h2>
+        <div class="grid">
+
+            <!-- 1. SFI -->
+            <div class="card">
+                <div class="badge">فروش داخلی</div>
+                <h2>مشوق‌های فروش (SFI)</h2>
+                <p>ایجاد انگیزه در تیم فروش برای محصولات در مناطق منتخب</p>
+                <ul>
+                    <strong>مکانیزم انگیزشی</strong>
+                    <li>پورسانت — پاداش‌های نقدی</li>
+                    <li>مسابقات فروش (گروهی)</li>
+                    <li>لیدربرد سالانه (انفرادی)</li>
+                </ul>
+                <br />
+                <ul>
+                    <strong>شاخص عملکرد</strong>
+                    <li>Actual Coverage</li>
+                    <li>Daily Volume (AOP)</li>
+                    <li>Line per Invoice (LPI)</li>
+                </ul>
+                <br />
+                <ul>
+                    <strong>انواع جوایز</strong>
+                    <li>هدایای نقدی</li>
+                    <li>اعتبار خرید</li>
+                    <li>سبد شکلات رایگان</li>
+                    <li>بلیط رایگان</li>
+                    <li>هدایای غیر نقدی</li>
+                </ul>
+                <br />
+                <ul>
+                    <strong>روش‌های ارتباطی</strong>
+                    <li>جلسات روزانه و هفتگی تیم فروش</li>
+                    <li>فیش حقوقی ثابت و متغیر</li>
+                    <li>ابزار دیجیتال ثبت سفارش</li>
+                    <li>فاکتور کاغذی سفارشات</li>
+                    <li>پیامک‌های هوشمند</li>
+                </ul>
+            </div>
+
+            <!-- 2. Sales Promotion -->
+            <div class="card">
+                <div class="badge">مصرف‌کننده</div>
+                <h2>ترفیع فروش</h2>
+                <p>پیشنهادات موقتی که خرید فوری را تحریک می‌کنند.</p>
+                <ul>
+                    <li>تخفیف‌ها</li>
+                    <li>یکی بخر دو تا ببر</li>
+                    <li>کوپن‌ها</li>
+                    <li>بازگشت نقدی</li>
+                    <li>هدایای رایگان</li>
+                </ul>
+            </div>
+
+            <!-- 3. Sampling -->
+            <div class="card">
+                <div class="badge">آزمایش</div>
+                <h2>نمونه‌سازی</h2>
+                <p>اجازه دادن به مصرف‌کنندگان برای تجربه محصول قبل از خرید.</p>
+                <ul>
+                    <li>چشیدن در فروشگاه</li>
+                    <li>رویدادها</li>
+                    <li>مراکز خرید</li>
+                    <li>فعال‌سازی در دانشگاه‌ها</li>
+                </ul>
+            </div>
+
+            <!-- 4. Trade Marketing -->
+            <div class="card">
+                <div class="badge">خرده‌فروشی</div>
+                <h2>بازاریابی تجاری</h2>
+                <p>ایجاد ارزش برای خرده‌فروشان و توزیع‌کنندگان.</p>
+                <ul>
+                    <li>تخفیف‌های تجاری</li>
+                    <li>مشوق‌های خرده‌فروشی</li>
+                    <li>کمک هزینه‌های نمایش</li>
+                    <li>کمپین‌های مشترک</li>
+                </ul>
+            </div>
+
+            <!-- 5. In-Store Marketing -->
+            <div class="card">
+                <div class="badge">فروشگاه</div>
+                <h2>بازاریابی درون‌فروشگاهی</h2>
+                <p>افزایش دیدپذیری محصول و تبدیل خریدار.</p>
+                <ul>
+                    <li>قفسه‌های انتهایی</li>
+                    <li>نمایشگرهای صندوق</li>
+                    <li>برچسب‌های قفسه</li>
+                    <li>مواد تبلیغاتی در نقطه فروش</li>
+                </ul>
+            </div>
+
+            <!-- 6. Merchandising -->
+            <div class="card">
+                <div class="badge">اجرا</div>
+                <h2>کالاچینی</h2>
+                <p>حفظ ارائه عالی محصول در قفسه.</p>
+                <ul>
+                    <li>رعایت پلانوگرام</li>
+                    <li>اول ورودی اول خروجی</li>
+                    <li>تکمیل قفسه</li>
+                    <li>اصلاح رو به جلو</li>
+                </ul>
+            </div>
+
+            <!-- 7. Shopper Marketing -->
+            <div class="card">
+                <div class="badge">خریدار</div>
+                <h2>بازاریابی خریدار</h2>
+                <p>تأثیر بر تصمیمات خرید درون فروشگاه.</p>
+                <ul>
+                    <li>کالاچینی متقابل</li>
+                    <li>نمایشگرهای خرید تحمیلی</li>
+                    <li>قرارگیری در صندوق</li>
+                    <li>نمایشگرهای فصلی</li>
+                </ul>
+            </div>
+
+            <!-- 8. Consumer Activation -->
+            <div class="card">
+                <div class="badge">تجربه</div>
+                <h2>فعال‌سازی مصرف‌کننده</h2>
+                <p>کمپین‌های تعاملی که مصرف‌کنندگان را درگیر می‌کند.</p>
+                <ul>
+                    <li>بازی‌های کیوآر</li>
+                    <li>چرخ گردون</li>
+                    <li>مسابقات</li>
+                    <li>نمایشگاه‌های سیار</li>
+                </ul>
+            </div>
+
+            <!-- 9. Loyalty Programs -->
+            <div class="card">
+                <div class="badge">حفظ مشتری</div>
+                <h2>برنامه‌های وفاداری</h2>
+                <p>تشویق به خرید مجدد.</p>
+                <ul>
+                    <li>امتیازها</li>
+                    <li>جوایز</li>
+                    <li>عضویت</li>
+                    <li>باشگاه‌های ویژه</li>
+                </ul>
+            </div>
+
+            <!-- 10. Category Management -->
+            <div class="card">
+                <div class="badge">راهبرد خرده‌فروشی</div>
+                <h2>مدیریت دسته‌بندی</h2>
+                <p>بهینه‌سازی دسته شیرینی‌جات برای خرده‌فروش و تولیدکننده.</p>
+                <ul>
+                    <li>ترکیب کالاها</li>
+                    <li>تخصیص قفسه</li>
+                    <li>تقویم ترفیعات</li>
+                    <li>سودآوری</li>
+                </ul>
+            </div>
+
+            <!-- 11. Channel Marketing -->
+            <div class="card">
+                <div class="badge">کانال‌ها</div>
+                <h2>بازاریابی کانالی</h2>
+                <p>تطابق بازاریابی با کانال فروش.</p>
+                <ul>
+                    <li>سوپرمارکت‌ها</li>
+                    <li>فروشگاه‌های رفاهی</li>
+                    <li>تجارت الکترونیک</li>
+                    <li>عمده‌فروشی</li>
+                </ul>
+            </div>
+
+            <!-- 12. Perfect Store -->
+            <div class="card">
+                <div class="badge">تعالی خرده‌فروشی</div>
+                <h2>فروشگاه ایده‌آل</h2>
+                <p>ارزیابی فروشگاه‌ها بر اساس استانداردهای اجرایی ایده‌آل.</p>
+                <ul>
+                    <li>در دسترس بودن</li>
+                    <li>دیدپذیری</li>
+                    <li>قیمت‌گذاری</li>
+                    <li>انطباق نمایش</li>
+                </ul>
+            </div>
+
+        </div>
+        <!-- end grid -->
+
+        <!-- ===== TABLE ===== -->
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>استراتژی بازاریابی و فروش</th>
+                        <th>مخاطب هدف</th>
+                        <th>نتایج کلیدی</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>مشوق‌های فروش (SFI)</td><td>تیم فروش</td><td>بهبود عملکرد میدانی</td></tr>
+                    <tr><td>ترفیع فروش</td><td>مصرف‌کننده</td><td>افزایش فروش کوتاه‌مدت</td></tr>
+                    <tr><td>نمونه‌سازی</td><td>مصرف‌کننده</td><td>ایجاد امتحان محصول</td></tr>
+                    <tr><td>بازاریابی تجاری</td><td>خرده‌فروشان</td><td>افزایش توزیع</td></tr>
+                    <tr><td>بازاریابی درون‌فروشگاهی</td><td>خریدار</td><td>افزایش دیدپذیری</td></tr>
+                    <tr><td>کالاچینی</td><td>خرده‌فروشی</td><td>بهبود اجرای قفسه</td></tr>
+                    <tr><td>بازاریابی خریدار</td><td>خریدار</td><td>تأثیر بر تصمیمات خرید</td></tr>
+                    <tr><td>فعال‌سازی مصرف‌کننده</td><td>مصرف‌کننده</td><td>ایجاد تعامل</td></tr>
+                    <tr><td>برنامه‌های وفاداری</td><td>مشتری</td><td>افزایش خرید مجدد</td></tr>
+                    <tr><td>مدیریت دسته‌بندی</td><td>خرده‌فروش</td><td>رشد کل دسته</td></tr>
+                    <tr><td>بازاریابی کانالی</td><td>کانال‌های فروش</td><td>بهینه‌سازی عملکرد کانال</td></tr>
+                    <tr><td>فروشگاه ایده‌آل</td><td>خرده‌فروشی</td><td>تضمین کیفیت اجرا</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ===== ENHANCED FLOW ===== -->
+        <div class="flow">
+            <h2 class="section-title">🌀 جریان <span>اجرایی</span> بازاریابی و فروش</h2>
+
+            <!-- main flow steps -->
+            <div class="flow-steps">
+
+                <div class="flow-step">
+                    <span class="step-icon">📋</span>
+                    <span class="step-label">برنامه‌ریزی</span>
+                    <span class="step-desc">تحلیل داده، هدف‌گذاری و بودجه‌بندی</span>
+                </div>
+
+                <div class="flow-arrow">◀</div>
+
+                <div class="flow-step">
+                    <span class="step-icon">🚚</span>
+                    <span class="step-label">توزیع</span>
+                    <span class="step-desc">ارسال به انبارها و فروشگاه‌ها</span>
+                </div>
+
+                <div class="flow-arrow">◀</div>
+
+                <div class="flow-step">
+                    <span class="step-icon">🏪</span>
+                    <span class="step-label">اجرا در فروشگاه</span>
+                    <span class="step-desc">کالاچینی، نمایش و قیمت‌گذاری</span>
+                </div>
+
+                <div class="flow-arrow">◀</div>
+
+                <div class="flow-step">
+                    <span class="step-icon">🛒</span>
+                    <span class="step-label">فروش</span>
+                    <span class="step-desc">تعامل با خریدار و تبدیل</span>
+                </div>
+
+                <div class="flow-arrow">◀</div>
+
+                <div class="flow-step">
+                    <span class="step-icon">📊</span>
+                    <span class="step-label">اندازه‌گیری</span>
+                    <span class="step-desc">ردیابی شاخص‌ها و بازخورد</span>
+                </div>
+
+                <div class="flow-arrow">◀</div>
+
+                <div class="flow-step">
+                    <span class="step-icon">🔄</span>
+                    <span class="step-label">بهینه‌سازی</span>
+                    <span class="step-desc">اصلاح استراتژی بر اساس داده</span>
+                </div>
+
+            </div>
+
+            <!-- detail sub-row -->
+            <div class="flow-detail">
+                <div class="flow-detail-item">
+                    <span class="label">🎯 شاخص کلیدی</span>
+                    <span class="value">NSV · LPI · Coverage</span>
+                </div>
+                <div class="flow-detail-item">
+                    <span class="label">📦 کانال‌ها</span>
+                    <span class="value">سوپرمارکت · رفاهی · آنلاین</span>
+                </div>
+                <div class="flow-detail-item">
+                    <span class="label">🧩 ابزارها</span>
+                    <span class="value">پلانوگرام · POS · اپلیکیشن</span>
+                </div>
+                <div class="flow-detail-item">
+                    <span class="label">📈 خروجی</span>
+                    <span class="value">فروش · سهم قفسه · وفاداری</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== INTEGRATION NOTE ===== -->
+        <div class="integration-note">
+            <h3>🔗 یکپارچه‌سازی سازوکارها</h3>
+            <p>
+                <strong>مکانیزم‌های بازاریابی و فروش</strong> به تنهایی مؤثر نیستند؛
+                <strong>یکپارچگی</strong> میان آن‌هاست که ارزش آفرینی می‌کند.
+                برای مثال، <strong>برنامه‌های وفاداری</strong> بدون
+                <strong>اجرای درست کالاچینی</strong> و <strong>نمونه‌سازی</strong>
+                در نقطه فروش، نمی‌توانند خرید مجدد را تضمین کنند.
+                همچنین <strong>بازاریابی خریدار</strong> زمانی بیشترین تأثیر را دارد
+                که با <strong>ترفیع فروش</strong> و <strong>فعال‌سازی مصرف‌کننده</strong>
+                هم‌زمان اجرا شود.
+                <br /><br />
+                <strong>نکته کلیدی:</strong> هماهنگی بین تیم فروش، بازاریابی تجاری و
+                کانال‌های توزیع، ستون اصلی <strong>فروشگاه ایده‌آل</strong> و
+                رشد پایدار سهم بازار در صنعت شیرینی‌جات است.
+            </p>
+        </div>
+
+    </div>
+    <!-- end container -->
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-brand">🍫 Sorbon Confectionary Business</div>
+        <div class="footer-meta">
+            <span>V1.0</span> · <span>تیر ۱۴۰۵</span>
+            <span style="margin:0 8px;">|</span>
+            <a href="https://hamidreza-mohammadiha.github.io/Sorbon/8box/" target="_blank">🔄 نسخه تعاملی</a>
+        </div>
+        <div style="margin-top:8px;font-size:0.7rem;opacity:0.4;">
+            طراحی و تدوین — واحد بازاریابی &bull; همه حقوق محفوظ است
+        </div>
+    </footer>
+
+</body>
+</html>
