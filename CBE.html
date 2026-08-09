@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>راهنمای جامع انواع شکلات: CBS، CBR و شکلات واقعی</title>
+    <style>
+        /* ===== Reset & Base ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Vazir', system-ui, sans-serif;
+            background: #f8f5f0;
+            color: #2c2b28;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* ===== Typography ===== */
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            color: #3d2b1f;
+            border-right: 6px solid #8b5a3c;
+            padding-right: 16px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            font-size: 1rem;
+            color: #6b5a4a;
+            margin-bottom: 30px;
+            padding-right: 22px;
+        }
+        h2 {
+            font-size: 1.6rem;
+            color: #3d2b1f;
+            margin: 40px 0 20px 0;
+            padding-right: 12px;
+            border-right: 4px solid #c29a7b;
+        }
+        h3 {
+            font-size: 1.15rem;
+            color: #4d3a2a;
+            margin-bottom: 8px;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .badge-cbs {
+            background: #7a9b8a;
+        }
+        .badge-cbr {
+            background: #b28b6f;
+        }
+        .badge-real {
+            background: #8b3a2a;
+        }
+
+        /* ===== Card Grid ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 16px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 22px 20px 20px 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+            border: 1px solid #f0e8e0;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.07);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #e8ded6;
+            padding-bottom: 10px;
+        }
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .card-body {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        .card-body p {
+            margin: 4px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 8px;
+        }
+        .card-body .label {
+            font-weight: 600;
+            color: #5a4a3a;
+            min-width: 100px;
+        }
+        .card-body .value {
+            color: #2c2b28;
+        }
+        .hardness-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0;
+        }
+        .hardness-track {
+            flex: 1;
+            height: 8px;
+            background: #e8e0d8;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .hardness-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #b8d4c0, #e8c8a0, #d49a6a);
+            width: 50%;
+        }
+        .hardness-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: #7a6a5a;
+            margin-top: 2px;
+        }
+
+        /* ===== Table ===== */
+        .table-wrap {
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+            border: 1px solid #ede6de;
+            padding: 4px 0;
+            margin-top: 12px;
+        }
+        table.comparison {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 700px;
+        }
+        table.comparison th {
+            background: #f0e8e0;
+            color: #3d2b1f;
+            font-weight: 700;
+            padding: 12px 14px;
+            text-align: center;
+            border-bottom: 2px solid #dccfc4;
+            white-space: nowrap;
+        }
+        table.comparison td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #ede6de;
+            text-align: center;
+            vertical-align: middle;
+        }
+        table.comparison tr:last-child td {
+            border-bottom: none;
+        }
+        table.comparison .col-label {
+            font-weight: 600;
+            color: #4d3a2a;
+            text-align: right;
+            background: #faf7f4;
+            white-space: nowrap;
+        }
+        .tag-cbs {
+            background: #7a9b8a20;
+            color: #3a6b5a;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+        .tag-cbr {
+            background: #b28b6f20;
+            color: #8a6a4a;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+        .tag-real {
+            background: #8b3a2a20;
+            color: #7a2a1a;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        /* ===== Chart ===== */
+        .chart-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 24px 20px 20px 20px;
+            border: 1px solid #ede6de;
+            margin: 12px 0 8px 0;
+        }
+        .chart-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+        }
+        .chart-label {
+            min-width: 170px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #3d2b1f;
+            text-align: right;
+        }
+        .chart-bar-wrap {
+            flex: 1;
+            height: 22px;
+            background: #f0e8e0;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+        }
+        .chart-bar-fill {
+            height: 100%;
+            border-radius: 14px;
+            background: linear-gradient(90deg, #b8d4c0, #dbb08a, #c08060);
+            transition: width 0.4s ease;
+        }
+        .chart-ticks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: #7a6a5a;
+            padding: 0 4px;
+            margin-top: 4px;
+        }
+
+        /* ===== Terminology ===== */
+        .term-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #ede6de;
+        }
+        .term-item {
+            background: #faf7f4;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+        }
+        .term-item strong {
+            color: #4d3a2a;
+            display: inline-block;
+            min-width: 60px;
+        }
+
+        /* ===== Packaging ===== */
+        .pack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 12px;
+        }
+        .pack-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 18px 16px 18px;
+            border: 1px solid #ede6de;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+        .pack-card h4 {
+            color: #3d2b1f;
+            border-bottom: 2px solid #e8ded6;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+        }
+
+        /* ===== Tempering & EU ===== */
+        .temper-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 12px 0;
+        }
+        .temper-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px 18px;
+            border: 1px solid #ede6de;
+            text-align: center;
+        }
+        .temper-card h4 {
+            color: #3d2b1f;
+            margin-bottom: 4px;
+        }
+        .temper-card .temp {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #8b5a3c;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        .eu-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 22px;
+            border: 1px solid #ede6de;
+            max-width: 500px;
+            margin: 16px 0 8px 0;
+        }
+        .eu-card h4 {
+            color: #3d2b1f;
+            margin-bottom: 6px;
+        }
+        .eu-card ul {
+            padding-right: 20px;
+            font-size: 0.9rem;
+        }
+        .eu-card ul li {
+            margin: 4px 0;
+        }
+
+        /* ===== Quick Selection ===== */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 12px 0 8px 0;
+        }
+        .quick-item {
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px 16px;
+            border: 1px solid #ede6de;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+        .quick-item .highlight {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: #6b5a4a;
+            margin-top: 4px;
+        }
+
+        /* ===== Disclaimer ===== */
+        .disclaimer {
+            background: #f0ebe6;
+            border-radius: 16px;
+            padding: 18px 22px;
+            font-size: 0.85rem;
+            color: #5a4a3a;
+            border-right: 4px solid #b28b6f;
+            margin-top: 32px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            h1 {
+                font-size: 1.6rem;
+                padding-right: 12px;
+            }
+            .subtitle {
+                font-size: 0.9rem;
+                padding-right: 16px;
+            }
+            h2 {
+                font-size: 1.3rem;
+            }
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-label {
+                min-width: 120px;
+                font-size: 0.7rem;
+            }
+            .term-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .pack-grid {
+                grid-template-columns: 1fr;
+            }
+            .temper-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .quick-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            table.comparison {
+                font-size: 0.75rem;
+                min-width: 500px;
+            }
+            table.comparison th,
+            table.comparison td {
+                padding: 8px 10px;
+            }
+            .eu-card {
+                max-width: 100%;
+            }
+        }
+        @media (max-width: 480px) {
+            .term-grid {
+                grid-template-columns: 1fr;
+            }
+            .temper-grid {
+                grid-template-columns: 1fr;
+            }
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-label {
+                min-width: 90px;
+                font-size: 0.65rem;
+            }
+        }
+
+        /* ===== Utilities ===== */
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .text-muted {
+            color: #6b5a4a;
+            font-size: 0.85rem;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .direction-ltr {
+            direction: ltr;
+            display: inline-block;
+        }
+        .small-note {
+            font-size: 0.75rem;
+            color: #7a6a5a;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <h1>🍫 راهنمای جامع انواع شکلات<br />CBS، CBR و شکلات واقعی</h1>
+        <div class="subtitle">اینفوگرافیک آموزشی — ۸ کلاس اصلی + جدول مقایسه + راهنمای بسته‌بندی</div>
+
+        <!-- ===== 8 CLASSES ===== -->
+        <h2>۸ کلاس اصلی شکلات</h2>
+        <div class="card-grid" id="chocolateCards">
+            <!-- data injected by JS -->
+        </div>
+
+        <!-- ===== COMPARISON TABLE ===== -->
+        <h2>جدول مقایسه‌ای اصلی</h2>
+        <div class="table-wrap">
+            <table class="comparison" id="comparisonTable">
+                <thead>
+                    <tr>
+                        <th>ویژگی</th>
+                        <th><span class="tag-cbs">CBS</span></th>
+                        <th><span class="tag-cbr">CBR</span></th>
+                        <th><span class="tag-real">Real Chocolate</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- injected by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ===== HARDNESS CHART ===== -->
+        <h2>نمودار سختی Soft → Hard</h2>
+        <div class="chart-container">
+            <div id="hardnessChart">
+                <!-- injected by JS -->
+            </div>
+            <div class="chart-ticks">
+                <span>نرم‌تر (Soft)</span>
+                <span>●</span>
+                <span>سخت‌تر (Hard)</span>
+            </div>
+            <div class="text-muted small-note mt-8" style="text-align:center;">
+                ترتیب تقریبی — وابسته به SFC، فرمولاسیون و دما
+            </div>
+        </div>
+
+        <!-- ===== TERMINOLOGY ===== -->
+        <h2>اصطلاحات و اختصارات</h2>
+        <div class="term-grid" id="termGrid">
+            <!-- injected by JS -->
+        </div>
+
+        <!-- ===== PACKAGING GUIDE ===== -->
+        <h2>راهنمای بسته‌بندی</h2>
+        <div class="pack-grid">
+            <div class="pack-card">
+                <h4>🎁 Aluminium Foil + Paper</h4>
+                <p>برای شکلات‌های <strong>premium</strong> و لوکس. محافظت عالی در برابر نور، اکسیژن و رطوبت.</p>
+            </div>
+            <div class="pack-card">
+                <h4>📦 Metallized PET/OPP + PE</h4>
+                <p>برای محصولات <strong>صنعتی</strong> و تولید انبوه. تعادل خوب هزینه و عملکرد.</p>
+            </div>
+            <div class="pack-card">
+                <h4>🎀 High‑barrier inner wrap + rigid paperboard box</h4>
+                <p>برای <strong>gift / luxury</strong> products. ترکیبی از زیبایی و محافظت چندلایه.</p>
+            </div>
+        </div>
+        <div style="background:#f0ebe6; border-radius:14px; padding:14px 20px; margin:12px 0 8px 0; font-size:0.9rem;">
+            <strong>⚠️ محافظت در برابر:</strong> Heat، Moisture، Oxygen، Light و Odour.
+            <span class="small-note">— paperboard به‌تنهایی بسته‌بندی اولیه کافی نیست.</span>
+        </div>
+
+        <!-- ===== TEMPERING ===== -->
+        <h2>دمای معمول Tempering (شکلات واقعی)</h2>
+        <div class="temper-grid">
+            <div class="temper-card">
+                <h4>🍫 Dark</h4>
+                <div class="temp">45–50°C → 28–29°C → 31–32°C</div>
+                <div class="small-note">حدود</div>
+            </div>
+            <div class="temper-card">
+                <h4>🥛 Milk</h4>
+                <div class="temp">40–50°C → 27–28°C → 29–30°C</div>
+                <div class="small-note">حدود</div>
+            </div>
+            <div class="temper-card">
+                <h4>🤍 White</h4>
+                <div class="temp">40–45°C → 26–27°C → 28–29°C</div>
+                <div class="small-note">حدود</div>
+            </div>
+        </div>
+        <div class="text-muted small-note" style="margin-top:-6px; margin-bottom:16px;">
+            ⚠️ دمای دقیق به <strong>formulation</strong> و <strong>manufacturer</strong> وابسته است.
+        </div>
+
+        <!-- ===== EU STANDARDS ===== -->
+        <h2>استانداردهای اتحادیه اروپا (EU)</h2>
+        <div class="eu-card">
+            <h4>🇪🇺 حداقل الزامات</h4>
+            <ul>
+                <li><strong>Chocolate:</strong> حداقل 35% total dry cocoa solids، 18% cocoa butter و 14% dry non‑fat cocoa solids.</li>
+                <li><strong>Milk chocolate:</strong> حداقل 25% total dry cocoa solids و 14% dry milk solids.</li>
+                <li><strong>White chocolate:</strong> حداقل 20% cocoa butter و 14% dry milk solids.</li>
+            </ul>
+        </div>
+
+        <!-- ===== QUICK SELECTION ===== -->
+        <h2>انتخاب سریع</h2>
+        <div class="quick-grid">
+            <div class="quick-item">💰 کمترین هزینه / سرعت تولید <span class="highlight">→ CBS</span></div>
+            <div class="quick-item">⚖️ تعادل هزینه و عملکرد <span class="highlight">→ CBR</span></div>
+            <div class="quick-item">🏆 بیشترین کیفیت حسی و premium positioning <span class="highlight">→ Real Chocolate</span></div>
+            <div class="quick-item">🪙 Chocolate Coin اقتصادی <span class="highlight">→ CBS Dark</span></div>
+            <div class="quick-item">🪙 Chocolate Coin Premium <span class="highlight">→ Real Dark</span></div>
+            <div class="quick-item">🎁 Luxury Gift <span class="highlight">→ Real Chocolate + Foil + Rigid Box</span></div>
+        </div>
+
+        <!-- ===== DISCLAIMER ===== -->
+        <div class="disclaimer">
+            <strong>⚠️ Disclaimer:</strong> درصدها و دماهای فرمولاسیون صنعتی باید با <strong>specification تأمین‌کننده چربی/شکلات</strong> و <strong>استاندارد بازار هدف</strong> کنترل شوند. این راهنما صرفاً جنبه‌ی آموزشی دارد و مقادیر تقریبی هستند.
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // DATA
+        // ============================================================
+
+        const classes = [{
+            id: 'cbs-dark',
+            title: 'CBS Dark Compound',
+            badge: 'CBS',
+            badgeClass: 'badge-cbs',
+            ingredients: 'شکر، روغن نارگیل/نخل (CBS)، پودر کاکائو، لسیتین، وانیلین',
+            percentages: 'کاکائو ~۱۸–۲۵٪، چربی ~۲۸–۳۲٪',
+            fatType: 'لوریک (CBS)',
+            hardness: 35,
+            meltTemp: '~۳۵–۴۰°C',
+            tempering: 'نیاز ندارد',
+            moulding: 'قالب‌گیری ساده، خنک‌سازی سریع',
+            texture: 'بافت صاف، ذوب سریع، کمی مومی',
+            applications: 'پوشش بیسکویت، مغزها، تزئین، شکلات‌های ارزان',
+            packaging: 'Metallized PET/OPP + PE'
+        }, {
+            id: 'cbs-milk',
+            title: 'CBS Milk Compound',
+            badge: 'CBS',
+            badgeClass: 'badge-cbs',
+            ingredients: 'شکر، روغن نارگیل/نخل (CBS)، پودر شیر، پودر کاکائو، لسیتین',
+            percentages: 'شیر ~۱۲–۱۸٪، چربی ~۲۸–۳۲٪',
+            fatType: 'لوریک (CBS)',
+            hardness: 30,
+            meltTemp: '~۳۵–۴۰°C',
+            tempering: 'نیاز ندارد',
+            moulding: 'قالب‌گیری ساده، خنک‌سازی سریع',
+            texture: 'نرم‌تر، ذوب سریع، طعم شیری ساده',
+            applications: 'شکلات‌های طعم‌دار، پوشش کیک و دونات',
+            packaging: 'Metallized PET/OPP + PE'
+        }, {
+            id: 'cbs-white',
+            title: 'CBS White Compound',
+            badge: 'CBS',
+            badgeClass: 'badge-cbs',
+            ingredients: 'شکر، روغن نارگیل/نخل (CBS)، پودر شیر، لسیتین، وانیلین',
+            percentages: 'شیر ~۱۴–۲۰٪، چربی ~۲۸–۳۲٪',
+            fatType: 'لوریک (CBS)',
+            hardness: 28,
+            meltTemp: '~۳۵–۴۰°C',
+            tempering: 'نیاز ندارد',
+            moulding: 'قالب‌گیری ساده، خنک‌سازی سریع',
+            texture: 'نرم، ذوب سریع، طعم وانیلی ساده',
+            applications: 'تزئین، پوشش، شکلات‌های سفید ارزان',
+            packaging: 'Metallized PET/OPP + PE'
+        }, {
+            id: 'cbr-dark',
+            title: 'CBR Dark Compound',
+            badge: 'CBR',
+            badgeClass: 'badge-cbr',
+            ingredients: 'شکر، روغن نخل/شیا (CBR)، پودر کاکائو، لسیتین، وانیلین',
+            percentages: 'کاکائو ~۲۰–۲۸٪، چربی ~۲۶–۳۰٪',
+            fatType: 'غیرلوریک (CBR)',
+            hardness: 45,
+            meltTemp: '~۳۸–۴۳°C',
+            tempering: 'معمولاً نیاز ندارد',
+            moulding: 'قالب‌گیری با دمای کنترل‌شده',
+            texture: 'سفت‌تر، ذوب دیرتر، بافت کره‌ای‌تر',
+            applications: 'شکلات‌های صنعتی باکیفیت‌تر، پوشش کیک و آجیل',
+            packaging: 'Metallized PET/OPP + PE / Foil'
+        }, {
+            id: 'cbr-milk',
+            title: 'CBR Milk Compound',
+            badge: 'CBR',
+            badgeClass: 'badge-cbr',
+            ingredients: 'شکر، روغن نخل/شیا (CBR)، پودر شیر، پودر کاکائو، لسیتین',
+            percentages: 'شیر ~۱۴–۲۰٪، چربی ~۲۶–۳۰٪',
+            fatType: 'غیرلوریک (CBR)',
+            hardness: 40,
+            meltTemp: '~۳۸–۴۳°C',
+            tempering: 'معمولاً نیاز ندارد',
+            moulding: 'قالب‌گیری با دمای کنترل‌شده',
+            texture: 'نرم‌تر از CBR dark، بافت کرم‌دار',
+            applications: 'شکلات‌های لبنی صنعتی، پوشش و تزئین',
+            packaging: 'Metallized PET/OPP + PE'
+        }, {
+            id: 'cbr-white',
+            title: 'CBR White Compound',
+            badge: 'CBR',
+            badgeClass: 'badge-cbr',
+            ingredients: 'شکر، روغن نخل/شیا (CBR)، پودر شیر، لسیتین، وانیلین',
+            percentages: 'شیر ~۱۶–۲۲٪، چربی ~۲۶–۳۰٪',
+            fatType: 'غیرلوریک (CBR)',
+            hardness: 38,
+            meltTemp: '~۳۸–۴۳°C',
+            tempering: 'معمولاً نیاز ندارد',
+            moulding: 'قالب‌گیری با دمای کنترل‌شده',
+            texture: 'کرم‌دار، ذوب تدریجی، طعم غنی‌تر',
+            applications: 'شکلات سفید صنعتی باکیفیت، تزئینات',
+            packaging: 'Metallized PET/OPP + PE'
+        }, {
+            id: 'real-dark',
+            title: 'Real Dark Chocolate',
+            badge: 'Real',
+            badgeClass: 'badge-real',
+            ingredients: 'ماسه کاکائو، کره کاکائو، شکر، لسیتین، وانیل طبیعی',
+            percentages: 'کاکائو ~۵۰–۸۵٪، کره کاکائو ~۲۰–۳۵٪',
+            fatType: 'کره کاکائو (غیرلوریک)',
+            hardness: 55,
+            meltTemp: '~۳۲–۳۵°C',
+            tempering: 'نیاز دارد',
+            moulding: 'قالب‌گیری دقیق با دمای کنترل‌شده',
+            texture: 'شکننده، براق، ذوب در دهان، طعم عمیق',
+            applications: 'شکلات‌های لوکس، کنافکشنری، گاناش، پوشش premium',
+            packaging: 'Aluminium Foil + Paper / High‑barrier + Rigid Box'
+        }, {
+            id: 'real-milk-white',
+            title: 'Real Milk / White Chocolate',
+            badge: 'Real',
+            badgeClass: 'badge-real',
+            ingredients: 'ماسه کاکائو، کره کاکائو، شکر، پودر شیر کامل، لسیتین، وانیل',
+            percentages: 'شیر ~۱۴–۲۵٪، کره کاکائو ~۲۰–۳۰٪',
+            fatType: 'کره کاکائو (غیرلوریک)',
+            hardness: 50,
+            meltTemp: '~۳۰–۳۴°C',
+            tempering: 'نیاز دارد',
+            moulding: 'قالب‌گیری دقیق با دمای کنترل‌شده',
+            texture: 'نرم، کرم‌دار، ذوب لطیف، طعم شیر و کاکائو',
+            applications: 'شکلات‌های لبنی لوکس، پرالین، تزئینات premium',
+            packaging: 'Aluminium Foil + Paper / High‑barrier + Rigid Box'
+        }];
+
+        // Comparison data
+        const comparisonData = [{
+            label: 'نوع چربی',
+            cbs: 'لوریک (CBS)',
+            cbr: 'غیرلوریک (CBR)',
+            real: 'کره کاکائو'
+        }, {
+            label: 'نیاز به Tempering',
+            cbs: '❌ خیر',
+            cbr: '❌ معمولاً خیر',
+            real: '✅ بله'
+        }, {
+            label: 'سختی (نسبی)',
+            cbs: '۳۰–۴۰',
+            cbr: '۴۰–۵۰',
+            real: '۵۰–۶۰'
+        }, {
+            label: 'Snap (شکنندگی)',
+            cbs: 'متوسط',
+            cbr: 'خوب',
+            real: 'عالی'
+        }, {
+            label: 'Gloss (براقیت)',
+            cbs: 'متوسط',
+            cbr: 'خوب',
+            real: 'عالی'
+        }, {
+            label: 'ذوب در دهان',
+            cbs: 'سریع، کمی مومی',
+            cbr: 'متوسط، کرم‌دار',
+            real: 'لطیف، کامل'
+        }, {
+            label: 'هزینه',
+            cbs: 'کم',
+            cbr: 'متوسط',
+            real: 'بالا'
+        }, {
+            label: 'پیچیدگی تولید',
+            cbs: 'ساده',
+            cbr: 'متوسط',
+            real: 'پیچیده'
+        }];
+
+        // Terminology
+        const terms = [
+            { term: 'CB', desc: 'کره کاکائو (Cocoa Butter) — چربی اصلی شکلات واقعی' },
+            { term: 'CBA', desc: 'کره کاکائو تصفیه‌شده (Cocoa Butter Anhydrous)' },
+            { term: 'CBS', desc: 'کره کاکائو جایگزین از نوع لوریک (Lauric CB Substitute)' },
+            { term: 'CBR', desc: 'کره کاکائو جایگزین از نوع غیرلوریک (Non‑Lauric CB Replacer)' },
+            { term: 'CBE', desc: 'معادل کره کاکائو (Cocoa Butter Equivalent) — قابل اختلاط با CB' },
+            { term: 'CBI', desc: 'بهبوددهنده کره کاکائو (Cocoa Butter Improver) — افزایش مقاومت' },
+            { term: 'TAG', desc: 'تری‌گلیسرید — ساختار اصلی چربی‌ها' },
+            { term: 'SFC', desc: 'محتوی چربی جامد (Solid Fat Content) — تعیین‌کننده سختی' },
+            { term: 'FA', desc: 'اسید چرب (Fatty Acid) — ترکیب سازنده چربی' },
+            { term: 'POP', desc: 'تری‌گلیسرید پالمیتیک‑اولئیک‑پالمیتیک — موجود در کره کاکائو' },
+            { term: 'POS', desc: 'پالمیتیک‑اولئیک‑استئاریک — تری‌گلیسرید اصلی کره کاکائو' },
+            { term: 'SOS', desc: 'استئاریک‑اولئیک‑استئاریک — تری‌گلیسرید با نقطه ذوب بالا' },
+            { term: 'RH', desc: 'رطوبت نسبی (Relative Humidity) — عامل مهم در بسته‌بندی' },
+            { term: 'WVTR', desc: 'نرخ انتقال بخار آب (Water Vapour Transmission Rate)' },
+            { term: 'OTR', desc: 'نرخ انتقال اکسیژن (Oxygen Transmission Rate)' },
+            { term: 'OPP', desc: 'پلی‌پروپیلن دوطرفه (Oriented Polypropylene) — فیلم بسته‌بندی' },
+            { term: 'PET', desc: 'پلی‌اتیلن ترفتالات — فیلم با شفافیت و مقاومت بالا' },
+            { term: 'PE', desc: 'پلی‌اتیلن — لایه آب‌بندی حرارتی' },
+            { term: 'EVOH', desc: 'کوپلیمر اتیلن‑وینیل الکل — لایه ضد اکسیژن' },
+            { term: 'Bloom', desc: 'ظهور بلورهای چربی یا قند روی سطح — نشانه بی‌کیفیتی' },
+            { term: 'Tempering', desc: 'فرایند حرارتی کنترل‌شده برای تثبیت کریستال‌های کره کاکائو' },
+            { term: 'Conching', desc: 'فرایند طولانی مخلوط‌کردن و هم‌زدن برای بهبود طعم و بافت' }
+        ];
+
+        // ============================================================
+        // RENDER FUNCTIONS
+        // ============================================================
+
+        function renderCards() {
+            const container = document.getElementById('chocolateCards');
+            container.innerHTML = classes.map(c => `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>${c.title}</h3>
+                            <span class="badge ${c.badgeClass}">${c.badge}</span>
+                        </div>
+                        <div class="card-body">
+                            <p><span class="label">مواد اولیه:</span><span class="value">${c.ingredients}</span></p>
+                            <p><span class="label">درصدها:</span><span class="value">${c.percentages}</span></p>
+                            <p><span class="label">نوع چربی:</span><span class="value">${c.fatType}</span></p>
+                            <div class="hardness-bar">
+                                <span class="label" style="min-width:70px;">سختی:</span>
+                                <div class="hardness-track">
+                                    <div class="hardness-fill" style="width:${c.hardness}%;"></div>
+                                </div>
+                                <span style="font-size:0.7rem;color:#5a4a3a;">${c.hardness}%</span>
+                            </div>
+                            <p><span class="label">دمای ذوب:</span><span class="value">${c.meltTemp}</span></p>
+                            <p><span class="label">Tempering:</span><span class="value">${c.tempering}</span></p>
+                            <p><span class="label">روش Moulding:</span><span class="value">${c.moulding}</span></p>
+                            <p><span class="label">بافت و ذوب:</span><span class="value">${c.texture}</span></p>
+                            <p><span class="label">کاربردها:</span><span class="value">${c.applications}</span></p>
+                            <p><span class="label">بسته‌بندی:</span><span class="value">${c.packaging}</span></p>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function renderComparison() {
+            const tbody = document.querySelector('#comparisonTable tbody');
+            tbody.innerHTML = comparisonData.map(row => `
+                    <tr>
+                        <td class="col-label">${row.label}</td>
+                        <td>${row.cbs}</td>
+                        <td>${row.cbr}</td>
+                        <td>${row.real}</td>
+                    </tr>
+                `).join('');
+        }
+
+        function renderChart() {
+            const container = document.getElementById('hardnessChart');
+            // sort by hardness
+            const sorted = [...classes].sort((a, b) => a.hardness - b.hardness);
+            container.innerHTML = sorted.map(c => `
+                    <div class="chart-row">
+                        <div class="chart-label">
+                            <span class="badge ${c.badgeClass}" style="font-size:0.6rem;padding:1px 8px;">${c.badge}</span>
+                            ${c.title}
+                        </div>
+                        <div class="chart-bar-wrap">
+                            <div class="chart-bar-fill" style="width:${c.hardness}%;"></div>
+                        </div>
+                        <span style="font-size:0.7rem;color:#5a4a3a;min-width:30px;">${c.hardness}%</span>
+                    </div>
+                `).join('');
+        }
+
+        function renderTerms() {
+            const container = document.getElementById('termGrid');
+            container.innerHTML = terms.map(t => `
+                    <div class="term-item">
+                        <strong>${t.term}</strong> — ${t.desc}
+                    </div>
+                `).join('');
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+
+        renderCards();
+        renderComparison();
+        renderChart();
+        renderTerms();
+    </script>
+</body>
+</html>
