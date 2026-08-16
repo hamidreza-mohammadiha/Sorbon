@@ -340,8 +340,8 @@
             top: 7px;
             right: 50%;
             transform: translateX(50%);
-            width: 18px;
-            height: 18px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #16060b;
             border: 2.5px solid var(--g);
@@ -1138,7 +1138,7 @@
             <div class="actions">
                 <button class="btn" onclick="saveData()">💾 ذخیره</button>
                 <button class="btn" onclick="resetData()">↺ بازنشانی</button>
-                <button class="btn btn-gold" onclick="exportPNG()">🖼 PNG</button>
+                <!-- <button class="btn btn-gold" onclick="exportPNG()">🖼 PNG</button> -->
                 <button class="btn btn-gold" onclick="exportXLSX()">📊 Excel</button>
                 <button class="btn btn-locked" onclick="membershipAlert()">📽 PPT · عضویت</button>
             </div>
@@ -1253,7 +1253,7 @@
         };
         const TAG_LIST = Object.keys(TAG_COLORS);
         const YEARS = ['2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
-        const PHASES = ['Foundation', 'Build', 'Control', 'Scale', 'Commercialize', 'Market', 'Operate', 'Mature'];
+        // const PHASES = ['Foundation', 'Build', 'Control', 'Scale', 'Commercialize', 'Market', 'Operate', 'Mature'];
 
         // ─── default data: one empty card per year ──────────────────
         function getDefaultData() {
