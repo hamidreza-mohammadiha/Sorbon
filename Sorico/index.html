@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Revenue Management Lab – SQLite Edition</title>
-    <!-- sql.js (SQLite compiled to WebAssembly) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js">
-    </script>
+    <title>Revenue Management Lab – SQLite + JSON Upload</title>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
+    <!-- sql.js (local) -->
+    <script src="lib/sql-wasm.js"></script>
     <style>
         * {
             margin: 0;
@@ -205,6 +204,7 @@
             gap: 10px;
             margin-top: 14px;
             flex-wrap: wrap;
+            align-items: center;
         }
         .btn {
             padding: 8px 22px;
@@ -409,6 +409,42 @@
             background: #1e7a3e;
         }
 
+        .json-upload-area {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e9edf4;
+        }
+        .json-upload-area input[type="file"] {
+            display: none;
+        }
+        .json-upload-area .file-label {
+            background: #eef3fa;
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            border: 2px solid #cdd7e6;
+            transition: background 0.2s;
+        }
+        .json-upload-area .file-label:hover {
+            background: #dde4ef;
+        }
+        .json-upload-area .file-name {
+            font-size: 13px;
+            color: #4a5a72;
+            margin-left: 4px;
+        }
+        .json-upload-area .sample-format {
+            font-size: 12px;
+            color: #6a7a8e;
+            margin-left: 8px;
+            opacity: 0.8;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 12px;
@@ -445,7 +481,7 @@
         <header class="header">
             <h1>
                 🗄️ Revenue Management Lab
-                <small>SQLite · Client‑side</small>
+                <small>SQLite · JSON Upload</small>
             </h1>
             <div class="db-status">
                 <span><span class="dot"></span> DB ready</span>
@@ -454,7 +490,7 @@
             </div>
         </header>
 
-        <!-- 1: SQLite DATA TABLE + ADD FORM -->
+        <!-- 1: PRICING DATA (SQLite) -->
         <div class="card">
             <div class="card-title">
                 <span class="step">1</span> Pricing Data (SQLite)
@@ -542,6 +578,16 @@
                     <span style="font-size:12px;color:#6a7a8e;margin-left:8px;">Fields with * are required</span>
                 </div>
             </div>
+
+            <!-- JSON BULK UPLOAD -->
+            <div class="json-upload-area">
+                <span style="font-weight:500;font-size:14px;color:#0b1a2e;">📤 Bulk upload JSON</span>
+                <label class="file-label" for="jsonFileInput">Choose JSON file</label>
+                <input type="file" id="jsonFileInput" accept=".json" />
+                <span class="file-name" id="jsonFileName">No file selected</span>
+                <button class="btn btn-primary" id="uploadJsonBtn">⬆ Upload & Replace DB</button>
+                <span class="sample-format">(array of arrays: [material, desc, uom, zd00, zd04, zd01, zd05, zd02, zd03, valid_from, valid_to])</span>
+            </div>
         </div>
 
         <!-- 2 + 3: SALES & DISCOUNT (two-col) -->
@@ -627,7 +673,7 @@
         </div>
 
         <div style="text-align:center;font-size:13px;color:#8a9aae;padding:10px 0 2px;border-top:1px solid #e9edf4;margin-top:6px;">
-            Revenue Management Lab · SQLite client‑side · Chart.js
+            Revenue Management Lab · SQLite client‑side · JSON bulk upload
         </div>
     </div>
 
@@ -1307,6 +1353,9 @@
         const discountRowCount = $('discountRowCount');
         const addRecordBtn = $('addRecordBtn');
         const clearFormBtn = $('clearFormBtn');
+        const jsonFileInput = $('jsonFileInput');
+        const jsonFileName = $('jsonFileName');
+        const uploadJsonBtn = $('uploadJsonBtn');
         const toast = $('toast');
 
         // Form fields
@@ -1330,7 +1379,6 @@
             if (!SQL) return;
             db = new SQL.Database();
 
-            // Create schema
             db.run(`
                 CREATE TABLE IF NOT EXISTS pricing (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1347,38 +1395,23 @@
                     valid_to TEXT
                 )
             `);
-
-            // Create index for faster SKU lookups
             db.run(`CREATE INDEX IF NOT EXISTS idx_material ON pricing(material)`);
-
-            // Load sample data
             loadSampleData();
         }
 
         function loadSampleData() {
             if (!db) return;
-            // Clear existing data
             db.run(`DELETE FROM pricing`);
-
             const insert = db.prepare(`
                 INSERT INTO pricing
                 (material, description, uom, price_zd00, price_zd04, price_zd01, price_zd05, price_zd02, price_zd03, valid_from, valid_to)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `);
-
             for (const row of SAMPLE_PRICING_RAW) {
                 insert.run(
-                    row[0], // material
-                    row[1], // description
-                    row[2], // uom
-                    row[3] || 0, // zd00
-                    row[4] || 0, // zd04
-                    row[5] || 0, // zd01
-                    row[6] || 0, // zd05
-                    row[7] || 0, // zd02
-                    row[8] || 0, // zd03
-                    row[9] || null, // valid_from
-                    row[10] || null // valid_to
+                    row[0], row[1], row[2],
+                    row[3] || 0, row[4] || 0, row[5] || 0, row[6] || 0, row[7] || 0, row[8] || 0,
+                    row[9] || null, row[10] || null
                 );
             }
             insert.free();
@@ -1478,7 +1511,6 @@
             for (const sku of list) {
                 const opt = document.createElement('option');
                 opt.value = sku;
-                // Get description from first record
                 const rows = getPricingForSku(sku);
                 const desc = rows.length > 0 ? rows[0].description || sku : sku;
                 opt.textContent = `${sku} – ${desc.substring(0, 40)}${desc.length > 40 ? '…' : ''}`;
@@ -1497,7 +1529,6 @@
                 showToast('Material (SKU) is required', 'error');
                 return;
             }
-
             const desc = fDesc.value.trim() || '';
             const uom = fUom.value;
             const zd00 = parseInt(fZd00.value) || 0;
@@ -1510,7 +1541,7 @@
             const validTo = fValidTo.value || null;
 
             if (zd00 <= 0) {
-                showToast('ZD00 (list price) must be greater than 0', 'error');
+                showToast('ZD00 (list price) must be > 0', 'error');
                 return;
             }
 
@@ -1524,15 +1555,11 @@
                 insert.free();
                 refreshUI();
                 clearForm();
-                showToast(`Record for ${material} added successfully!`, 'success');
-                // Auto-select the new SKU
+                showToast(`Record for ${material} added!`, 'success');
                 const list = getSkuList();
-                if (list.includes(material)) {
-                    skuSelect.value = material;
-                }
+                if (list.includes(material)) skuSelect.value = material;
             } catch (err) {
-                showToast('Error adding record: ' + err.message, 'error');
-                console.error(err);
+                showToast('Error: ' + err.message, 'error');
             }
         }
 
@@ -1551,7 +1578,70 @@
         }
 
         // ================================================================
-        // 6. PARSE SALES & DISCOUNT
+        // 6. BULK JSON UPLOAD
+        // ================================================================
+
+        function uploadJson() {
+            const file = jsonFileInput.files[0];
+            if (!file) {
+                showToast('Please select a JSON file first.', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!Array.isArray(data)) {
+                        showToast('JSON must be an array of arrays.', 'error');
+                        return;
+                    }
+                    // Validate first row length
+                    if (data.length > 0 && (!Array.isArray(data[0]) || data[0].length < 11)) {
+                        showToast('Each row must have at least 11 elements.', 'error');
+                        return;
+                    }
+                    // Clear and insert
+                    db.run(`DELETE FROM pricing`);
+                    const insert = db.prepare(`
+                        INSERT INTO pricing
+                        (material, description, uom, price_zd00, price_zd04, price_zd01, price_zd05, price_zd02, price_zd03, valid_from, valid_to)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    `);
+                    let inserted = 0;
+                    for (const row of data) {
+                        if (row.length < 11) continue;
+                        const material = String(row[0]).trim();
+                        if (!material) continue;
+                        insert.run(
+                            material,
+                            String(row[1] || '').trim(),
+                            String(row[2] || 'PC').trim(),
+                            parseFloat(row[3]) || 0,
+                            parseFloat(row[4]) || 0,
+                            parseFloat(row[5]) || 0,
+                            parseFloat(row[6]) || 0,
+                            parseFloat(row[7]) || 0,
+                            parseFloat(row[8]) || 0,
+                            row[9] || null,
+                            row[10] || null
+                        );
+                        inserted++;
+                    }
+                    insert.free();
+                    refreshUI();
+                    showToast(`✅ Uploaded ${inserted} records from JSON.`, 'success');
+                    jsonFileName.textContent = file.name;
+                    // Reset file input so same file can be re-uploaded
+                    jsonFileInput.value = '';
+                } catch (err) {
+                    showToast('Error parsing JSON: ' + err.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ================================================================
+        // 7. PARSE SALES & DISCOUNT
         // ================================================================
 
         function parseTableText(text) {
@@ -1611,12 +1701,11 @@
         }
 
         // ================================================================
-        // 7. COMPUTE PRICE-RESPONSE
+        // 8. COMPUTE PRICE-RESPONSE
         // ================================================================
 
         function computePriceResponse(sku) {
             if (!salesData || !discountData) return null;
-
             const points = [];
             const { months, years, values: salesVals } = salesData;
             const discVals = discountData.values;
@@ -1650,7 +1739,7 @@
         }
 
         // ================================================================
-        // 8. STATISTICAL HELPERS
+        // 9. STATISTICAL HELPERS
         // ================================================================
 
         function pearsonCorrelation(x, y) {
@@ -1694,7 +1783,7 @@
         }
 
         // ================================================================
-        // 9. CHART RENDERING
+        // 10. CHART RENDERING
         // ================================================================
 
         function renderChart(sku, points) {
@@ -1748,7 +1837,7 @@
                 }
             }
 
-            // Logit: log(sales) = a + b * price
+            // Logit
             const logY = yData.map(v => Math.log(v));
             const logReg = linearRegression(xData, logY);
             let logitTrend = [];
@@ -1870,7 +1959,7 @@
         }
 
         // ================================================================
-        // 10. PLOT FUNCTION
+        // 11. PLOT FUNCTION
         // ================================================================
 
         function plotPriceResponse() {
@@ -1880,7 +1969,6 @@
                 return;
             }
 
-            // Parse sales and discount
             salesData = parseTableText(salesInput.value);
             discountData = parseTableText(discountInput.value);
             updateRowCounts();
@@ -1902,7 +1990,7 @@
         }
 
         // ================================================================
-        // 11. UI HELPERS
+        // 12. UI HELPERS
         // ================================================================
 
         function updateRowCounts() {
@@ -1925,7 +2013,7 @@
         }
 
         // ================================================================
-        // 12. RESET FUNCTIONS
+        // 13. RESET FUNCTIONS
         // ================================================================
 
         function resetPricing() {
@@ -1934,7 +2022,6 @@
                 loadSampleData();
                 refreshUI();
                 showToast('Pricing data reset to sample', 'success');
-                // Clear chart
                 if (chart) { chart.destroy();
                     chart = null; }
                 chartEmptyState.style.display = 'flex';
@@ -1964,14 +2051,12 @@
         }
 
         // ================================================================
-        // 13. EVENT BINDINGS
+        // 14. EVENT BINDINGS
         // ================================================================
 
-        // Add record
         addRecordBtn.addEventListener('click', addRecord);
         clearFormBtn.addEventListener('click', clearForm);
 
-        // Enter key on form fields
         document.querySelectorAll('#addForm input').forEach(el => {
             el.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
@@ -1981,11 +2066,9 @@
             });
         });
 
-        // Plot
         plotBtn.addEventListener('click', plotPriceResponse);
         skuSelect.addEventListener('keydown', (e) => { if (e.key === 'Enter') plotPriceResponse(); });
 
-        // Clear chart
         clearChartBtn.addEventListener('click', () => {
             if (chart) { chart.destroy();
                 chart = null; }
@@ -2002,24 +2085,17 @@
             currentSku = null;
         });
 
-        // Reset buttons
         resetDbBtn.addEventListener('click', resetPricing);
         resetSalesBtn.addEventListener('click', resetSales);
         resetDiscountBtn.addEventListener('click', resetDiscount);
 
-        // Trend toggles – re-plot when changed
         showLinearCb.addEventListener('change', () => {
-            if (currentSku && chartPoints) {
-                renderChart(currentSku, chartPoints);
-            }
+            if (currentSku && chartPoints) renderChart(currentSku, chartPoints);
         });
         showLogitCb.addEventListener('change', () => {
-            if (currentSku && chartPoints) {
-                renderChart(currentSku, chartPoints);
-            }
+            if (currentSku && chartPoints) renderChart(currentSku, chartPoints);
         });
 
-        // Sales / Discount input – parse on change
         salesInput.addEventListener('input', () => {
             salesData = parseTableText(salesInput.value);
             updateRowCounts();
@@ -2029,19 +2105,29 @@
             updateRowCounts();
         });
 
+        // JSON upload
+        jsonFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                jsonFileName.textContent = this.files[0].name;
+            } else {
+                jsonFileName.textContent = 'No file selected';
+            }
+        });
+        uploadJsonBtn.addEventListener('click', uploadJson);
+
         // ================================================================
-        // 14. INITIALIZE SQLITE
+        // 15. INITIALIZE SQLITE
         // ================================================================
 
-        // Load sql.js
         initSqlJs({
             locateFile: function(filename) {
-                return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/' + filename;
+                // Point to local lib folder
+                return 'lib/' + filename;
             }
         }).then(function(sqlLib) {
             SQL = sqlLib;
             initDb();
-            // Load default sales & discount
+            // Load default sales & discount (ensure they are visible)
             salesInput.value = DEFAULT_SALES;
             discountInput.value = DEFAULT_DISCOUNT;
             salesData = parseTableText(DEFAULT_SALES);
@@ -2060,11 +2146,11 @@
             console.log('✅ SQLite ready, ' + SAMPLE_PRICING_RAW.length + ' records loaded.');
         }).catch(function(err) {
             console.error('Failed to load sql.js:', err);
-            dbTableBody.innerHTML = '<tr class="empty-row"><td colspan="12">⚠️ Failed to load SQLite. Please check your internet connection.</td></tr>';
-            showToast('Failed to load SQLite library', 'error');
+            dbTableBody.innerHTML = '<tr class="empty-row"><td colspan="12">⚠️ Failed to load SQLite. Make sure lib/sql-wasm.js and lib/sql-wasm.wasm exist.</td></tr>';
+            showToast('Failed to load SQLite library. Check your lib folder.', 'error');
         });
 
-        console.log('🚀 Revenue Management Lab – SQLite Edition');
+        console.log('🚀 Revenue Management Lab – SQLite + JSON upload');
     </script>
 </body>
 </html>
