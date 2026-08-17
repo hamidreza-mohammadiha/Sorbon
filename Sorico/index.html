@@ -7,9 +7,11 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
-    <!-- sql.js (local) -->
-    <script src="lib/sql-wasm.js"></script>
+    <!-- sql.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
     <style>
+        /* ... (same CSS as before, no changes) ... */
+        /* I'll include the full CSS again for completeness, but you can reuse yours */
         * {
             margin: 0;
             padding: 0;
@@ -25,8 +27,6 @@
             max-width: 1440px;
             margin: 0 auto;
         }
-
-        /* HEADER */
         .header {
             background: linear-gradient(145deg, #0b1a2e, #1a3a5c);
             color: #fff;
@@ -74,8 +74,6 @@
             border-radius: 50%;
             background: #4ade80;
         }
-
-        /* CARDS */
         .card {
             background: #fff;
             border-radius: 14px;
@@ -107,7 +105,6 @@
             font-weight: 700;
             flex-shrink: 0;
         }
-
         .two-col {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -118,8 +115,6 @@
                 grid-template-columns: 1fr;
             }
         }
-
-        /* TABLE */
         .table-wrap {
             max-height: 260px;
             overflow-y: auto;
@@ -162,8 +157,6 @@
             padding: 24px 0;
             font-style: italic;
         }
-
-        /* FORM */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -254,8 +247,6 @@
         .btn:active {
             transform: scale(0.97);
         }
-
-        /* SKU SELECTOR */
         .sku-row {
             display: flex;
             flex-wrap: wrap;
@@ -281,8 +272,6 @@
             font-size: 13px;
             color: #6a7a8e;
         }
-
-        /* CHART */
         .chart-wrapper {
             position: relative;
             min-height: 380px;
@@ -313,7 +302,6 @@
             font-size: 17px;
             color: #2a3a4e;
         }
-
         .stats-row {
             display: flex;
             flex-wrap: wrap;
@@ -334,7 +322,6 @@
             color: #1a3a5c;
             font-size: 16px;
         }
-
         .reset-btn {
             background: transparent;
             border: none;
@@ -350,7 +337,6 @@
             background: #eef3fa;
             color: #1a3a5c;
         }
-
         .legend-color {
             display: inline-block;
             width: 18px;
@@ -381,7 +367,6 @@
             accent-color: #1a3a5c;
             cursor: pointer;
         }
-
         .toast {
             position: fixed;
             bottom: 24px;
@@ -408,7 +393,6 @@
         .toast.success {
             background: #1e7a3e;
         }
-
         .json-upload-area {
             display: flex;
             flex-wrap: wrap;
@@ -444,7 +428,6 @@
             margin-left: 8px;
             opacity: 0.8;
         }
-
         @media (max-width: 600px) {
             body {
                 padding: 12px;
@@ -1399,25 +1382,53 @@
             loadSampleData();
         }
 
-        function loadSampleData() {
-            if (!db) return;
-            db.run(`DELETE FROM pricing`);
-            const insert = db.prepare(`
-                INSERT INTO pricing
-                (material, description, uom, price_zd00, price_zd04, price_zd01, price_zd05, price_zd02, price_zd03, valid_from, valid_to)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `);
-            for (const row of SAMPLE_PRICING_RAW) {
-                insert.run(
-                    row[0], row[1], row[2],
-                    row[3] || 0, row[4] || 0, row[5] || 0, row[6] || 0, row[7] || 0, row[8] || 0,
-                    row[9] || null, row[10] || null
-                );
+            function loadSampleData() {
+                if (!db) return;
+                db.run(`DELETE FROM pricing`);
+                const insert = db.prepare(`
+                    INSERT INTO pricing
+                    (material, description, uom, price_zd00, price_zd04, price_zd01, price_zd05, price_zd02, price_zd03, valid_from, valid_to)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `);
+                let inserted = 0;
+                let skipped = 0;
+                for (const row of SAMPLE_PRICING_RAW) {
+                    // Ensure the row is an array and has at least 11 elements
+                    if (!Array.isArray(row) || row.length < 11) {
+                        skipped++;
+                        continue;
+                    }
+                    const material = String(row[0]).trim();
+                    if (!material) {
+                        skipped++;
+                        console.warn('Skipping row with empty material:', row);
+                        continue;
+                    }
+                    // Proceed with insertion
+                    insert.run(
+                        material,
+                        String(row[1] || '').trim(),
+                        String(row[2] || 'PC').trim(),
+                        parseFloat(row[3]) || 0,
+                        parseFloat(row[4]) || 0,
+                        parseFloat(row[5]) || 0,
+                        parseFloat(row[6]) || 0,
+                        parseFloat(row[7]) || 0,
+                        parseFloat(row[8]) || 0,
+                        row[9] || null,
+                        row[10] || null
+                    );
+                    inserted++;
+                }
+                insert.free();
+                refreshUI();
+                if (skipped > 0) {
+                    console.warn(`Skipped ${skipped} rows due to missing material.`);
+                    showToast(`Loaded ${inserted} records (skipped ${skipped} invalid rows).`, 'info');
+                } else {
+                    showToast('Sample data loaded (' + inserted + ' records)', 'success');
+                }
             }
-            insert.free();
-            refreshUI();
-            showToast('Sample data loaded (' + SAMPLE_PRICING_RAW.length + ' records)', 'success');
-        }
 
         function refreshUI() {
             renderTable();
@@ -1578,7 +1589,7 @@
         }
 
         // ================================================================
-        // 6. BULK JSON UPLOAD
+        // 6. BULK JSON UPLOAD (with BOM stripping and better logging)
         // ================================================================
 
         function uploadJson() {
@@ -1590,12 +1601,17 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const data = JSON.parse(e.target.result);
+                    // Strip BOM if present
+                    let content = e.target.result;
+                    if (content.charCodeAt(0) === 0xFEFF) {
+                        content = content.slice(1);
+                    }
+                    const data = JSON.parse(content);
+                    console.log('Parsed JSON data:', data.length, 'records');
                     if (!Array.isArray(data)) {
                         showToast('JSON must be an array of arrays.', 'error');
                         return;
                     }
-                    // Validate first row length
                     if (data.length > 0 && (!Array.isArray(data[0]) || data[0].length < 11)) {
                         showToast('Each row must have at least 11 elements.', 'error');
                         return;
@@ -1634,6 +1650,7 @@
                     // Reset file input so same file can be re-uploaded
                     jsonFileInput.value = '';
                 } catch (err) {
+                    console.error('JSON upload error:', err);
                     showToast('Error parsing JSON: ' + err.message, 'error');
                 }
             };
@@ -2116,41 +2133,73 @@
         uploadJsonBtn.addEventListener('click', uploadJson);
 
         // ================================================================
-        // 15. INITIALIZE SQLITE
+        // 15. INITIALIZE SQLITE (with fallback)
         // ================================================================
 
-        initSqlJs({
-            locateFile: function(filename) {
-                // Point to local lib folder
-                return 'lib/' + filename;
+        // ================================================================
+        // INIT SQLITE (CDN only)
+        // ================================================================
+
+        function initSqlite() {
+            if (typeof initSqlJs !== 'function') {
+                // If the script tag didn't load, try loading dynamically
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js';
+                script.onload = function() {
+                    startDatabase();
+                };
+                script.onerror = function() {
+                    showToast('Failed to load SQLite from CDN. Please check your internet.', 'error');
+                };
+                document.head.appendChild(script);
+            } else {
+                startDatabase();
             }
-        }).then(function(sqlLib) {
-            SQL = sqlLib;
-            initDb();
-            // Load default sales & discount (ensure they are visible)
-            salesInput.value = DEFAULT_SALES;
-            discountInput.value = DEFAULT_DISCOUNT;
-            salesData = parseTableText(DEFAULT_SALES);
-            discountData = parseTableText(DEFAULT_DISCOUNT);
-            updateRowCounts();
+        }
 
-            // Auto-plot first SKU
-            setTimeout(() => {
-                const list = getSkuList();
-                if (list.length > 0) {
-                    skuSelect.value = list[0];
-                    plotPriceResponse();
+        function startDatabase() {
+            initSqlJs({
+                locateFile: function(filename) {
+                    // Use the same CDN for the .wasm file
+                    return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/' + filename;
                 }
-            }, 400);
+            }).then(function(sqlLib) {
+                SQL = sqlLib;
+                db = new SQL.Database();
+                // Create table
+                db.run(`
+                    CREATE TABLE IF NOT EXISTS pricing (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        material TEXT NOT NULL,
+                        description TEXT,
+                        uom TEXT,
+                        price_zd00 INTEGER,
+                        price_zd04 INTEGER,
+                        price_zd01 INTEGER,
+                        price_zd05 INTEGER,
+                        price_zd02 INTEGER,
+                        price_zd03 INTEGER,
+                        valid_from TEXT,
+                        valid_to TEXT
+                    )
+                `);
+                db.run(`CREATE INDEX IF NOT EXISTS idx_material ON pricing(material)`);
+                
+                // Load sample data
+                loadSampleData();
+                
+                // Finish initialisation
+                finishInit();
+            }).catch(function(err) {
+                showToast('SQLite initialisation failed: ' + err.message, 'error');
+                console.error(err);
+            });
+        }
 
-            console.log('✅ SQLite ready, ' + SAMPLE_PRICING_RAW.length + ' records loaded.');
-        }).catch(function(err) {
-            console.error('Failed to load sql.js:', err);
-            dbTableBody.innerHTML = '<tr class="empty-row"><td colspan="12">⚠️ Failed to load SQLite. Make sure lib/sql-wasm.js and lib/sql-wasm.wasm exist.</td></tr>';
-            showToast('Failed to load SQLite library. Check your lib folder.', 'error');
-        });
+        // Call this when the page loads
+        initSqlite();
 
-        console.log('🚀 Revenue Management Lab – SQLite + JSON upload');
+        console.log('🚀 Revenue Management Lab – SQLite + JSON upload with fallback');
     </script>
 </body>
 </html>
