@@ -146,7 +146,19 @@ footer{text-align:center;color:#8a9aae;font-size:12px;padding:8px}
    Format:
    [material, desc, uom, zd00, zd04, zd01, zd05, zd02, zd03, valid_from, valid_to]
    ========================================================= */
-const pricing_data =[];
+const pricing_data =[  [
+    "30000581",
+    "شکلات سکه اي دارک 20 % سوربن 3.5 کيلویی",
+    "PC",
+    1547123,
+    1686364,
+    1701836,
+    1855001,
+    1923073,
+    2096100,
+    "2020-10-27",
+    "2021-02-16"
+  ]];
 const DEFAULT_SALES = "Jan\t2329\t2970\t4981\t2294\nFeb\t3067\t4118\t4814\t1899\nMar\t2210\t2049\t1345\t1481\nApr\t1189\t3374\t2019\t2788\nMay\t1812\t2448\t2457\t1875\nJun\t1156\t1392\t1297\t1408\nJul\t1611\t1213\t2092\t2113\nAug\t1522\t1628\t2594\t2155\nSep\t2087\t2294\t3259\t\nOct\t2268\t2232\t3675\t\nNov\t2287\t3862\t4489\t\nDec\t2440\t4730\t5211\t";
 const DEFAULT_DISCOUNT = "Jan\t6.4\t7.8\t9.8\t5.8\nFeb\t6.0\t8.8\t8.4\t5.7\nMar\t5.2\t6.7\t3.3\t4.1\nApr\t5.6\t8.7\t8.1\t6.3\nMay\t5.4\t8.4\t7.2\t7.2\nJun\t5.7\t7.6\t4.9\t5.6\nJul\t4.6\t6.0\t7.1\t9.8\nAug\t6.5\t7.6\t7.1\t9.0\nSep\t6.9\t8.4\t8.9\t\nOct\t9.0\t7.4\t8.4\t\nNov\t8.0\t8.9\t8.0\t\nDec\t6.6\t9.0\t8.0\t";
 const PRICE_KEYS = ['zd00','zd04','zd01','zd05','zd02','zd03'];
