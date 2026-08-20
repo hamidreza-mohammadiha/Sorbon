@@ -974,10 +974,10 @@
             let lx = legX + 12,
                 ly = legY + 18;
             const quarterLabels = {
-                'Q1': 'زمستان    Q1:    January – March',
-                'Q2': 'بهار    Q2:    April – June',
-                'Q3': 'تابستان    Q3:    July – September',
-                'Q4': 'پاییز    Q4:    October – December'
+                'Q1': ' January – March',
+                'Q2': ' pril – June',
+                'Q3': ' July – September',
+                'Q4': ' October – December'
             };
             for (const [q, col] of Object.entries(quarterColors)) {
                 const label = quarterLabels[q] || q;
@@ -1094,7 +1094,7 @@
             add('text', { x: L + pw / 2, y: H - 2, 'text-anchor': 'middle', fill: '#334155', 'font-size': 11,
                 'font-weight': '500' }, 'Effective Price');
             add('text', { x: 14, y: T + ph / 2, transform: `rotate(-90 14 ${T+ph/2})`, 'text-anchor': 'middle',
-                fill: '#334155', 'font-size': 11, 'font-weight': '500' }, 'Total Contribution');
+                fill: '#334155', 'font-size': 11, 'font-weight': '500' }, ' ');
 
             // --- draw connected line (polyline) ---
             const ptsForLine = contribPoints.map(p => ({ x: X(p.effectivePrice), y: Y(p.contribution) }));
