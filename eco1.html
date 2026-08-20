@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>طبقه‌بندی و اعتبارسنجی آموزه‌های اقتصادی مدرسه الفبای اقتصاد</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#172033;--muted:#687386;--line:#dfe4ec;--accent:#2457d6;--good:#18794e;--warn:#9a6700;--bad:#b42318}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,"Segoe UI",Arial,sans-serif;line-height:1.8}
+header{background:linear-gradient(135deg,#172554,#2457d6);color:#fff;padding:42px 5vw}
+header h1{margin:0 0 8px;font-size:clamp(24px,4vw,38px)} header p{max-width:950px;margin:0;color:#e6ecff}
+.container{width:min(1500px,94vw);margin:24px auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 25px #1720330b;margin-bottom:18px}
+.controls{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+.stat{padding:9px 14px;border-radius:999px;background:#eef3ff;color:#173b9b;font-size:14px}
+.table-wrap{overflow:auto;border-radius:14px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:1250px;background:#fff}
+th{position:sticky;top:0;background:#eef2f8;text-align:right;z-index:1}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:#f8faff}
+.fa{font-weight:600}
+.module{display:inline-block;padding:4px 8px;border-radius:7px;background:#f0f2f7;font-size:12px}
+.muted{color:var(--muted);font-size:12px}
+.status{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#e9f7ef;color:var(--good)}
+tr[data-status*="اصلاح"] .status{background:#fff5d6;color:var(--warn)}
+tr[data-status*="تفکیک"] .status{background:#fdecec;color:var(--bad)}
+.note{background:#fff8df;border-right:4px solid #d59b00;padding:13px 16px;border-radius:10px}
+.en{direction:ltr;text-align:left;font-family:"Segoe UI",Arial,sans-serif}
+footer{color:var(--muted);font-size:13px;padding:10px 0 40px}
+a{color:var(--accent)}
+@media(max-width:800px){.controls{grid-template-columns:1fr} header{padding:30px 5vw}}
+</style>
+</head>
+<body>
+<header>
+  <h1>آموزه‌های اقتصادی مدرسه الفبای اقتصاد</h1>
+  <p>طبقه‌بندی موضوعی، معادل‌یابی انگلیسی و اعتبارسنجی مفهومیِ فهرست درس‌های منتشرشده در school.kalleh.com</p>
+</header>
+<main class="container">
+<section class="card">
+  <h2>روش اعتبارسنجی</h2>
+  <p>این نسخه ابتدا فهرست ۲۴ درس صفحه رسمی را استخراج و سپس عنوان‌ها و مفاهیم را با ادبیات اقتصادی و منابع نهادی معتبر تطبیق داده است. «تأییدشده» یعنی مفهوم با تعریف متعارف سازگار است؛ «تأییدشده با اصلاح» یعنی ایده درست است ولی برای دقت علمی باید ساده‌سازی آن محدود شود؛ و «نیازمند تفکیک مفهومی» یعنی ترجمه یا چارچوب‌بندی می‌تواند خواننده را به اشتباه بیندازد.</p>
+  <div class="note"><strong>نکته مهم:</strong> اعتبارسنجی حاضر در سطح <strong>عنوان/آموزه و مفهوم اقتصادی</strong> است، نه داوری جمله‌به‌جمله متن کامل هر درس. صفحه اصلی فهرست درس‌ها را تأیید می‌کند، اما برای برخی مفاهیم خاص مانند «پنج قاعده به‌علاوه یک» و «انفال» معادل انگلیسی استاندارد واحدی وجود ندارد.</div>
+</section>
+
+<section class="card">
+  <div class="controls">
+    <input id="q" placeholder="جست‌وجو در فارسی، انگلیسی، مفهوم یا حوزه..." oninput="filterRows()">
+    <select id="cat" onchange="filterRows()"><option value="">همه حوزه‌ها</option></select>
+    <select id="statusFilter" onchange="filterRows()"><option value="">همه وضعیت‌ها</option><option>تأییدشده</option><option>تأییدشده با اصلاح</option><option>نیازمند تفکیک مفهومی</option><option>نیازمند نام‌گذاری دقیق</option></select>
+  </div>
+  <div class="stats">
+    <span class="stat">تعداد آموزه‌ها: 23</span>
+    <span class="stat">حوزه‌های اصلی: 8</span>
+    <span class="stat">زبان مقصد: English</span>
+  </div>
+</section>
+
+<section class="card">
+  <h2>جدول طبقه‌بندی و معادل‌یابی</h2>
+  <div class="table-wrap">
+  <table id="tbl">
+    <thead><tr><th>#</th><th>قدم</th><th>طبقه</th><th>عنوان فارسی</th><th>معادل انگلیسی + اصطلاح تخصصی</th><th>اعتبارسنجی / اصلاح علمی</th><th>وضعیت</th><th>حوزه علمی</th></tr></thead>
+    <tbody>
+    <tr data-cat="Money &amp; Economic Foundations" data-status="تأییدشده">
+      <td>1</td><td>۱</td><td><span class="module">پول را بشناس</span></td>
+      <td class="fa">پول چیست؟</td><td><strong>What Is Money?</strong><br><span class="muted">Money: functions, forms, and trust</span></td>
+      <td>پول وسیله مبادله، واحد حساب و ذخیره ارزش است؛ تعریف باید این کارکردها را پوشش دهد.</td><td><span class="status">تأییدشده</span></td><td>Money / Monetary Economics</td>
+    </tr>
+    <tr data-cat="Money &amp; Economic Foundations" data-status="تأییدشده با اصلاح">
+      <td>2</td><td>۱</td><td><span class="module">پول را بشناس</span></td>
+      <td class="fa">اقتصاد چیست؟</td><td><strong>What Is Economics?</strong><br><span class="muted">Economics: choice under scarcity</span></td>
+      <td>بهتر است اقتصاد با «انتخاب در شرایط کمیابی و تخصیص منابع محدود» توضیح داده شود، نه صرفاً پول و ثروت.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Microeconomics / Economic Principles</td>
+    </tr>
+    <tr data-cat="Money &amp; Economic Foundations" data-status="تأییدشده با اصلاح">
+      <td>3</td><td>۱</td><td><span class="module">پول را بشناس</span></td>
+      <td class="fa">تاریخِ کوتاهِ پول</td><td><strong>A Brief History of Money</strong><br><span class="muted">History of Money</span></td>
+      <td>سیر کلی از پول کالایی و فلزی تا پول کاغذی و سپرده‌ای؛ تاریخ پول خطی و یکسان برای همه جوامع نیست.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Monetary History</td>
+    </tr>
+    <tr data-cat="Money &amp; Economic Foundations" data-status="تأییدشده با اصلاح">
+      <td>4</td><td>۱</td><td><span class="module">پول را بشناس</span></td>
+      <td class="fa">عرضه، تقاضا و قیمت؛ قیمت چگونه تعیین می‌شود؟</td><td><strong>Supply, Demand &amp; Price: How Are Prices Determined?</strong><br><span class="muted">Supply and Demand / Price Formation</span></td>
+      <td>مدل پایه عرضه و تقاضا مفید است؛ اما قیمت همیشه صرفاً در نقطه تعادل ساده تعیین نمی‌شود و نهادها، قدرت بازار و انتظارات هم مهم‌اند.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Microeconomics / Price Theory</td>
+    </tr>
+    <tr data-cat="Inflation &amp; Purchasing Power" data-status="تأییدشده">
+      <td>5</td><td>۲</td><td><span class="module">تورم، دزد بی‌سروصدا</span></td>
+      <td class="fa">تورم چیست؟</td><td><strong>What Is Inflation?</strong><br><span class="muted">Inflation</span></td>
+      <td>تورم نرخ افزایش سطح عمومی قیمت‌هاست؛ افزایش قیمت یک کالای منفرد به‌تنهایی تورم نیست.</td><td><span class="status">تأییدشده</span></td><td>Macroeconomics / Inflation</td>
+    </tr>
+    <tr data-cat="Inflation &amp; Purchasing Power" data-status="تأییدشده با اصلاح">
+      <td>6</td><td>۲</td><td><span class="module">تورم، دزد بی‌سروصدا</span></td>
+      <td class="fa">تورم؛ چه کسی واقعاً می‌پردازد؟</td><td><strong>Inflation: Who Really Pays?</strong><br><span class="muted">Distributional Effects of Inflation</span></td>
+      <td>تورم اثر توزیعی دارد و با توجه به درآمد، دارایی، بدهی، دستمزد و قراردادهای اسمی، بر افراد متفاوت اثر می‌گذارد.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Inflation Incidence / Distribution</td>
+    </tr>
+    <tr data-cat="Inflation &amp; Purchasing Power" data-status="تأییدشده">
+      <td>7</td><td>۲</td><td><span class="module">تورم، دزد بی‌سروصدا</span></td>
+      <td class="fa">پس‌انداز چگونه کار می‌کند؛ و تورم چگونه آن را می‌خورد؟</td><td><strong>How Does Saving Work—and How Does Inflation Erode It?</strong><br><span class="muted">Real vs. Nominal Returns</span></td>
+      <td>اثر واقعی تورم باید با نرخ بازده واقعی سنجیده شود؛ تقریب ساده: real rate ≈ nominal rate − inflation.</td><td><span class="status">تأییدشده</span></td><td>Personal Finance / Real Returns</td>
+    </tr>
+    <tr data-cat="Inflation &amp; Purchasing Power" data-status="تأییدشده با اصلاح">
+      <td>8</td><td>۲</td><td><span class="module">تورم، دزد بی‌سروصدا</span></td>
+      <td class="fa">چرا ارزها بی‌ارزش می‌شوند؟</td><td><strong>Why Do Currencies Lose Value?</strong><br><span class="muted">Currency Depreciation &amp; Exchange Rates</span></td>
+      <td>افت ارزش پول می‌تواند از تفاوت تورم، سیاست پولی و مالی، جریان سرمایه، تراز پرداخت‌ها، انتظارات و عرضه/تقاضای ارز ناشی شود؛ یک علت واحد وجود ندارد.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Exchange Rates / Open-Economy Macroeconomics</td>
+    </tr>
+    <tr data-cat="Banking &amp; Monetary Policy" data-status="تأییدشده با اصلاح">
+      <td>9</td><td>۳</td><td><span class="module">بانک و خلق پول</span></td>
+      <td class="fa">بانک‌ها چگونه پول می‌سازند؟</td><td><strong>How Do Banks Create Money?</strong><br><span class="muted">Bank Money Creation</span></td>
+      <td>در نظام بانکی مدرن، اعطای وام می‌تواند هم‌زمان سپرده جدید ایجاد کند؛ محدودیت‌های سرمایه، نقدینگی، سودآوری، تقاضای اعتبار و سیاست پولی مهم‌اند.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Banking / Money Creation</td>
+    </tr>
+    <tr data-cat="Banking &amp; Monetary Policy" data-status="تأییدشده">
+      <td>10</td><td>۳</td><td><span class="module">بانک و خلق پول</span></td>
+      <td class="fa">نرخ بهره چیست؟</td><td><strong>What Is an Interest Rate?</strong><br><span class="muted">Cost of Borrowing / Return to Saving</span></td>
+      <td>نرخ بهره هزینه تأمین مالی یا بازده پس‌انداز است؛ باید تفاوت نرخ اسمی و واقعی و نرخ ثابت/متغیر نیز روشن شود.</td><td><span class="status">تأییدشده</span></td><td>Finance / Monetary Economics</td>
+    </tr>
+    <tr data-cat="Banking &amp; Monetary Policy" data-status="تأییدشده با اصلاح">
+      <td>11</td><td>۳</td><td><span class="module">بانک و خلق پول</span></td>
+      <td class="fa">بانک مرکزی چه می‌کند؟</td><td><strong>What Does a Central Bank Do?</strong><br><span class="muted">Central Banking &amp; Monetary Policy</span></td>
+      <td>وظایف معمول شامل سیاست پولی و ثبات قیمت، و بسته به کشور ثبات مالی، نظارت/پرداخت‌ها و مدیریت ذخایر است؛ دامنه وظایف کشوربه‌کشور فرق دارد.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Central Banking / Monetary Policy</td>
+    </tr>
+    <tr data-cat="Banking &amp; Monetary Policy" data-status="نیازمند تفکیک مفهومی">
+      <td>12</td><td>۳</td><td><span class="module">بانک و خلق پول</span></td>
+      <td class="fa">بهره، سود و ربا؛ تفاوت در چیست؟</td><td><strong>Interest, Profit &amp; Riba: What Is the Difference?</strong><br><span class="muted">Interest, Profit &amp; Riba</span></td>
+      <td>Interest و profit مفاهیم اقتصادی متفاوت‌اند: بهره قیمت زمان‌مندِ پول/اعتبار است و سود مازاد درآمد بر هزینه در فعالیت اقتصادی؛ Riba یک مفهوم حقوقی/فقهی است و معادل کامل انگلیسیِ یک‌به‌یک ندارد.</td><td><span class="status">نیازمند تفکیک مفهومی</span></td><td>Finance / Islamic Finance</td>
+    </tr>
+    <tr data-cat="Public Finance &amp; Government" data-status="تأییدشده">
+      <td>13</td><td>۴</td><td><span class="module">دولت و مالیات</span></td>
+      <td class="fa">مالیات چیست؟</td><td><strong>What Is a Tax?</strong><br><span class="muted">Taxation &amp; Public Revenue</span></td>
+      <td>مالیات درآمد عمومی اجباری دولت برای تأمین مخارج عمومی و اجرای سیاست‌های مالی است؛ اثر اقتصادی آن به پایه مالیاتی، نرخ و نحوه مصرف درآمد بستگی دارد.</td><td><span class="status">تأییدشده</span></td><td>Public Finance</td>
+    </tr>
+    <tr data-cat="Public Finance &amp; Government" data-status="تأییدشده با اصلاح">
+      <td>14</td><td>۴</td><td><span class="module">دولت و مالیات</span></td>
+      <td class="fa">تولید ناخالص داخلی (GDP) چیست؟</td><td><strong>What Is Gross Domestic Product (GDP)?</strong><br><span class="muted">National Accounts / GDP</span></td>
+      <td>GDP ارزش بازار تولید نهایی در محدوده اقتصادی طی دوره مشخص را می‌سنجد؛ شاخص تولید است، نه معیار کامل رفاه یا توزیع درآمد.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Macroeconomics / National Accounts</td>
+    </tr>
+    <tr data-cat="Public Finance &amp; Government" data-status="تأییدشده با اصلاح">
+      <td>15</td><td>۴</td><td><span class="module">دولت و مالیات</span></td>
+      <td class="fa">معافیت مالیاتی: مشوق یا رانت؟</td><td><strong>Tax Exemption: Incentive or Rent-Seeking?</strong><br><span class="muted">Tax Expenditures / Tax Incentives</span></td>
+      <td>معافیت می‌تواند سیاست تشویقی باشد؛ اما ارزیابی آن باید هزینه درآمدی، هدف سیاست، گروه ذی‌نفع و اثر بر تخصیص منابع را بسنجد. «رانت» نتیجه‌گیری خودکار نیست.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Public Finance / Tax Expenditures</td>
+    </tr>
+    <tr data-cat="Natural Resources &amp; Resource Economics" data-status="تأییدشده با توضیح">
+      <td>16</td><td>۵</td><td><span class="module">نفت، انفال و بیماری هلندی</span></td>
+      <td class="fa">جزیره به نفت می‌رسد</td><td><strong>An Island Strikes Oil</strong><br><span class="muted">Resource Windfalls / Resource Wealth</span></td>
+      <td>عنوان یک سناریوی آموزشی است؛ از نظر اقتصادی می‌توان آن را به شوک درآمدی، ثروت منابع و نحوه تخصیص درآمد منابع پیوند داد.</td><td><span class="status">تأییدشده با توضیح</span></td><td>Resource Economics</td>
+    </tr>
+    <tr data-cat="Natural Resources &amp; Resource Economics" data-status="تأییدشده با اصلاح مهم">
+      <td>17</td><td>۵</td><td><span class="module">نفت، انفال و بیماری هلندی</span></td>
+      <td class="fa">بیماری هلندی چیست؟</td><td><strong>What Is Dutch Disease?</strong><br><span class="muted">Dutch Disease</span></td>
+      <td>شوک بزرگ منابع یا ورود ارز می‌تواند موجب تقویت نرخ واقعی ارز و جابه‌جایی منابع از بخش‌های قابل‌مبادله شود؛ «بیماری» الزاماً به معنی کاهش قطعی رشد کل نیست.</td><td><span class="status">تأییدشده با اصلاح مهم</span></td><td>Open-Economy Macroeconomics / Resource Economics</td>
+    </tr>
+    <tr data-cat="Natural Resources &amp; Resource Economics" data-status="نیازمند تفکیک حقوقی و اقتصادی">
+      <td>18</td><td>۵</td><td><span class="module">نفت، انفال و بیماری هلندی</span></td>
+      <td class="fa">سهم انفال: پرداخت مستقیم یا یارانه پنهان؟</td><td><strong>The Share of Anfal: Direct Payment or Hidden Subsidy?</strong><br><span class="muted">Resource Rents / Transfers / Implicit Subsidies</span></td>
+      <td>«انفال» اصطلاحی حقوقی-دینی در زمینه ایران است و ترجمه انگلیسی واحد ندارد؛ برای تحلیل اقتصادی بهتر است از resource rents، public resource revenues و transfers استفاده شود.</td><td><span class="status">نیازمند تفکیک حقوقی و اقتصادی</span></td><td>Resource Economics / Public Finance</td>
+    </tr>
+    <tr data-cat="Personal Finance &amp; Financial Literacy" data-status="تأییدشده">
+      <td>19</td><td>۶</td><td><span class="module">حساب‌وکتاب خودت</span></td>
+      <td class="fa">چگونه بودجه‌بندی کنم؟</td><td><strong>How Do I Make a Budget?</strong><br><span class="muted">Personal Budgeting</span></td>
+      <td>بودجه شخصی یعنی برنامه‌ریزی جریان درآمد و مخارج، همراه با هدف پس‌انداز، صندوق اضطراری و مدیریت ریسک.</td><td><span class="status">تأییدشده</span></td><td>Personal Finance</td>
+    </tr>
+    <tr data-cat="Personal Finance &amp; Financial Literacy" data-status="تأییدشده با اصلاح">
+      <td>20</td><td>۶</td><td><span class="module">حساب‌وکتاب خودت</span></td>
+      <td class="fa">بدهی چیست و چگونه آدم را به دام می‌اندازد؟</td><td><strong>What Is Debt and How Can It Become a Trap?</strong><br><span class="muted">Debt Management / Debt Trap</span></td>
+      <td>بدهی خودبه‌خود بد نیست؛ مسئله اصلی هزینه تأمین مالی، نسبت خدمت بدهی به درآمد، سررسید، ریسک درآمد و امکان بازپرداخت است.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Personal Finance / Credit Risk</td>
+    </tr>
+    <tr data-cat="Personal Finance &amp; Financial Literacy" data-status="تأییدشده">
+      <td>21</td><td>۶</td><td><span class="module">حساب‌وکتاب خودت</span></td>
+      <td class="fa">چگونه کلاهبرداری را تشخیص دهم؟</td><td><strong>How Can I Recognize a Scam?</strong><br><span class="muted">Fraud Detection / Scam Red Flags</span></td>
+      <td>نشانه‌هایی مانند وعده بازده تضمینی، فشار برای اقدام فوری، پیشنهاد ناخواسته و درخواست روش پرداخت غیرقابل‌برگشت، از هشدارهای معتبر ضدتقلب‌اند.</td><td><span class="status">تأییدشده</span></td><td>Financial Literacy / Fraud Prevention</td>
+    </tr>
+    <tr data-cat="Integrated Economic Thinking" data-status="نیازمند نام‌گذاری دقیق">
+      <td>22</td><td>۷</td><td><span class="module">جمع‌بندی، همه‌چیز کنار هم</span></td>
+      <td class="fa">پنج قاعده به‌علاوه یک، و مثلث طلایی ایران</td><td><strong>Five Plus One Rules &amp; Iran’s Golden Triangle</strong><br><span class="muted">Integrated Economic Principles</span></td>
+      <td>عنوان بومی و آموزشی است و معادل انگلیسیِ استاندارد و تثبیت‌شده‌ای ندارد؛ بهتر است در انگلیسی به‌عنوان یک framework محلی نگه داشته شود، نه یک نظریه استاندارد اقتصاد.</td><td><span class="status">نیازمند نام‌گذاری دقیق</span></td><td>Economic Reasoning / Iran Context</td>
+    </tr>
+    <tr data-cat="Money, Banking &amp; Monetary Theory" data-status="تأییدشده با اصلاح">
+      <td>23</td><td>۸</td><td><span class="module">برای کنجکاوترها</span></td>
+      <td class="fa">پولِ تازه از کجا می‌آید</td><td><strong>Where Does New Money Come From?</strong><br><span class="muted">Money Creation &amp; Monetary Aggregates</span></td>
+      <td>پرسش به‌درستی به خلق پول مربوط است؛ باید میان پول بانک مرکزی، سپرده‌های بانکی و خلق/امحای پول از طریق وام و بازپرداخت تفکیک شود.</td><td><span class="status">تأییدشده با اصلاح</span></td><td>Monetary Economics / Banking</td>
+    </tr></tbody>
+  </table>
+  </div>
+</section>
+
+<section class="card">
+<h2>نقشه مفهومی پیشنهادی</h2>
+<ol>
+<li><strong>Money & Microeconomics:</strong> پول ← کمیابی و انتخاب ← عرضه/تقاضا ← قیمت.</li>
+<li><strong>Inflation & Purchasing Power:</strong> تورم ← قدرت خرید ← بازده واقعی ← نرخ ارز.</li>
+<li><strong>Banking & Monetary Policy:</strong> بانک‌ها ← خلق سپرده ← نرخ بهره ← بانک مرکزی.</li>
+<li><strong>Public Finance:</strong> مالیات ← GDP ← مخارج عمومی ← معافیت/مشوق مالیاتی.</li>
+<li><strong>Resource Economics:</strong> نفت و رانت منابع ← ورود ارز ← نرخ واقعی ارز ← Dutch Disease.</li>
+<li><strong>Personal Finance:</strong> بودجه ← بدهی ← بازده/ریسک ← تشخیص کلاهبرداری.</li>
+</ol>
+<p>این ترتیب از نظر آموزشی یک مسیر بهتر از حفظ کردن واژه‌ها می‌سازد: <strong>Micro → Money → Macro → Public Finance → Resources → Personal Finance</strong>.</p>
+</section>
+
+<section class="card">
+<h2>منابع اعتبارسنجی</h2>
+<ul><li><a href="https://school.kalleh.com/lessons.html" target="_blank" rel="noopener">مدرسه الفبای اقتصاد – فهرست درس‌ها</a></li><li><a href="https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy" target="_blank" rel="noopener">Bank of England – Money creation in the modern economy</a></li><li><a href="https://www.bankofengland.co.uk/explainers/how-is-money-created" target="_blank" rel="noopener">Bank of England – How is money created?</a></li><li><a href="https://data.ecb.europa.eu/methodology/what-are-interest-rates" target="_blank" rel="noopener">ECB – What are interest rates?</a></li><li><a href="https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/inflation" target="_blank" rel="noopener">IMF – Inflation: Prices on the Rise</a></li><li><a href="https://www.imf.org/en/publications/fandd/issues/series/back-to-basics/dutch-disease" target="_blank" rel="noopener">IMF – Dutch Disease: Wealth Managed Unwisely</a></li><li><a href="https://databank.worldbank.org/metadataglossary/africa-development-indicators/series/NY.GDP.MKTP.KD" target="_blank" rel="noopener">World Bank – GDP definition</a></li><li><a href="https://www.oecd.org/content/dam/oecd/en/publications/reports/2010/01/tax-expenditures-in-oecd-countries_g1ghbcaf/9789264076907-en.pdf" target="_blank" rel="noopener">OECD – Tax Expenditures in OECD Countries</a></li><li><a href="https://www.investor.gov/protect-your-investments/fraud/how-avoid-fraud/red-flags-investment-fraud-checklist" target="_blank" rel="noopener">Investor.gov – Red Flags of Investment Fraud</a></li><li><a href="https://consumer.ftc.gov/consumer-alerts/2025/03/what-are-signs-scam" target="_blank" rel="noopener">FTC – What are the signs of a scam?</a></li><li><a href="https://www.bankofengland.co.uk/explainers/who-sets-exchange-rates" target="_blank" rel="noopener">Bank of England – Who sets exchange rates?</a></li></ul>
+</section>
+
+<footer>
+منبع اولیه فهرست درس‌ها: مدرسه الفبای اقتصاد. تاریخ تهیه این نسخه: ۲۰۲۶-۰۸-۲۰.
+</footer>
+</main>
+<script>
+const rows=[...document.querySelectorAll("#tbl tbody tr")];
+const cats=[...new Set(rows.map(r=>r.dataset.cat))];
+const cat=document.getElementById("cat");
+cats.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;cat.appendChild(o)});
+
+function filterRows(){
+ const q=document.getElementById("q").value.trim().toLowerCase();
+ const c=cat.value;
+ const s=document.getElementById("statusFilter").value;
+ let n=0;
+ rows.forEach(r=>{
+   const text=r.innerText.toLowerCase();
+   const ok=(!q||text.includes(q))&&(!c||r.dataset.cat===c)&&(!s||r.dataset.status===s);
+   r.style.display=ok?"":"none"; if(ok)n++;
+ });
+}
+</script>
+</body>
+</html>
