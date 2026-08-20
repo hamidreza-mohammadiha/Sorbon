@@ -287,8 +287,8 @@
             display: block;
         }
         #contribChart {
-            width: 100%;
-            height: 300px;
+            width: 120%;
+            height: 440px;
             display: block;
         }
         .legend {
@@ -616,7 +616,7 @@
                         <div class="title" style="margin:0;font-size:15px;">📊 Total Contribution <span class="sub" id="contribLabel">vs Price</span></div>
                         <span class="badge" id="contribCount">0 points</span>
                     </div>
-                    <div class="chartbox" id="contribChartbox">
+                    <div class="contrib-chartbox" id="contribChartbox">
                         <div class="contrib-empty" id="contribEmpty"><div style="font-size:36px;opacity:.35">📈</div><strong>No contribution data</strong><div>Plot a SKU with a fixed cost to see the contribution curve.</div></div>
                         <svg id="contribChart" viewBox="0 0 600 300" preserveAspectRatio="none" style="display:none"></svg>
                     </div>
@@ -974,10 +974,10 @@
             let lx = legX + 12,
                 ly = legY + 18;
             const quarterLabels = {
-                'Q1': '&nbsp; January – March',
-                'Q2': '&nbsp; April – June',
-                'Q3': '&nbsp; July – September',
-                'Q4': '&nbsp; October – December'
+                'Q1': ' Jan – Mar',
+                'Q2': ' Apr – Jun',
+                'Q3': ' Jul – Sep',
+                'Q4': ' Oct – Dec'
             };
             for (const [q, col] of Object.entries(quarterColors)) {
                 const label = quarterLabels[q] || q;
