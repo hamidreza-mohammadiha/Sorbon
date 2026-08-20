@@ -287,7 +287,7 @@
             display: block;
         }
         #contribChart {
-            width: 120%;
+            width: 100%;
             height: 440px;
             display: block;
         }
@@ -398,7 +398,7 @@
             border: 1px solid #edf1f6;
             border-radius: 12px;
             padding: 8px;
-            min-height: 300px;
+            min-height: 330px;
             position: relative;
         }
         .contrib-empty {
@@ -970,7 +970,7 @@
             // --- quarter legend inside chart (top-right) with month ranges ---
             const legX = W - 210,
                 legY = T + 10;
-            add('rect', { x: legX, y: legY, width: 195, height: 105, fill: 'white', stroke: '#ccc', rx: 6 });
+            add('rect', { x: legX, y: legY, height: 105, fill: 'white', stroke: '#ccc', rx: 6 });
             let lx = legX + 12,
                 ly = legY + 18;
             const quarterLabels = {
