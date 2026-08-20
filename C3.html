@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Revenue Management — Contribution Analysis</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --navy: #0b1a2e;
+            --blue: #1a3a5c;
+            --light: #eef3fa;
+            --border: #d8e0eb;
+            --muted: #6a7a8e;
+            --green: #1e7a3e;
+            --red: #b53b3b;
+            --orange: #c97d2b;
+        }
+        body {
+            font-family: Segoe UI, Roboto, system-ui, sans-serif;
+            background: #f4f7fc;
+            color: #1a2634;
+            padding: 18px;
+        }
+        .app {
+            max-width: 1450px;
+            margin: auto;
+        }
+        .header {
+            background: linear-gradient(145deg, #0b1a2e, #1a3a5c);
+            color: #fff;
+            padding: 18px 24px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 28px rgba(0, 20, 40, .25);
+        }
+        .header h1 {
+            font-size: 23px;
+            font-weight: 650;
+        }
+        .header small {
+            opacity: .7;
+            font-weight: 400;
+        }
+        .status {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            font-size: 13px;
+            opacity: .9;
+        }
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #4ade80;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .05);
+        }
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 13px;
+            font-weight: 650;
+            color: var(--navy);
+        }
+        .step {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .sub {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 400;
+        }
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        @media(max-width:850px) {
+            .grid2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+        input[type=text],
+        input[type=number],
+        select {
+            padding: 8px 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: #fafcff;
+            outline: none;
+        }
+        input[type=text]:focus,
+        input[type=number]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--blue);
+        }
+        input[type=number] {
+            width: 120px;
+        }
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 13px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: .15s;
+        }
+        .btn:hover {
+            opacity: .85;
+        }
+        .primary {
+            background: var(--blue);
+            color: white;
+        }
+        .success {
+            background: var(--green);
+            color: #fff;
+        }
+        .outline {
+            background: #fff;
+            color: var(--blue);
+            border: 2px solid var(--border);
+        }
+        .danger {
+            background: var(--red);
+            color: #fff;
+        }
+        .file {
+            display: none;
+        }
+        .filelabel {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--light);
+            border: 2px solid var(--border);
+            padding: 7px 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: .15s;
+        }
+        .filelabel:hover {
+            background: #e4ebf5;
+        }
+        textarea {
+            width: 100%;
+            min-height: 125px;
+            resize: vertical;
+            border: 2px solid var(--border);
+            border-radius: 9px;
+            padding: 10px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            background: #fafcff;
+        }
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+        .hint code {
+            background: #f0f3f8;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .tablewrap {
+            max-height: 330px;
+            overflow: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th {
+            position: sticky;
+            top: 0;
+            background: var(--light);
+            z-index: 2;
+            padding: 8px 9px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+        td {
+            padding: 6px 9px;
+            border-bottom: 1px solid #edf1f6;
+            white-space: nowrap;
+            max-width: 260px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: Consolas, monospace;
+        }
+        .skuRow {
+            display: grid;
+            grid-template-columns: minmax(200px, 1.5fr) 160px 130px auto auto;
+            gap: 10px;
+            align-items: center;
+        }
+        @media(max-width:800px) {
+            .skuRow {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .stats {
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e8edf3;
+        }
+        .stat {
+            font-size: 13px;
+        }
+        .stat b {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .stat span {
+            font-weight: 750;
+            color: var(--blue);
+            font-size: 16px;
+        }
+        .chartbox {
+            background: #fafcff;
+            border: 1px solid #edf1f6;
+            border-radius: 12px;
+            padding: 8px;
+            min-height: 440px;
+            position: relative;
+        }
+        #chart {
+            width: 100%;
+            height: 430px;
+            display: block;
+        }
+        #contribChart {
+            width: 100%;
+            height: 300px;
+            display: block;
+        }
+        .legend {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #44566c;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .swatch {
+            display: inline-block;
+            width: 22px;
+            height: 3px;
+            vertical-align: middle;
+            margin-right: 5px;
+            border-radius: 2px;
+        }
+        .swatch-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+        }
+        .empty {
+            height: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--muted);
+            flex-direction: column;
+            gap: 8px;
+        }
+        .empty strong {
+            color: #2a3a4e;
+            font-size: 17px;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: var(--blue);
+            color: white;
+            padding: 11px 18px;
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: .25s;
+            pointer-events: none;
+            z-index: 20;
+            box-shadow: 0 7px 25px rgba(0, 0, 0, .2);
+            max-width: 420px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: none;
+        }
+        .toast.error {
+            background: var(--red);
+        }
+        .toast.success {
+            background: var(--green);
+        }
+        .badge {
+            font-size: 12px;
+            background: #f2f5f9;
+            border-radius: 20px;
+            padding: 5px 10px;
+            color: #53657a;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge input[type="checkbox"] {
+            margin-right: 2px;
+            accent-color: var(--blue);
+        }
+        footer {
+            text-align: center;
+            color: #8a9aae;
+            font-size: 12px;
+            padding: 8px;
+        }
+        .chart-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+        }
+        @media(max-width:900px) {
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .contrib-chartbox {
+            background: #fafcff;
+            border: 1px solid #edf1f6;
+            border-radius: 12px;
+            padding: 8px;
+            min-height: 300px;
+            position: relative;
+        }
+        .contrib-empty {
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--muted);
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+        }
+        .contrib-empty strong {
+            color: #2a3a4e;
+            font-size: 16px;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .cost-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--navy);
+        }
+        .cost-input input {
+            width: 110px;
+            padding: 6px 8px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: #fafcff;
+            font-weight: 600;
+        }
+        .cost-input input:focus {
+            border-color: var(--blue);
+        }
+        .contrib-stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e8edf3;
+            font-size: 13px;
+        }
+        .contrib-stats .cs-item b {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .contrib-stats .cs-item span {
+            font-weight: 750;
+            color: var(--orange);
+            font-size: 15px;
+        }
+        .contrib-tag {
+            background: var(--orange);
+            color: #fff;
+            border-radius: 12px;
+            padding: 2px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+        .fixed-cost-label {
+            font-weight: 600;
+            color: var(--navy);
+        }
+        .quarter-legend {
+            display: inline-flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #334;
+        }
+        .ql-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .ql-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1>📈 Revenue Management Lab <small>· contribution analysis</small></h1>
+            <div class="status">
+                <span><i class="dot"></i>Local / client-side</span>
+                <span id="recordCount">0 records</span>
+                <span id="skuCount">0 SKUs</span>
+            </div>
+        </header>
+
+        <!-- STEP 1: PRICING DATA -->
+        <section class="card">
+            <div class="title"><span class="step">1</span> Pricing Data</div>
+            <div class="toolbar">
+                <div class="controls">
+                    <label class="filelabel" for="jsonFile">📤 Load pricing_data JSON</label>
+                    <input class="file" id="jsonFile" type="file" accept=".json,application/json" />
+                    <button class="btn outline" id="applyJson">Apply pasted JSON</button>
+                    <button class="btn outline" id="downloadJson">Download current JSON</button>
+                    <span class="badge" id="fileName">embedded pricing_data</span>
+                </div>
+            </div>
+            <textarea id="pricingInput" spellcheck="false"></textarea>
+            <div class="hint">
+                Expected format: array of arrays
+                <code>[material, desc, uom, zd00, zd04, zd01, zd05, zd02, zd03, valid_from, valid_to]</code>.
+                The HTML contains the supplied <b>pricing_data</b> as its initial input; replace it or load another JSON file.
+            </div>
+        </section>
+
+        <!-- STEP 2: PRICING RECORDS -->
+        <section class="card">
+            <div class="title"><span class="step">2</span> Pricing Records <span class="sub">read-only view of pricing_data</span></div>
+            <div class="tablewrap">
+                <table>
+                    <thead>
+                        <tr><th>#</th><th>Material</th><th>Description</th><th>UOM</th><th>ZD00</th><th>ZD04</th><th>ZD01</th><th>ZD05</th><th>ZD02</th><th>ZD03</th><th>Valid From</th><th>Valid To</th></tr>
+                    </thead>
+                    <tbody id="pricingBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- STEP 3 & 4: SALES + DISCOUNT -->
+        <section class="grid2">
+            <section class="card">
+                <div class="title"><span class="step">3</span> Sales Data (kg) <button class="btn outline" id="resetSales" style="margin-left:auto">↺ reset</button></div>
+                <textarea id="salesInput"></textarea>
+                <div class="hint">Month + 2023 + 2024 + 2025 + 2026. Tab or 2+ spaces separated.</div>
+            </section>
+            <section class="card">
+                <div class="title"><span class="step">4</span> Discount Data (%) <button class="btn outline" id="resetDiscount" style="margin-left:auto">↺ reset</button></div>
+                <textarea id="discountInput"></textarea>
+                <div class="hint">Discount is applied as effective price = selected price × (1 − discount / 100).</div>
+            </section>
+        </section>
+
+        <!-- STEP 5: SKU, PRICE CONDITION & FIXED COST -->
+        <section class="card">
+            <div class="title"><span class="step">5</span> SKU &amp; Price Condition <span class="sub">with fixed cost per unit</span></div>
+            <div class="skuRow">
+                <select id="skuSelect"></select>
+                <select id="priceCondition">
+                    <option value="zd00">ZD00 — List price</option>
+                    <option value="zd04">ZD04</option>
+                    <option value="zd01">ZD01</option>
+                    <option value="zd05">ZD05</option>
+                    <option value="zd02">ZD02</option>
+                    <option value="zd03">ZD03</option>
+                </select>
+                <div class="cost-input">
+                    <span class="fixed-cost-label">Cost/unit</span>
+                    <input type="number" id="fixedCost" value="800000" step="1000" min="0" />
+                </div>
+                <button class="btn primary" id="plotBtn">📊 Plot</button>
+                <button class="btn outline" id="clearBtn">✕ Clear</button>
+            </div>
+            <div class="hint" id="skuInfo">Select a SKU, pricing condition, and set the fixed cost per unit.</div>
+        </section>
+
+        <!-- STEP 6: PRICE-RESPONSE + CONTRIBUTION (side by side) -->
+        <section class="card">
+            <div class="chart-row">
+                <!-- left: price-response -->
+                <div>
+                    <div class="flex-between" style="margin-bottom:8px;">
+                        <div class="title" style="margin:0;"><span class="step">6a</span> Price-Response <span class="sub" id="chartLabel"></span></div>
+                        <div class="legend">
+                            <span><i class="swatch" style="background:#1a3a5c"></i>Linear trend</span>
+                            <span class="quarter-legend">
+                                <span class="ql-item"><span class="ql-dot" style="background:#999;"></span>Q1</span>
+                                <span class="ql-item"><span class="ql-dot" style="background:#2ecc71;"></span>Q2</span>
+                                <span class="ql-item"><span class="ql-dot" style="background:#e74c3c;"></span>Q3</span>
+                                <span class="ql-item"><span class="ql-dot" style="background:#f1c40f;"></span>Q4</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="controls" style="margin-bottom:9px;gap:14px;">
+                        <label class="badge"><input type="checkbox" id="showLinear" checked /> Linear trend</label>
+                        <span style="font-size:11px;color:var(--muted);margin-left:4px;">(50‑point curve)</span>
+                    </div>
+                    <div class="chartbox" id="chartbox">
+                        <div class="empty" id="empty"><div style="font-size:42px;opacity:.35">📊</div><strong>No data plotted</strong><div>Load pricing_data, enter sales/discount data, select a SKU, then plot.</div></div>
+                        <svg id="chart" viewBox="0 0 1000 430" preserveAspectRatio="none" style="display:none"></svg>
+                    </div>
+                    <div class="stats">
+                        <div class="stat"><b>POINTS</b><span id="statPoints">—</span></div>
+                        <div class="stat"><b>PRICE RANGE</b><span id="statPrice">—</span></div>
+                        <div class="stat"><b>SALES RANGE</b><span id="statSales">—</span></div>
+                        <div class="stat"><b>CORR (price)</b><span id="statCorr">—</span></div>
+                    </div>
+                </div>
+
+                <!-- right: contribution line chart -->
+                <div>
+                    <div class="flex-between" style="margin-bottom:8px;">
+                        <div class="title" style="margin:0;font-size:15px;">📊 Total Contribution <span class="sub" id="contribLabel">vs Price</span></div>
+                        <span class="badge" id="contribCount">0 points</span>
+                    </div>
+                    <div class="contrib-chartbox" id="contribChartbox">
+                        <div class="contrib-empty" id="contribEmpty"><div style="font-size:36px;opacity:.35">📈</div><strong>No contribution data</strong><div>Plot a SKU with a fixed cost to see the contribution curve.</div></div>
+                        <svg id="contribChart" viewBox="0 0 600 300" preserveAspectRatio="none" style="display:none"></svg>
+                    </div>
+                    <div class="contrib-stats" id="contribStats">
+                        <div class="cs-item"><b>Peak Contribution</b><span id="contribPeak">—</span></div>
+                        <div class="cs-item"><b>Optimal Price</b><span id="contribOptPrice">—</span></div>
+                        <div class="cs-item"><b>Fixed Cost</b><span id="contribFixedCost">—</span></div>
+                        <div class="cs-item"><b>Avg. Contribution</b><span id="contribAvg">—</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>Revenue Management Lab · standalone HTML · pricing_data is the single pricing source</footer>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        /* =========================================================
+           pricing_data INPUT
+           Format:
+           [material, desc, uom, zd00, zd04, zd01, zd05, zd02, zd03, valid_from, valid_to]
+           ========================================================= */
+        const pricing_data = [
+            [
+                "30000581",
+                "شکلات سکه اي دارک 20 % سوربن 3.5 کيلویی",
+                "PC",
+                1547123,
+                1686364,
+                1701836,
+                1855001,
+                1923073,
+                2096100,
+                "2020-10-27",
+                "2021-02-16"
+            ]
+        ];
+        const DEFAULT_SALES =
+            "Jan\t2329\t2970\t4981\t2294\nFeb\t3067\t4118\t4814\t1899\nMar\t2210\t2049\t1345\t1481\nApr\t1189\t3374\t2019\t2788\nMay\t1812\t2448\t2457\t1875\nJun\t1156\t1392\t1297\t1408\nJul\t1611\t1213\t2092\t2113\nAug\t1522\t1628\t2594\t2155\nSep\t2087\t2294\t3259\t\nOct\t2268\t2232\t3675\t\nNov\t2287\t3862\t4489\t\nDec\t2440\t4730\t5211\t";
+        const DEFAULT_DISCOUNT =
+            "Jan\t6.4\t7.8\t9.8\t5.8\nFeb\t6.0\t8.8\t8.4\t5.7\nMar\t5.2\t6.7\t3.3\t4.1\nApr\t5.6\t8.7\t8.1\t6.3\nMay\t5.4\t8.4\t7.2\t7.2\nJun\t5.7\t7.6\t4.9\t5.6\nJul\t4.6\t6.0\t7.1\t9.8\nAug\t6.5\t7.6\t7.1\t9.0\nSep\t6.9\t8.4\t8.9\t\nOct\t9.0\t7.4\t8.4\t\nNov\t8.0\t8.9\t8.0\t\nDec\t6.6\t9.0\t8.0\t";
+        const PRICE_KEYS = ['zd00', 'zd04', 'zd01', 'zd05', 'zd02', 'zd03'];
+        const PRICE_LABELS = { zd00: 'ZD00 — List price', zd04: 'ZD04', zd01: 'ZD01', zd05: 'ZD05', zd02: 'ZD02',
+        zd03: 'ZD03' };
+
+        // Quarter color mapping
+        const quarterColors = {
+            'Q1': '#999',      // gray
+            'Q2': '#2ecc71',   // green
+            'Q3': '#e74c3c',   // red
+            'Q4': '#f1c40f'    // yellow
+        };
+        const monthToQuarter = {
+            'Jan':'Q1','Feb':'Q1','Mar':'Q1',
+            'Apr':'Q2','May':'Q2','Jun':'Q2',
+            'Jul':'Q3','Aug':'Q3','Sep':'Q3',
+            'Oct':'Q4','Nov':'Q4','Dec':'Q4'
+        };
+        function getQuarter(month) { return monthToQuarter[month] || 'Q1'; }
+
+        let data = normalize(pricing_data),
+            chartPoints = null,
+            currentSku = null,
+            currentFixedCost = 800000;
+
+        const $ = id => document.getElementById(id);
+        const els = {
+            pricingBody: $('pricingBody'),
+            recordCount: $('recordCount'),
+            skuCount: $('skuCount'),
+            pricingInput: $('pricingInput'),
+            salesInput: $('salesInput'),
+            discountInput: $('discountInput'),
+            skuSelect: $('skuSelect'),
+            priceCondition: $('priceCondition'),
+            fixedCost: $('fixedCost'),
+            plotBtn: $('plotBtn'),
+            clearBtn: $('clearBtn'),
+            chart: $('chart'),
+            empty: $('empty'),
+            chartLabel: $('chartLabel'),
+            skuInfo: $('skuInfo'),
+            showLinear: $('showLinear'),
+            statPoints: $('statPoints'),
+            statPrice: $('statPrice'),
+            statSales: $('statSales'),
+            statCorr: $('statCorr'),
+            toast: $('toast'),
+            fileName: $('fileName'),
+            contribChart: $('contribChart'),
+            contribEmpty: $('contribEmpty'),
+            contribLabel: $('contribLabel'),
+            contribCount: $('contribCount'),
+            contribPeak: $('contribPeak'),
+            contribOptPrice: $('contribOptPrice'),
+            contribFixedCost: $('contribFixedCost'),
+            contribAvg: $('contribAvg'),
+            contribStats: $('contribStats'),
+            contribChartbox: $('contribChartbox'),
+        };
+
+        function normalize(rows) {
+            if (!Array.isArray(rows)) throw new Error('pricing_data must be an array');
+            return rows.filter(r => Array.isArray(r) && r.length >= 11 && String(r[0] || '').trim()).map((r, i) => ({
+                id: i + 1,
+                material: String(r[0]).trim(),
+                description: String(r[1] || '').trim(),
+                uom: String(r[2] || 'PC').trim(),
+                zd00: num(r[3]),
+                zd04: num(r[4]),
+                zd01: num(r[5]),
+                zd05: num(r[6]),
+                zd02: num(r[7]),
+                zd03: num(r[8]),
+                valid_from: dateText(r[9]),
+                valid_to: dateText(r[10])
+            }));
+        }
+
+        function num(v) { const n = Number(v); return Number.isFinite(n) ? n : 0 }
+
+        function dateText(v) { if (v == null || v === '') return ''; if (v instanceof Date) return v.toISOString().slice(0,
+            10); return String(v).slice(0, 10) }
+
+        function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;',
+                '"': '&quot;', "'": '&#39;' } [c])) }
+
+        function toast(msg, type = 'info') {
+            els.toast.textContent = msg;
+            els.toast.className = 'toast show ' + type;
+            clearTimeout(toast.t);
+            toast.t = setTimeout(() => els.toast.className = 'toast', 3000);
+        }
+
+        function render() {
+            els.pricingInput.value = JSON.stringify(data.map(r => [r.material, r.description, r.uom, r.zd00, r.zd04, r.zd01,
+                r.zd05, r.zd02, r.zd03, r.valid_from, r.valid_to
+            ]), null, 2);
+            els.recordCount.textContent = data.length + ' records';
+            els.skuCount.textContent = new Set(data.map(r => r.material)).size + ' SKUs';
+            els.pricingBody.innerHTML = data.map((r, i) =>
+                `<tr>
+              <td>${i+1}</td><td><b>${esc(r.material)}</b></td><td title="${esc(r.description)}">${esc(r.description)}</td><td>${esc(r.uom)}</td>
+              <td>${r.zd00.toLocaleString()}</td><td>${r.zd04.toLocaleString()}</td><td>${r.zd01.toLocaleString()}</td>
+              <td>${r.zd05.toLocaleString()}</td><td>${r.zd02.toLocaleString()}</td><td>${r.zd03.toLocaleString()}</td>
+              <td>${esc(r.valid_from)}</td><td>${esc(r.valid_to)}</td></tr>`
+            ).join('') || '<tr><td colspan="12" style="text-align:center;padding:25px">No pricing records.</td></tr>';
+            const old = els.skuSelect.value;
+            const skus = [...new Set(data.map(r => r.material))].sort();
+            els.skuSelect.innerHTML = skus.map(s =>
+                `<option value="${esc(s)}">${esc(s)} — ${esc((data.find(r=>r.material===s)||{}).description||'')}</option>`
+                ).join('');
+            if (skus.includes(old)) els.skuSelect.value = old;
+            else if (skus.length) els.skuSelect.value = skus[0];
+            updateSkuInfo();
+        }
+
+        function updateSkuInfo() {
+            const sku = els.skuSelect.value,
+                rows = data.filter(r => r.material === sku);
+            els.skuInfo.textContent = sku ? `${rows.length} pricing records · ${(rows[0]?.description||sku)}` :
+                'No SKU selected.';
+        }
+
+        function parseTable(text) {
+            const values = {},
+                months = [],
+                years = [2023, 2024, 2025, 2026];
+            for (const line of text.split(/\r?\n/).filter(x => x.trim())) {
+                const p = line.trim().split(/\t|\s{2,}/).map(x => x.trim()).filter(Boolean);
+                if (p.length < 2) continue;
+                const month = p[0];
+                months.push(month);
+                values[month] = {};
+                for (let i = 1; i <= 4; i++) {
+                    const v = parseFloat((p[i] || '').replace(/,/g, '').replace('%', ''));
+                    values[month][years[i - 1]] = Number.isFinite(v) ? v : null;
+                }
+            }
+            return months.length ? { months, years, values } : null;
+        }
+        const monthNo = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11,
+            Dec: 12 };
+
+        function getPrice(sku, year, month, key) {
+            const t = new Date(year, month - 1, 15).getTime();
+            const rows = data.filter(r => r.material === sku);
+            for (const r of rows) {
+                const from = r.valid_from ? new Date(r.valid_from).getTime() : -Infinity;
+                const to = r.valid_to ? new Date(r.valid_to).getTime() : Infinity;
+                if (t >= from && t <= to && r[key] > 0) return r[key];
+            }
+            return null;
+        }
+
+        function compute(sku, key) {
+            const sales = parseTable(els.salesInput.value),
+                disc = parseTable(els.discountInput.value);
+            if (!sales || !disc) return [];
+            const pts = [];
+            for (const month of sales.months) {
+                for (const year of sales.years) {
+                    const s = sales.values[month]?.[year],
+                        d = disc.values[month]?.[year];
+                    if (!(s > 0) || d == null || !Number.isFinite(d)) continue;
+                    const p = getPrice(sku, year, monthNo[month], key);
+                    if (!(p > 0)) continue;
+                    pts.push({ month, year, sales: s, discount: d, listPrice: p, effectivePrice: p * (1 - d / 100) });
+                }
+            }
+            return pts.sort((a, b) => a.effectivePrice - b.effectivePrice);
+        }
+
+        function corr(x, y) {
+            if (x.length < 2) return null;
+            let sx = 0,
+                sy = 0,
+                sxy = 0,
+                sx2 = 0,
+                sy2 = 0,
+                n = x.length;
+            for (let i = 0; i < n; i++) { sx += x[i];
+                sy += y[i];
+                sxy += x[i] * y[i];
+                sx2 += x[i] * x[i];
+                sy2 += y[i] * y[i]; }
+            const den = Math.sqrt((n * sx2 - sx * sx) * (n * sy2 - sy * sy));
+            return den ? ((n * sxy - sx * sy) / den) : null;
+        }
+
+        function reg(x, y) {
+            if (x.length < 2) return null;
+            let sx = 0,
+                sy = 0,
+                sxy = 0,
+                sx2 = 0,
+                n = x.length;
+            for (let i = 0; i < n; i++) { sx += x[i];
+                sy += y[i];
+                sxy += x[i] * y[i];
+                sx2 += x[i] * x[i]; }
+            const den = n * sx2 - sx * sx;
+            if (!den) return null;
+            const b = (n * sxy - sx * sy) / den;
+            return { a: (sy - b * sx) / n, b };
+        }
+
+        function fmt(v) {
+            if (v == null || !Number.isFinite(v)) return '—';
+            return v >= 1e6 ? (v / 1e6).toFixed(2) + 'M' : v >= 1e3 ? (v / 1e3).toFixed(0) + 'K' : v.toFixed(0);
+        }
+
+        function resetStats() {
+            ['statPoints', 'statPrice', 'statSales', 'statCorr'].forEach(id => $(id).textContent = '—');
+        }
+
+        function linePath(xs, ys, X, Y) {
+            return xs.map((x, i) => (i ? 'L' : 'M') + X(x).toFixed(1) + ',' + Y(ys[i]).toFixed(1)).join(' ');
+        }
+
+        // ---------- draw main price-response chart ----------
+        function drawChart(sku, pts) {
+            const svg = els.chart;
+            const empty = els.empty;
+            if (!pts || pts.length < 3) {
+                empty.style.display = 'flex';
+                svg.style.display = 'none';
+                svg.innerHTML = '';
+                resetStats();
+                els.chartLabel.textContent = '';
+                drawContribution([]);
+                return;
+            }
+            empty.style.display = 'none';
+            svg.style.display = 'block';
+            svg.innerHTML = '';
+
+            const W = 1000,
+                H = 430,
+                L = 78,
+                R = 28,
+                T = 24,
+                B = 55,
+                pw = W - L - R,
+                ph = H - T - B;
+            const xs = pts.map(p => p.effectivePrice),
+                ys = pts.map(p => p.sales);
+            const minX = Math.min(...xs),
+                maxX = Math.max(...xs),
+                minY = Math.min(...ys),
+                maxY = Math.max(...ys);
+            const padX = (maxX - minX || 1) * .08,
+                padY = (maxY - minY || 1) * .12;
+            const x0 = minX - padX,
+                x1 = maxX + padX,
+                y0 = Math.max(0, minY - padY),
+                y1 = maxY + padY;
+            const X = v => L + (v - x0) / (x1 - x0) * pw;
+            const Y = v => T + ph - (v - y0) / (y1 - y0) * ph;
+
+            const add = (tag, attrs, text) => {
+                const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+                Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+                if (text != null) e.textContent = text;
+                svg.appendChild(e);
+                return e;
+            };
+
+            add('rect', { x: 0, y: 0, width: W, height: H, fill: '#fafcff' });
+
+            // grid & axes
+            for (let i = 0; i <= 5; i++) {
+                const xv = x0 + (x1 - x0) * i / 5,
+                    yv = y0 + (y1 - y0) * i / 5;
+                add('line', { x1: X(xv), y1: T, x2: X(xv), y2: T + ph, stroke: '#e7edf5' });
+                add('line', { x1: L, y1: Y(yv), x2: W - R, y2: Y(yv), stroke: '#e7edf5' });
+                add('text', { x: X(xv), y: H - 24, 'text-anchor': 'middle', fill: '#64748b', 'font-size': 11 }, fmt(xv));
+                add('text', { x: L - 10, y: Y(yv) + 4, 'text-anchor': 'end', fill: '#64748b', 'font-size': 11 }, fmt(yv));
+            }
+            add('line', { x1: L, y1: T + ph, x2: W - R, y2: T + ph, stroke: '#8796aa' });
+            add('line', { x1: L, y1: T, x2: L, y2: T + ph, stroke: '#8796aa' });
+            add('text', { x: L + pw / 2, y: H - 5, 'text-anchor': 'middle', fill: '#334155', 'font-size': 13,
+                'font-weight': '600' }, 'Effective Price (per unit)');
+            add('text', { x: 17, y: T + ph / 2, transform: `rotate(-90 17 ${T+ph/2})`, 'text-anchor': 'middle',
+                fill: '#334155', 'font-size': 13, 'font-weight': '600' }, 'Sales (kg)');
+
+            // linear regression (only trend, no log)
+            if (els.showLinear.checked) {
+                const rr = reg(xs, ys);
+                if (rr) {
+                    const a = [x0, x1],
+                        b = a.map(v => rr.a + rr.b * v);
+                    add('path', { d: linePath(a, b, X, Y), fill: 'none', stroke: '#1a3a5c', 'stroke-width': 3 });
+                }
+            }
+
+            // --- scatter points with quarter colors ---
+            pts.forEach(p => {
+                const q = getQuarter(p.month);
+                const fillColor = quarterColors[q] || '#1a3a5c';
+                const c = add('circle', { cx: X(p.effectivePrice), cy: Y(p.sales), r: 6, fill: fillColor,
+                    stroke: '#fff', 'stroke-width': 2 });
+                const tt = add('title', {},
+                    `${p.month} ${p.year} · Price ${p.effectivePrice.toFixed(0)} · Sales ${p.sales.toFixed(0)} kg · Discount ${p.discount}% · ${q}`
+                    );
+                c.appendChild(tt);
+            });
+
+            // --- quarter legend inside chart (top-right) ---
+            const legX = W - 160,
+                legY = T + 10;
+            add('rect', { x: legX, y: legY, width: 145, height: 85, fill: 'white', stroke: '#ccc', rx: 6 });
+            let lx = legX + 10,
+                ly = legY + 18;
+            for (const [q, col] of Object.entries(quarterColors)) {
+                add('rect', { x: lx, y: ly - 6, width: 12, height: 12, fill: col, rx: 2 });
+                add('text', { x: lx + 18, y: ly + 4, 'font-size': 11, fill: '#334' }, q);
+                ly += 20;
+            }
+
+            // stats
+            const cCorr = corr(xs, ys);
+            els.statPoints.textContent = pts.length;
+            els.statPrice.textContent = fmt(minX) + ' – ' + fmt(maxX);
+            els.statSales.textContent = fmt(minY) + ' – ' + fmt(maxY);
+            els.statCorr.textContent = cCorr == null ? '—' : cCorr.toFixed(3);
+            els.chartLabel.textContent = `· ${sku} · ${PRICE_LABELS[els.priceCondition.value]}`;
+            els.skuInfo.textContent = `${pts.length} usable observations · ${data.filter(r=>r.material===sku).length} pricing records`;
+
+            // draw contribution chart with same data
+            drawContribution(pts);
+        }
+
+        // ---------- CONTRIBUTION LINE CHART ----------
+        function drawContribution(pts) {
+            const svg = els.contribChart;
+            const empty = els.contribEmpty;
+            const fixedCost = parseFloat(els.fixedCost.value) || 0;
+            currentFixedCost = fixedCost;
+
+            if (!pts || pts.length < 2) {
+                empty.style.display = 'flex';
+                svg.style.display = 'none';
+                svg.innerHTML = '';
+                els.contribCount.textContent = '0 points';
+                els.contribPeak.textContent = '—';
+                els.contribOptPrice.textContent = '—';
+                els.contribFixedCost.textContent = fmt(fixedCost);
+                els.contribAvg.textContent = '—';
+                els.contribLabel.textContent = 'vs Price (no data)';
+                return;
+            }
+
+            // compute contribution for each point: contribution = sales * (price - fixedCost)
+            const contribPoints = pts
+                .map(p => ({
+                    ...p,
+                    contribution: p.sales * (p.effectivePrice - fixedCost)
+                }))
+                .filter(p => p.effectivePrice > fixedCost) // only profitable points
+                .sort((a, b) => a.effectivePrice - b.effectivePrice);
+
+            if (contribPoints.length < 2) {
+                empty.style.display = 'flex';
+                svg.style.display = 'none';
+                svg.innerHTML = '';
+                els.contribCount.textContent = pts.length + ' pts (no profit)';
+                els.contribPeak.textContent = '—';
+                els.contribOptPrice.textContent = '—';
+                els.contribFixedCost.textContent = fmt(fixedCost);
+                els.contribAvg.textContent = '—';
+                els.contribLabel.textContent = 'vs Price (no profitable points)';
+                return;
+            }
+
+            empty.style.display = 'none';
+            svg.style.display = 'block';
+            svg.innerHTML = '';
+
+            const W = 600,
+                H = 300,
+                L = 58,
+                R = 20,
+                T = 20,
+                Bpad = 40,
+                pw = W - L - R,
+                ph = H - T - Bpad;
+
+            const xs = contribPoints.map(p => p.effectivePrice);
+            const ys = contribPoints.map(p => p.contribution);
+            const minX = Math.min(...xs),
+                maxX = Math.max(...xs);
+            const minY = Math.min(...ys),
+                maxY = Math.max(...ys);
+            const padX = (maxX - minX || 1) * .06;
+            const padY = (maxY - minY || 1) * .10;
+            const x0 = Math.max(0, minX - padX);
+            const x1 = maxX + padX;
+            const y0 = Math.max(0, minY - padY);
+            const y1 = maxY + padY;
+
+            const X = v => L + (v - x0) / (x1 - x0) * pw;
+            const Y = v => T + ph - (v - y0) / (y1 - y0) * ph;
+
+            const add = (tag, attrs, text) => {
+                const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+                Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+                if (text != null) e.textContent = text;
+                svg.appendChild(e);
+                return e;
+            };
+
+            add('rect', { x: 0, y: 0, width: W, height: H, fill: '#fafcff' });
+
+            // grid
+            for (let i = 0; i <= 5; i++) {
+                const xv = x0 + (x1 - x0) * i / 5,
+                    yv = y0 + (y1 - y0) * i / 5;
+                add('line', { x1: X(xv), y1: T, x2: X(xv), y2: T + ph, stroke: '#e7edf5' });
+                add('line', { x1: L, y1: Y(yv), x2: L + pw, y2: Y(yv), stroke: '#e7edf5' });
+                add('text', { x: X(xv), y: H - 20, 'text-anchor': 'middle', fill: '#64748b', 'font-size': 10 }, fmt(xv));
+                add('text', { x: L - 8, y: Y(yv) + 3, 'text-anchor': 'end', fill: '#64748b', 'font-size': 10 }, fmt(yv));
+            }
+            add('line', { x1: L, y1: T + ph, x2: L + pw, y2: T + ph, stroke: '#8796aa' });
+            add('line', { x1: L, y1: T, x2: L, y2: T + ph, stroke: '#8796aa' });
+            add('text', { x: L + pw / 2, y: H - 2, 'text-anchor': 'middle', fill: '#334155', 'font-size': 11,
+                'font-weight': '500' }, 'Effective Price');
+            add('text', { x: 14, y: T + ph / 2, transform: `rotate(-90 14 ${T+ph/2})`, 'text-anchor': 'middle',
+                fill: '#334155', 'font-size': 11, 'font-weight': '500' }, 'Total Contribution');
+
+            // --- draw connected line (polyline) ---
+            const ptsForLine = contribPoints.map(p => ({ x: X(p.effectivePrice), y: Y(p.contribution) }));
+            const d = ptsForLine.map((p, i) => (i ? 'L' : 'M') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+            add('path', { d, fill: 'none', stroke: '#c97d2b', 'stroke-width': 3, 'stroke-linejoin': 'round' });
+
+            // --- draw markers ---
+            contribPoints.forEach(p => {
+                const cx = X(p.effectivePrice),
+                    cy = Y(p.contribution);
+                const c = add('circle', { cx, cy, r: 5, fill: '#c97d2b', stroke: '#fff', 'stroke-width': 2 });
+                const tt = add('title', {},
+                    `${p.month} ${p.year} · Price ${p.effectivePrice.toFixed(0)} · Contribution ${p.contribution.toFixed(0)} · Sales ${p.sales.toFixed(0)}`
+                    );
+                c.appendChild(tt);
+            });
+
+            // --- stats ---
+            const peak = Math.max(...ys);
+            const peakIdx = ys.indexOf(peak);
+            const optPrice = xs[peakIdx];
+            const avg = ys.reduce((a, b) => a + b, 0) / ys.length;
+
+            els.contribCount.textContent = contribPoints.length + ' pts';
+            els.contribPeak.textContent = fmt(peak);
+            els.contribOptPrice.textContent = fmt(optPrice);
+            els.contribFixedCost.textContent = fmt(fixedCost);
+            els.contribAvg.textContent = fmt(avg);
+            els.contribLabel.textContent = `vs Price · ${fmt(minX)} – ${fmt(maxX)}`;
+        }
+
+        // ---------- plot / clear ----------
+        function plot() {
+            const sku = els.skuSelect.value;
+            if (!sku) { toast('Select a SKU.', 'error'); return; }
+            const fixedCost = parseFloat(els.fixedCost.value);
+            if (isNaN(fixedCost) || fixedCost < 0) {
+                toast('Enter a valid fixed cost (≥ 0).', 'error');
+                return;
+            }
+            currentFixedCost = fixedCost;
+            const pts = compute(sku, els.priceCondition.value);
+            chartPoints = pts;
+            currentSku = sku;
+            drawChart(sku, pts);
+            if (pts.length < 3) toast(`Only ${pts.length} usable observations; at least 3 are needed.`, 'error');
+        }
+
+        function clearChart() {
+            els.chart.style.display = 'none';
+            els.empty.style.display = 'flex';
+            els.chart.innerHTML = '';
+            resetStats();
+            els.chartLabel.textContent = '';
+            currentSku = null;
+            chartPoints = null;
+
+            els.contribChart.style.display = 'none';
+            els.contribEmpty.style.display = 'flex';
+            els.contribChart.innerHTML = '';
+            els.contribCount.textContent = '0 points';
+            els.contribPeak.textContent = '—';
+            els.contribOptPrice.textContent = '—';
+            els.contribFixedCost.textContent = fmt(currentFixedCost);
+            els.contribAvg.textContent = '—';
+            els.contribLabel.textContent = 'vs Price (no data)';
+        }
+
+        function applyPricing(raw, source = 'input') {
+            try {
+                const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                const normalized = normalize(parsed);
+                if (!normalized.length) throw new Error('No valid pricing records found.');
+                data = normalized;
+                render();
+                clearChart();
+                els.fileName.textContent = source;
+                toast(`Loaded ${data.length} pricing records.`, 'success');
+            } catch (e) {
+                toast('Invalid pricing_data: ' + e.message, 'error');
+            }
+        }
+
+        // ---------- init ----------
+        els.salesInput.value = DEFAULT_SALES;
+        els.discountInput.value = DEFAULT_DISCOUNT;
+        els.skuSelect.addEventListener('change', updateSkuInfo);
+        els.plotBtn.addEventListener('click', plot);
+        els.priceCondition.addEventListener('change', () => { if (currentSku) plot(); });
+        els.fixedCost.addEventListener('change', () => { if (currentSku && chartPoints) { drawContribution(chartPoints); } });
+        els.fixedCost.addEventListener('input', () => { if (currentSku && chartPoints) { drawContribution(chartPoints); } });
+        els.clearBtn.addEventListener('click', clearChart);
+        els.showLinear.addEventListener('change', () => { if (currentSku && chartPoints) drawChart(currentSku,
+            chartPoints); });
+        $('resetSales').addEventListener('click', () => { els.salesInput.value = DEFAULT_SALES;
+            toast('Sales reset.', 'success'); });
+        $('resetDiscount').addEventListener('click', () => { els.discountInput.value = DEFAULT_DISCOUNT;
+            toast('Discount reset.', 'success'); });
+        $('applyJson').addEventListener('click', () => applyPricing(els.pricingInput.value, 'pasted pricing_data'));
+        $('downloadJson').addEventListener('click', () => {
+            const blob = new Blob([JSON.stringify(data.map(r => [r.material, r.description, r.uom, r.zd00, r.zd04,
+                r.zd01, r.zd05, r.zd02, r.zd03, r.valid_from, r.valid_to
+            ]), null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'pricing_data.json';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        });
+        $('jsonFile').addEventListener('change', e => {
+            const f = e.target.files[0];
+            if (!f) return;
+            const rd = new FileReader();
+            rd.onload = ev => applyPricing(ev.target.result, f.name);
+            rd.readAsText(f);
+        });
+        document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') plot(); });
+
+        render();
+    </script>
+</body>
+</html>
