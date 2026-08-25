@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>پژوهش بازار | شکلات واقعی × تغذیه ورزشی</title>
+
+    <!-- html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
+    </script>
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+            background: #f7f0ea;
+            color: #2d1b0e;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fdf8f3;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(61, 31, 0, 0.15);
+            padding: 40px 45px;
+            position: relative;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #3d1f00;
+            letter-spacing: -0.5px;
+            border-right: 6px solid #c89a6b;
+            padding-right: 18px;
+            margin-bottom: 6px;
+        }
+
+        .subhead {
+            font-size: 16px;
+            color: #8b5e3c;
+            margin-right: 24px;
+            margin-bottom: 30px;
+            font-weight: 400;
+            border-bottom: 1px solid #e8dcd2;
+            padding-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #3d1f00;
+            margin-top: 36px;
+            margin-bottom: 14px;
+            padding-right: 14px;
+            border-right: 4px solid #c89a6b;
+        }
+
+        .section-title-sm {
+            font-size: 18px;
+            font-weight: 600;
+            color: #5a3420;
+            margin-top: 24px;
+            margin-bottom: 10px;
+            padding-right: 12px;
+            border-right: 3px solid #dbb594;
+        }
+
+        p,
+        li {
+            font-size: 15.5px;
+            line-height: 1.8;
+            color: #2d1b0e;
+        }
+
+        p {
+            margin-bottom: 12px;
+        }
+
+        ul,
+        ol {
+            padding-right: 28px;
+            margin-bottom: 14px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        .brand-highlight {
+            color: #8b5e3c;
+            font-weight: 600;
+        }
+
+        .en-term {
+            direction: ltr;
+            display: inline-block;
+            font-weight: 500;
+            color: #6b4a2e;
+            background: #f0e8e0;
+            padding: 0 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* ===== TABLE ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 16px 0 20px 0;
+            border-radius: 12px;
+            border: 1px solid #e8dcd2;
+            background: #fffcf9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            min-width: 600px;
+        }
+
+        th {
+            background: #3d1f00;
+            color: #fdf8f3;
+            font-weight: 600;
+            padding: 12px 10px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 11px 10px;
+            border-bottom: 1px solid #eee5dc;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-highlight {
+            background: #f8f0e8;
+        }
+
+        .rating-stars {
+            color: #c89a6b;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SCORECARD ===== */
+        .scorecard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 16px 0 8px 0;
+        }
+
+        .score-item {
+            background: #fffcf9;
+            border-radius: 10px;
+            padding: 12px 14px;
+            border: 1px solid #e8dcd2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .score-item .label {
+            font-weight: 600;
+            color: #3d1f00;
+        }
+
+        .score-item .value {
+            font-weight: 700;
+            color: #8b5e3c;
+            background: #f0e8e0;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        /* ===== COMMENT BOXES ===== */
+        .comment-section {
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 2px dashed #dccfc4;
+        }
+
+        .comment-section label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #5a3420;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .comment-section textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #dccfc4;
+            background: #fffcf9;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 56px;
+            transition: border 0.2s;
+            color: #2d1b0e;
+        }
+
+        .comment-section textarea:focus {
+            outline: none;
+            border-color: #c89a6b;
+            box-shadow: 0 0 0 3px rgba(200, 154, 107, 0.2);
+        }
+
+        .comment-section .comment-count {
+            font-size: 12px;
+            color: #8b5e3c;
+            margin-top: 4px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .action-bar {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 2px solid #e8dcd2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 36px;
+            border: none;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #3d1f00;
+            color: #fdf8f3;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(61, 31, 0, 0.25);
+        }
+
+        .btn-secondary {
+            background: #e8dcd2;
+            color: #3d1f00;
+        }
+
+        .btn-secondary:hover {
+            background: #dccfc4;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* ===== PRINT / PDF STYLES ===== */
+        @media print {
+            body {
+                background: white;
+                padding: 10px;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px 30px;
+                border-radius: 0;
+            }
+            .comment-section textarea {
+                border: 1px solid #ccc;
+                background: #fafafa;
+                min-height: 40px;
+            }
+            .action-bar {
+                display: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .table-wrap {
+                border: 1px solid #ccc;
+            }
+            th {
+                background: #3d1f00 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .table-highlight {
+                background: #f5ede6 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .rating-stars {
+                color: #c89a6b !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .score-item {
+                background: #fafafa;
+                border: 1px solid #ddd;
+            }
+            .score-item .value {
+                background: #f0e8e0;
+            }
+            .brand-highlight {
+                color: #8b5e3c;
+            }
+            .en-term {
+                background: #f0e8e0;
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .container {
+                padding: 20px 18px;
+            }
+            h1 {
+                font-size: 24px;
+                padding-right: 12px;
+            }
+            .section-title {
+                font-size: 19px;
+            }
+            .section-title-sm {
+                font-size: 16px;
+            }
+            p,
+            li {
+                font-size: 14px;
+            }
+            .scorecard {
+                grid-template-columns: 1fr;
+            }
+            .btn {
+                padding: 10px 24px;
+                font-size: 14px;
+                width: 100%;
+                justify-content: center;
+            }
+            .action-bar {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 14px 12px;
+                border-radius: 16px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            .subhead {
+                font-size: 14px;
+                margin-right: 12px;
+            }
+            th,
+            td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+            table {
+                min-width: 480px;
+            }
+        }
+
+        /* small helper */
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .text-muted {
+            color: #6b4a2e;
+            font-size: 14px;
+        }
+        .gap-4 {
+            gap: 4px;
+        }
+
+        /* map placeholder */
+        .map-placeholder {
+            background: #f5ede6;
+            border-radius: 14px;
+            padding: 28px 20px;
+            text-align: center;
+            border: 1px solid #e8dcd2;
+            margin: 12px 0 6px 0;
+        }
+        .map-placeholder .map-title {
+            font-weight: 600;
+            color: #3d1f00;
+            font-size: 16px;
+        }
+        .map-placeholder .map-desc {
+            font-size: 14px;
+            color: #5a3420;
+            margin-top: 6px;
+        }
+        .map-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+        .map-axis {
+            text-align: center;
+        }
+        .map-axis .axis-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #5a3420;
+        }
+        .map-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 4px;
+            background: #c89a6b;
+        }
+        .map-dot.high {
+            background: #3d1f00;
+        }
+        .map-dot.med {
+            background: #8b5e3c;
+        }
+        .map-dot.low {
+            background: #dbb594;
+        }
+        .map-legend {
+            font-size: 13px;
+            color: #5a3420;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="reportContainer">
+
+        <!-- ===== HEADER ===== -->
+        <h1>پژوهش بازار &bull; شکلات واقعی × تغذیه ورزشی</h1>
+        <div class="subhead">
+            <span style="font-weight:600;">NPD Proposal</span> &nbsp;—&nbsp; تحلیل فرصت‌ها، رقبا و معماری محصول برای شکلات پروتئینی ممتاز
+        </div>
+
+        <!-- ===== 1. خلاصه اجرایی ===== -->
+        <div class="section-title">۱. خلاصه اجرایی</div>
+        <p>
+            بازار <span class="brand-highlight">قرص‌های شکلات واقعی با پروتئین</span> هنوز نسبتاً نابالغ است.
+            بهترین معیار (<span class="en-term">benchmark</span>) موجود، <span class="brand-highlight">Myprotein Protein Chocolate</span> است
+            که با <strong>۱۹ گرم پروتئین در ۷۰ گرم</strong> و حداقل <strong>۵۴–۵۵٪ مواد جامد کاکائو</strong>،
+            به شکلات واقعی بسیار نزدیک‌تر از بارهای پروتئینی معمول است.
+        </p>
+        <p>
+            فرصت اصلی در ترکیب <strong>کیفیت شکلات ممتاز</strong> با <strong>اعتبار عملکردی تغذیه ورزشی</strong>
+            نهفته است؛ فضایی که هنوز به‌طور جدی پر نشده است.
+        </p>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (خلاصه اجرایی)</label>
+            <textarea id="comment1" placeholder="نظر یا پرسش خود را درباره خلاصه اجرایی وارد کنید…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 2. چشم‌انداز رقابتی ===== -->
+        <div class="section-title">۲. چشم‌انداز رقابتی</div>
+        <p>
+            برندهای اصلی تغذیه ورزشی مانند <span class="brand-highlight">Barebells</span>،
+            <span class="brand-highlight">Grenade</span> و <span class="brand-highlight">Myprotein Impact</span>
+            عمدتاً در حوزه <span class="en-term">protein bar</span> رقابت می‌کنند، نه قرص شکلات.
+            دو معیار کلیدی برای محصول شما عبارتند از:
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>برند / محصول</th>
+                        <th>فرمت</th>
+                        <th>پروتئین</th>
+                        <th>موقعیت‌یابی شکلات</th>
+                        <th>کیفیت مواد</th>
+                        <th>ارزیابی</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-highlight">
+                        <td><strong>Myprotein Protein Chocolate</strong></td>
+                        <td>قرص / تبلت</td>
+                        <td><strong>۱۹g / ۷۰g</strong></td>
+                        <td>شکلات واقعی</td>
+                        <td>★★★★★</td>
+                        <td><strong>بهترین معیار</strong></td>
+                    </tr>
+                    <tr class="table-highlight">
+                        <td><strong>MealJoy Protein Chocolate</strong></td>
+                        <td>تبلت</td>
+                        <td><strong>۸.۸g / ۴۰g</strong></td>
+                        <td>شکلات واقعی</td>
+                        <td>★★★★☆</td>
+                        <td>قوی در فرمت تبلت</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Barebells</strong></td>
+                        <td>پروتئین بار</td>
+                        <td>۲۰g / ۵۵g</td>
+                        <td>روکش شکلات شیری</td>
+                        <td>★★★★☆</td>
+                        <td>بهترین معیار حسی</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Grenade Carb Killa</strong></td>
+                        <td>پروتئین بار</td>
+                        <td>~۲۰–۲۱g</td>
+                        <td>روکش + لایه‌های مرکزی</td>
+                        <td>★★★☆☆</td>
+                        <td>موقعیت‌یابی ورزشی قوی</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Myprotein Impact Bar</strong></td>
+                        <td>پروتئین بار</td>
+                        <td>۲۰g</td>
+                        <td>روکش شکلاتی</td>
+                        <td>★★★☆☆</td>
+                        <td>معیار بازار انبوه</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Isostar High Protein 30</strong></td>
+                        <td>بار ورزشی</td>
+                        <td>۱۶g / ۵۵g</td>
+                        <td>کریسپی شکلاتی</td>
+                        <td>★★★☆☆</td>
+                        <td>عملکردگرا</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-muted" style="font-size:14px;">
+            ⚡ تفاوت کلیدی: دو برند نخست <em>خود شکلات</em> را به عنوان محصول اصلی ارائه می‌دهند،
+            نه یک بار پروتئینی که با شکلات پوشش داده شده است.
+        </p>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (چشم‌انداز رقابتی)</label>
+            <textarea id="comment2" placeholder="تحلیل شما از رقبا…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 3. Myprotein ===== -->
+        <div class="section-title">۳. معیار Myprotein — قوی‌ترین مرجع مستقیم</div>
+        <p>
+            <span class="brand-highlight">Myprotein Protein Chocolate</span> با مواد اولیه:
+            <span class="en-term">cocoa butter</span>، <span class="en-term">whey protein isolate</span>،
+            <span class="en-term">cocoa mass</span>، <span class="en-term">cocoa powder</span>
+            و <strong>حداقل ۵۴–۵۵٪ مواد جامد کاکائو</strong>، یک لیست مواد کوتاه و شفاف دارد.
+        </p>
+        <p>
+            پیام کلیدی آن: <strong>«اول شکلات، دوم پروتئین»</strong> — این تمایز برای ورزشکارانی که
+            بار جویدنی نمی‌خواهند، بسیار ارزشمند است.
+        </p>
+        <ul>
+            <li><strong>پروتئین:</strong> ۲۷٪ (۱۹ گرم در ۷۰ گرم)</li>
+            <li><strong>چربی کاکائو:</strong> کره کاکائو + توده کاکائو</li>
+            <li><strong>شیرین‌کننده:</strong> شکر / شیرین‌کننده بر اساس طعم</li>
+        </ul>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (معیار Myprotein)</label>
+            <textarea id="comment3" placeholder="نظر شما درباره این معیار…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 4. MealJoy ===== -->
+        <div class="section-title">۴. معیار MealJoy — نزدیک‌ترین رقیب در فرمت تبلت</div>
+        <p>
+            <span class="brand-highlight">MealJoy Protein Chocolate</span> به‌صراحت از
+            <span class="en-term">tablet concept</span> استفاده می‌کند. هر واحد ۴۰ گرمی شامل:
+        </p>
+        <ul>
+            <li><strong>۲۴٪ پروتئین وی</strong> (<span class="en-term">whey protein</span>)</li>
+            <li><strong>۸.۸ گرم پروتئین</strong> در ۴۰ گرم</li>
+            <li>۲۰۹ کیلوکالری، ۱.۲ گرم شکر، ۱۷.۶ گرم چربی</li>
+            <li>موقعیت‌یابی: <em>پس از ورزش، بین وعده‌ها، اسنک روزانه</em></li>
+        </ul>
+        <p>
+            با این حال، چگالی پروتئین آن (۲۲ گرم در ۱۰۰ گرم) کمتر از Myprotein (۲۷ گرم در ۱۰۰ گرم) است
+            — بنابراین <strong>فضای بهبود وجود دارد</strong>.
+        </p>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (معیار MealJoy)</label>
+            <textarea id="comment4" placeholder="تحلیل فرمت تبلت MealJoy…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 5. Barebells ===== -->
+        <div class="section-title">۵. معیار Barebells — مرجع طعم و حس</div>
+        <p>
+            <span class="brand-highlight">Barebells</span> اگرچه در فرمت تبلت رقابت نمی‌کند، اما
+            <strong>مهم‌ترین معیار حسی</strong> است. در آزمون طعم <span class="en-term">Guardian</span> (۲۰۲۶)،
+            طعم آن نزدیک به شکلات معمولی ارزیابی شده است.
+        </p>
+        <ul>
+            <li><strong>۲۰ گرم پروتئین</strong> در ۵۵ گرم</li>
+            <li>ترکیب پروتئین شیر + پوسته شکلات + کریسپ شکلاتی</li>
+            <li>بدون شکر افزوده</li>
+        </ul>
+        <p>
+            پیام کلیدی: <strong>مصرف‌کنندگان طعم «سلامتی‌محور» نمی‌خواهند</strong>؛
+            آنها <em>طعم شکلات معمولی + تغذیه عملکردی</em> را می‌خواهند.
+        </p>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (معیار Barebells)</label>
+            <textarea id="comment5" placeholder="نظر شما درباره اهمیت طعم…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 6. Grenade ===== -->
+        <div class="section-title">۶. معیار Grenade — ارتباطات ورزشی</div>
+        <p>
+            <span class="brand-highlight">Grenade</span> رویکرد متفاوتی دارد: محصول آن بیشتر
+            <strong>«شیرینی پروتئینی»</strong> است تا شکلات. با ~۲۱ گرم پروتئین در ۶۰ گرم،
+            کارامل، نوقا و چیپس شکلاتی را ترکیب می‌کند.
+        </p>
+        <div class="table-wrap" style="margin-top:8px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ویژگی</th>
+                        <th>Grenade</th>
+                        <th>فرصت تبلت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>پروتئین</td><td>بسیار بالا</td><td>بالا</td></tr>
+                    <tr><td>اصالت شکلات</td><td>متوسط</td><td><strong>بسیار بالا</strong></td></tr>
+                    <tr><td>بافت</td><td>جویدنی / لایه‌ای</td><td><strong>شکنندگی / ذوب‌شدن</strong></td></tr>
+                    <tr><td>شکر</td><td>بسیار کم</td><td>متوسط / کم</td></tr>
+                    <tr><td>هویت ورزشی</td><td>بسیار بالا</td><td>بالا</td></tr>
+                    <tr><td>ادراک شکلات ممتاز</td><td>متوسط</td><td><strong>بالا</strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (معیار Grenade)</label>
+            <textarea id="comment6" placeholder="تحلیل رویکرد Grenade…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 7. مقایسه بسته‌بندی ===== -->
+        <div class="section-title">۷. مقایسه بسته‌بندی</div>
+        <p>
+            بسته‌بندی استاندارد <span class="en-term">protein bar</span> (flow-wrap → multipack carton)
+            پیام <strong>«پروتئین بار»</strong> را منتقل می‌کند. در مقابل، بسته‌بندی شکلات تبلت ممتاز
+            (آستین مقوایی + فویل + تبلت) پیام <strong>«شکلات + کیفیت + هدیه + لذت»</strong> را می‌دهد.
+        </p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>معماری بسته‌بندی</th>
+                        <th>محافظت</th>
+                        <th>ادراک ممتاز</th>
+                        <th>قابلیت حمل</th>
+                        <th>پایداری</th>
+                        <th>فرصت برند</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Flow-wrap پروتئین بار</td><td>★★★★★</td><td>★★☆☆☆</td><td>★★★★★</td><td>★★★☆☆</td><td>متوسط</td></tr>
+                    <tr><td>فویل + آستین کاغذی</td><td>★★★★★</td><td>★★★★★</td><td>★★★★☆</td><td>★★★★☆</td><td><strong>بسیار بالا</strong></td></tr>
+                    <tr><td>کارتن مقوایی + لایه داخلی</td><td>★★★★☆</td><td>★★★★★</td><td>★★★★☆</td><td>★★★★★</td><td><strong>بسیار بالا</strong></td></tr>
+                    <tr><td>جعبه سخت ممتاز</td><td>★★★★★</td><td>★★★★★</td><td>★★☆☆☆</td><td>★★☆☆☆</td><td>هدیه / ممتاز</td></tr>
+                    <tr><td>کارتن چند تبلتی</td><td>★★★★☆</td><td>★★★★★</td><td>★★★☆☆</td><td>★★★★★</td><td><strong>بسیار بالا</strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (مقایسه بسته‌بندی)</label>
+            <textarea id="comment7" placeholder="نظر شما درباره بسته‌بندی…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 8. شکاف محصول ===== -->
+        <div class="section-title">۸. شکاف محصول واقعی</div>
+        <p>
+            سه قلمرو متمایز وجود دارد:
+        </p>
+        <ul>
+            <li><strong>قلمرو ۱ — پروتئین بار:</strong> <span class="brand-highlight">Barebells / Grenade / Myprotein Impact</span><br />
+            <span class="text-muted">«من به پروتئین نیاز دارم.»</span></li>
+            <li><strong>قلمرو ۲ — شکلات پروتئینی:</strong> <span class="brand-highlight">Myprotein / MealJoy</span><br />
+            <span class="text-muted">«من شکلات می‌خواهم، اما با پروتئین.»</span></li>
+            <li><strong>قلمرو ۳ — شکلات ممتاز ورزشی:</strong> <span style="color:#3d1f00;font-weight:700;">هنوز نسبتاً باز</span><br />
+            <span class="text-muted">«من ورزشکار هستم، اما نمی‌خواهم شکلاتم حس مکمل ورزشی داشته باشد.»</span></li>
+        </ul>
+        <p>
+            <strong>قلمرو سوم جذاب‌ترین فرصت است.</strong>
+        </p>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (شکاف محصول)</label>
+            <textarea id="comment8" placeholder="آیا با این تحلیل شکاف موافقید؟…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 9. معماری محصول پیشنهادی ===== -->
+        <div class="section-title">۹. معماری محصول پیشنهادی</div>
+        <p>
+            هدف: <strong>تبلت شکلات ۴۰–۶۰ گرمی</strong> با:
+        </p>
+        <ul>
+            <li>کره کاکائو واقعی، توده کاکائو، پودر کاکائو</li>
+            <li>حداقل <strong>۵۰–۶۰٪ مواد جامد کاکائو</strong></li>
+            <li><strong>۱۵–۲۰ گرم پروتئین</strong> در هر واحد (۲۵–۳۳٪ پروتئین)</li>
+            <li>منبع پروتئین: <span class="en-term">Whey Protein Isolate</span></li>
+            <li>بافت: <strong>شکنندگی و ذوب‌شدن</strong> — بدون مرکز جویدنی</li>
+        </ul>
+
+        <div class="section-title-sm">پورتفولیو پیشنهادی</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>موقعیت‌یابی</th>
+                        <th>کاکائو</th>
+                        <th>پروتئین هدف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Performance Milk</strong></td><td>شکلات روزمره ورزشکار</td><td>۴۰–۴۵٪</td><td>۱۸ گرم</td></tr>
+                    <tr><td><strong>Performance Dark</strong></td><td>تمرین جدی / کم‌شکر</td><td>۶۰–۷۰٪</td><td>۲۰ گرم</td></tr>
+                    <tr><td><strong>Recovery Hazelnut</strong></td><td>لذت پس از تمرین</td><td>۴۵–۵۵٪</td><td>۱۸ گرم</td></tr>
+                    <tr><td><strong>Crunch Protein</strong></td><td>متمرکز بر بافت</td><td>۴۵–۵۵٪</td><td>۲۰ گرم</td></tr>
+                    <tr><td><strong>۸۵٪ Athlete Dark</strong></td><td>ممتاز / پیچیده</td><td>۸۰–۸۵٪</td><td>۱۵–۱۸ گرم</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-muted" style="font-size:14px;">
+            💡 نکته کلیدی: <strong>پنج نسخه از یک پروتئین بار نسازید</strong>؛ آنها را به عنوان
+            <em>مجموعه شکلات</em> معرفی کنید.
+        </p>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (معماری محصول)</label>
+            <textarea id="comment9" placeholder="نظر شما درباره SKUهای پیشنهادی…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 10. مفهوم بسته‌بندی ===== -->
+        <div class="section-title">۱۰. مفهوم بسته‌بندی پیشنهادی</div>
+        <p>
+            برای شکلات ممتاز ورزشی، معماری زیر را توصیه می‌کنم:
+        </p>
+        <ul>
+            <li><strong>تبلت ۴۰–۵۰ گرمی</strong></li>
+            <li>بسته‌بندی انفرادی با <span class="en-term">high-barrier foil/film</span></li>
+            <li>قرارگیری در <strong>آستین مقوایی</strong> (<span class="en-term">paperboard sleeve</span>)</li>
+            <li>۶–۱۲ واحد در یک کارتن خرده‌فروشی</li>
+        </ul>
+        <p>
+            <strong>پیام‌های کلیدی در جلو:</strong>
+        </p>
+        <div style="background:#f5ede6;border-radius:12px;padding:14px 20px;margin:8px 0;border:1px solid #e8dcd2;">
+            <div style="font-weight:700;font-size:18px;color:#3d1f00;">REAL CHOCOLATE</div>
+            <div style="font-weight:600;font-size:16px;color:#8b5e3c;">۲۰ g PROTEIN</div>
+            <div style="font-weight:500;font-size:14px;color:#5a3420;">WHEY ISOLATE</div>
+        </div>
+        <p class="text-muted" style="font-size:14px;">
+            اطلاعات تغذیه‌ای دقیق در پشت بسته‌بندی درج شود.
+            این بسته‌بندی <strong>بسیار ممتازتر</strong> از بسته‌بندی رنگارنگ پروتئین بارهای معمول است.
+        </p>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (مفهوم بسته‌بندی)</label>
+            <textarea id="comment10" placeholder="نظر شما درباره بسته‌بندی پیشنهادی…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 11. نقشه موقعیت‌یابی رقابتی ===== -->
+        <div class="section-title">۱۱. نقشه موقعیت‌یابی رقابتی</div>
+        <p>
+            فضای سفید استراتژیک در <strong>بعد بالا-راست</strong> قرار دارد:
+            <strong>اصالت بالای شکلات + چگالی بالای پروتئین</strong>.
+        </p>
+        <div class="map-placeholder">
+            <div class="map-title">📍 موقعیت‌یابی کیفی برندها</div>
+            <div class="map-desc">
+                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#3d1f00;vertical-align:middle;"></span>
+                اصالت شکلات (افقی) &nbsp; &bull; &nbsp;
+                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#c89a6b;vertical-align:middle;"></span>
+                شدت پروتئین (عمودی)
+            </div>
+            <div class="map-grid">
+                <div class="map-axis">
+                    <div class="axis-label">اصالت شکلات ↑</div>
+                    <div style="font-size:13px;color:#5a3420;">
+                        <span class="map-dot high"></span> Myprotein ۹
+                        <span style="margin:0 6px;">|</span>
+                        <span class="map-dot med"></span> Barebells ۸
+                        <span style="margin:0 6px;">|</span>
+                        <span class="map-dot low"></span> Grenade ۶
+                    </div>
+                </div>
+                <div class="map-axis">
+                    <div class="axis-label">شدت پروتئین ↑</div>
+                    <div style="font-size:13px;color:#5a3420;">
+                        <span class="map-dot high"></span> Myprotein ۹
+                        <span style="margin:0 6px;">|</span>
+                        <span class="map-dot med"></span> Barebells ۹
+                        <span style="margin:0 6px;">|</span>
+                        <span class="map-dot low"></span> Grenade ۹
+                    </div>
+                </div>
+            </div>
+            <div class="map-legend">
+                ⭐ <strong>فضای سفید:</strong> ترکیب اصالت بالا + پروتئین بالا ← فرصت برند جدید
+            </div>
+        </div>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (نقشه موقعیت‌یابی)</label>
+            <textarea id="comment11" placeholder="آیا با موقعیت‌یابی پیشنهادی موافقید؟…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== 12. نتیجه نهایی ===== -->
+        <div class="section-title">۱۲. نتیجه نهایی</div>
+        <p style="font-size:17px;font-weight:500;color:#3d1f00;background:#f8f0e8;padding:16px 20px;border-radius:14px;border-right:6px solid #c89a6b;">
+            من <strong>وارد این بازار با ساخت یک پروتئین بار دیگر نمی‌شوم</strong>.
+            بلکه محصولی با این ترکیب برنده می‌سازم:
+        </p>
+        <ul style="font-size:15.5px;">
+            <li><strong>شکلات واقعی</strong> طراحی‌شده برای ورزشکاران</li>
+            <li>کاکائو ممتاز + کره کاکائو + <span class="en-term">Whey Isolate</span></li>
+            <li><strong>۱۸–۲۰ گرم پروتئین</strong> در هر واحد</li>
+            <li>شکر کم / متوسط</li>
+            <li>بافت <strong>شکننده و ذوب‌شونده</strong> معتبر</li>
+            <li>بسته‌بندی ممتاز <span class="en-term">paper / foil</span></li>
+        </ul>
+        <p style="margin-top:14px;">
+            <span class="brand-highlight">Myprotein</span> ثابت کرده که مصرف‌کنندگان
+            «شکلات پروتئینی» را می‌پذیرند و <span class="brand-highlight">Barebells</span> نشان داده
+            که طعم شکلات معمولی در تغذیه ورزشی قدرت بالایی دارد.
+        </p>
+        <p style="font-weight:600;color:#3d1f00;font-size:16px;">
+            فرصت بزرگتر: <span style="background:#c89a6b20;padding:2px 10px;border-radius:20px;">
+            ترکیب کیفیت و آیین شکلات ممتاز با اعتبار عملکردی تغذیه ورزشی
+            </span>
+        </p>
+
+        <div class="comment-section">
+            <label>✏️ دیدگاه شما (نتیجه نهایی)</label>
+            <textarea id="comment12" placeholder="نظر نهایی شما درباره این پروپوزال…"></textarea>
+            <div class="comment-count">پس از ثبت، در خروجی PDF گنجانده می‌شود.</div>
+        </div>
+
+        <!-- ===== ACTION BAR ===== -->
+        <div class="action-bar no-print">
+            <button class="btn" id="downloadPdfBtn">
+                <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2,0,0,0,4,4V20a2,2,0,0,0,2,2H18a2,2,0,0,0,2-2V8ZM12,18,8,14h2.5V10h3v4H16ZM13,9V3.5L18.5,9Z"/></svg>
+                دانلود PDF با نظرات
+            </button>
+            <button class="btn btn-secondary" id="resetCommentsBtn">
+                <svg viewBox="0 0 24 24"><path d="M12,4V1L8,5l4,4V6a6,6,0,0,1,6,6,6,6,0,0,1-6,6,6,6,0,0,1-6-6H4a8,8,0,0,0,8,8,8,8,0,0,0,8-8A8,8,0,0,0,12,4Z"/></svg>
+                پاک کردن همه نظرات
+            </button>
+        </div>
+
+        <div style="text-align:center;margin-top:20px;font-size:13px;color:#8b5e3c;border-top:1px solid #e8dcd2;padding-top:18px;" class="no-print">
+            پژوهش بازار &bull; شکلات واقعی × تغذیه ورزشی &bull; NPD Proposal
+        </div>
+
+    </div>
+    <!-- end container -->
+
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ---- references ----
+            const container = document.getElementById('reportContainer');
+            const downloadBtn = document.getElementById('downloadPdfBtn');
+            const resetBtn = document.getElementById('resetCommentsBtn');
+
+            // ---- collect all textareas ----
+            const textareas = document.querySelectorAll('.comment-section textarea');
+
+            // ---- reset comments ----
+            resetBtn.addEventListener('click', function() {
+                if (confirm('آیا از پاک کردن همه نظرات اطمینان دارید؟')) {
+                    textareas.forEach(ta => ta.value = '');
+                }
+            });
+
+            // ---- download PDF ----
+            downloadBtn.addEventListener('click', function() {
+                // disable button during generation
+                downloadBtn.disabled = true;
+                downloadBtn.textContent = 'در حال تولید PDF …';
+
+                // get all comments
+                const comments = {};
+                textareas.forEach((ta, idx) => {
+                    const key = 'comment' + (idx + 1);
+                    comments[key] = ta.value.trim() || '—';
+                });
+
+                // we'll generate PDF from the container with print styles
+                // but we need to ensure comments are visible in print.
+                // They already are.
+
+                const opt = {
+                    margin: [0.6, 0.6, 0.6, 0.6],
+                    filename: 'NPD_RealChocolate_SportsNutrition.pdf',
+                    image: { type: 'jpeg', quality: 0.95 },
+                    html2canvas: {
+                        scale: 2,
+                        letterRendering: true,
+                        useCORS: true,
+                        scrollY: 0,
+                        windowHeight: container.scrollHeight,
+                    },
+                    jsPDF: {
+                        unit: 'in',
+                        format: 'a4',
+                        orientation: 'portrait'
+                    },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                };
+
+                // temporarily add a class for better print
+                container.classList.add('pdf-generating');
+
+                html2pdf().set(opt).from(container).save().then(function() {
+                    container.classList.remove('pdf-generating');
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML =
+                        '<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;"><path d="M14,2H6A2,2,0,0,0,4,4V20a2,2,0,0,0,2,2H18a2,2,0,0,0,2-2V8ZM12,18,8,14h2.5V10h3v4H16ZM13,9V3.5L18.5,9Z"/></svg> دانلود PDF با نظرات';
+                }).catch(function(err) {
+                    console.warn('PDF generation error:', err);
+                    container.classList.remove('pdf-generating');
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML =
+                        '<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;"><path d="M14,2H6A2,2,0,0,0,4,4V20a2,2,0,0,0,2,2H18a2,2,0,0,0,2-2V8ZM12,18,8,14h2.5V10h3v4H16ZM13,9V3.5L18.5,9Z"/></svg> دانلود PDF با نظرات';
+                    alert('خطا در تولید PDF. لطفاً دوباره تلاش کنید.');
+                });
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
