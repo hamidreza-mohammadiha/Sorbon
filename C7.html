@@ -674,7 +674,7 @@
                 <div class="hint">Discount is applied as effective price = selected price × (1 − discount / 100).</div>
             </section>
             <section class="card">
-                <div class="title"><span class="step">7</span> Exchange Rate <span class="sub">(USD per 1,000,000 IRR)</span> <button class="btn outline" id="resetExchange" style="margin-left:auto">↺ reset</button></div>
+                <div class="title"><span class="step">5</span> Exchange Rate <span class="sub">(USD per 1,000,000 IRR)</span> <button class="btn outline" id="resetExchange" style="margin-left:auto">↺ reset</button></div>
                 <textarea id="exchangeInput"></textarea>
                 <div class="hint">Example: <code>1.98</code> means 1 USD = 1,980,000 IRR. Month + 2023–2026 values.</div>
             </section>
@@ -682,7 +682,7 @@
 
         <!-- STEP 5: SKU, PRICE CONDITION & FIXED COST -->
         <section class="card">
-            <div class="title"><span class="step">5</span> SKU &amp; Price Condition <span class="sub">with fixed cost per unit</span></div>
+            <div class="title"><span class="step">6</span> SKU &amp; Price Condition <span class="sub">with fixed cost per unit</span></div>
             <div class="skuRow">
                 <select id="skuSelect"></select>
                 <select id="priceCondition">
@@ -695,7 +695,7 @@
                 </select>
                 <div class="cost-input">
                     <span class="fixed-cost-label">Cost/unit</span>
-                    <input type="number" id="fixedCost" value="800000" step="1000" min="0" />
+                    <input type="number" id="fixedCost" value="0" step="1000" min="0" />
                 </div>
                 <button class="btn primary" id="plotBtn">📊 Plot</button>
                 <button class="btn outline" id="clearBtn">✕ Clear</button>
