@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Revenue Management — C8 (Swap + Pulse)</title>
+    <title>Revenue Management — C8 (Swap + Breathing Pulse)</title>
     <!-- External libraries for export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -311,7 +311,7 @@
         }
         #contribChartUsd {
             width: 100%;
-            height: 260px;
+            height: 520px;          /* doubled height */
             display: block;
         }
         .legend {
@@ -417,6 +417,9 @@
             min-height: 260px;
             position: relative;
         }
+        .contrib-chartbox.usd-chart {
+            min-height: 520px;     /* match doubled height */
+        }
         .contrib-empty {
             height: 240px;
             display: flex;
@@ -428,9 +431,8 @@
             gap: 6px;
             font-size: 13px;
         }
-        .contrib-empty strong {
-            color: #2a3a4e;
-            font-size: 16px;
+        .contrib-empty.usd-empty {
+            height: 480px;
         }
         .flex-between {
             display: flex;
@@ -538,8 +540,8 @@
             min-height: 180px;
         }
         .left-charts .chartbox:last-child {
-            flex: 2;
-            min-height: 380px;
+            flex: 3;            /* give more space to the USD chart */
+            min-height: 480px;
         }
         .price-time-stats {
             display: flex;
@@ -597,19 +599,18 @@
             gap: 8px;
             flex-wrap: wrap;
         }
-        /* ---------- PULSE ANIMATION FOR LATEST USD POINT ---------- */
-        @keyframes pulse-latest {
-            0% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.4); }
-            100% { opacity: 0.5; transform: scale(1); }
+
+        /* ---------- BREATHING ANIMATION (only for the circle) ---------- */
+        @keyframes breathe {
+            0% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.35); }
+            100% { opacity: 0.6; transform: scale(1); }
         }
-        .pulse-latest {
-            animation: pulse-latest 2s ease-in-out infinite;
+        .breathing-point {
+            animation: breathe 2.2s ease-in-out infinite;
             transform-origin: center;
         }
-        .pulse-latest-line {
-            animation: pulse-latest 2s ease-in-out infinite;
-        }
+        /* No animation for dashed lines – they stay static */
     </style>
 </head>
 <body>
@@ -617,7 +618,7 @@
 
         <!-- HEADER -->
         <header class="header">
-            <h1>📈 Revenue Management Lab <small>· C8 (Swap + Pulse)</small></h1>
+            <h1>📈 Revenue Management Lab <small>· C8 (Swap + Breathing)</small></h1>
             <div class="status">
                 <span><i class="dot"></i>Local / client-side</span>
                 <span id="recordCount">0 records</span>
@@ -671,7 +672,7 @@
                 <div class="hint">Discount is applied as effective price = selected price × (1 − discount / 100).</div>
             </section>
             <section class="card">
-                <div class="title"><span class="step">7</span> Exchange Rate <span class="sub">(USD per 1,000,000 IRR)</span> <button class="btn outline" id="resetExchange" style="margin-left:auto">↺ reset</button></div>
+                <div class="title"><span class="step">5</span> Exchange Rate <span class="sub">(USD per 1,000,000 IRR)</span> <button class="btn outline" id="resetExchange" style="margin-left:auto">↺ reset</button></div>
                 <textarea id="exchangeInput"></textarea>
                 <div class="hint">Example: <code>1.98</code> means 1 USD = 1,980,000 IRR. Month + 2023–2026 values.</div>
             </section>
@@ -679,7 +680,7 @@
 
         <!-- STEP 5: SKU, PRICE CONDITION & FIXED COST -->
         <section class="card">
-            <div class="title"><span class="step">5</span> SKU &amp; Price Condition <span class="sub">with fixed cost per unit</span></div>
+            <div class="title"><span class="step">6</span> SKU &amp; Price Condition <span class="sub">with fixed cost per unit</span></div>
             <div class="skuRow">
                 <select id="skuSelect"></select>
                 <select id="priceCondition">
@@ -707,7 +708,7 @@
         <!-- ============ STEP 6: PRICE ANALYSIS (SWAPPED) ============ -->
         <section class="card" id="chartContainer">
             <div class="chart-row">
-                <!-- LEFT COLUMN: Price Over Time (top) + Total Contribution USD (bottom) -->
+                <!-- LEFT COLUMN: Price Over Time (top) + Total Contribution USD (bottom, taller) -->
                 <div class="left-charts">
                     <!-- Price Over Time -->
                     <div>
@@ -732,15 +733,15 @@
                         </div>
                     </div>
 
-                    <!-- Total Contribution USD (TIME-SERIES) -->
+                    <!-- Total Contribution USD (TIME-SERIES) - TALLER -->
                     <div>
                         <div class="flex-between" style="margin-bottom:6px;">
                             <div class="title" style="margin:0;font-size:15px;">📊 Total Contribution <span class="currency-badge usd">USD</span> <span class="usd-time-label">(over time)</span></div>
                             <span class="badge" id="contribCountUsd">0 points</span>
                         </div>
-                        <div class="contrib-chartbox" id="contribChartboxUsd">
-                            <div class="contrib-empty" id="contribEmptyUsd"><div style="font-size:28px;opacity:.35">💵</div><strong>No data</strong><div>Exchange rate required for USD.</div></div>
-                            <svg id="contribChartUsd" viewBox="0 0 600 260" preserveAspectRatio="none" style="display:none"></svg>
+                        <div class="contrib-chartbox usd-chart" id="contribChartboxUsd">
+                            <div class="contrib-empty usd-empty" id="contribEmptyUsd"><div style="font-size:28px;opacity:.35">💵</div><strong>No data</strong><div>Exchange rate required for USD.</div></div>
+                            <svg id="contribChartUsd" viewBox="0 0 600 520" preserveAspectRatio="none" style="display:none"></svg>
                         </div>
                         <div class="contrib-stats cs-usd" id="contribStatsUsd">
                             <div class="cs-item"><b>Peak</b><span data-stat="peak">—</span></div>
@@ -798,16 +799,14 @@
             </div>
         </section>
 
-        <footer>Revenue Management Lab · C8 · Swapped layout + pulse animation on latest USD point</footer>
+        <footer>Revenue Management Lab · C8 · Swapped layout, taller USD chart, breathing point (no dash animation)</footer>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
         /* =========================================================
-           C8 - Swapped layout: Price-Response moved to right column,
-           USD Contribution moved to left column.
-           Added pulse animation for latest USD point.
+           C8 - Swapped layout, taller USD chart, breathing point only
            ========================================================= */
 
         // ---- DEFAULT DATA ----
@@ -1119,7 +1118,7 @@
             ['ptMin', 'ptMax', 'ptAvg', 'ptCount'].forEach(id => $(id).textContent = '—');
         }
 
-        // ---------- DRAWING FUNCTIONS (with pulse animation for USD latest) ----------
+        // ---------- DRAWING FUNCTIONS ----------
         function drawPriceTime(sku, pts) {
             const svg = els.priceTimeChart;
             const empty = els.priceTimeEmpty;
@@ -1252,7 +1251,8 @@
             els.priceTimeLabel.textContent = `· ${sku} · ${PRICE_LABELS[els.priceCondition.value]}`;
         }
 
-        function drawSingleContribution(svg, empty, statsEl, pts, fixedCost, currency, exchangeRateMap, mode) {
+        function drawSingleContribution(svg, empty, statsEl, pts, fixedCost, currency, exchangeRateMap, mode, isTall) {
+            // isTall: true for USD chart (height = 520), false for RIAL (260)
             const isUsd = (currency === 'usd');
             const color = isUsd ? '#7d3c98' : '#c97d2b';
             const strokeColor = isUsd ? '#7d3c98' : '#c97d2b';
@@ -1301,8 +1301,10 @@
             svg.style.display = 'block';
             svg.innerHTML = '';
 
+            // Set dimensions based on tall flag
+            const chartHeight = isTall ? 520 : 260;
             const W = 600,
-                H = 260,
+                H = chartHeight,
                 L = 52,
                 R = 16,
                 T = 14,
@@ -1372,7 +1374,7 @@
                 'Contribution (RIAL)');
 
             if (mode === 'time') {
-                // ---- USD time-series with pulse animation on latest ----
+                // ---- USD time-series with breathing point ----
                 const timePoints = sortedData.map((p, i) => ({ x: i, y: p.contribution, month: p.month }));
                 const segments = [];
                 let currentQ = null;
@@ -1424,33 +1426,16 @@
                     }
                 }
 
-                // ---- Latest point with pulse animation ----
+                // ---- Latest point with BREATHING circle only (no line animation) ----
                 const latest = sortedData[sortedData.length - 1];
                 const latestX = X(sortedData.length - 1);
                 const latestY = Y(latest.contribution);
 
-                // Dashed lines (apply pulse class)
-                const hLine = add('line', {
-                    x1: L,
-                    y1: latestY,
-                    x2: latestX,
-                    y2: latestY,
-                    stroke: '#ff6b6b',
-                    'stroke-width': 1.5,
-                    'stroke-dasharray': '5,5'
-                });
-                hLine.classList.add('pulse-latest-line');
-
-                const vLine = add('line', {
-                    x1: latestX,
-                    y1: latestY,
-                    x2: latestX,
-                    y2: T + ph,
-                    stroke: '#ff6b6b',
-                    'stroke-width': 1.5,
-                    'stroke-dasharray': '5,5'
-                });
-                vLine.classList.add('pulse-latest-line');
+                // Dashed lines (static, no animation)
+                add('line', { x1: L, y1: latestY, x2: latestX, y2: latestY, stroke: '#ff6b6b', 'stroke-width': 1.5,
+                    'stroke-dasharray': '5,5' });
+                add('line', { x1: latestX, y1: latestY, x2: latestX, y2: T + ph, stroke: '#ff6b6b', 'stroke-width': 1.5,
+                    'stroke-dasharray': '5,5' });
 
                 // Value label on y-axis
                 add('text', { x: L - 8, y: latestY + 3, 'text-anchor': 'end', fill: '#ff6b6b', 'font-size': 9,
@@ -1460,10 +1445,10 @@
                 add('text', { x: latestX, y: T + ph + 16, 'text-anchor': 'middle', fill: '#ff6b6b', 'font-size': 9,
                     'font-weight': 'bold' }, latestLabel);
 
-                // Highlighted point (circle with pulse)
+                // Highlighted point (breathing circle only)
                 const pulseCircle = add('circle', { cx: latestX, cy: latestY, r: 7, fill: '#ff6b6b', stroke: '#fff',
                     'stroke-width': 2 });
-                pulseCircle.classList.add('pulse-latest');
+                pulseCircle.classList.add('breathing-point');
 
                 // Stats
                 const peak = Math.max(...ys);
@@ -1518,7 +1503,7 @@
                 }
             }
 
-            // RIAL (price mode)
+            // RIAL (price mode, normal height)
             drawSingleContribution(
                 els.contribChartRial,
                 els.contribEmptyRial,
@@ -1527,12 +1512,13 @@
                 fixedCost,
                 'rial',
                 null,
-                'price'
+                'price',
+                false
             );
             const rialCount = pts ? pts.filter(p => p.effectivePrice > fixedCost).length : 0;
             els.contribCountRial.textContent = rialCount + ' pts';
 
-            // USD (time mode)
+            // USD (time mode, tall)
             drawSingleContribution(
                 els.contribChartUsd,
                 els.contribEmptyUsd,
@@ -1541,7 +1527,8 @@
                 fixedCost,
                 'usd',
                 exMap,
-                'time'
+                'time',
+                true   // tall flag
             );
             const usdCount = pts ? pts.filter(p => {
                 const ex = exMap[p.month]?.[p.year];
@@ -1551,7 +1538,6 @@
         }
 
         function drawPriceResponse(sku, pts) {
-            // This is the Price-Response chart (moved to right column)
             const svg = els.chart;
             const empty = els.empty;
             if (!pts || pts.length < 3) {
@@ -1661,7 +1647,7 @@
             els.skuInfo.textContent = `${pts.length} usable observations · ${data.filter(r=>r.material===sku).length} pricing records`;
         }
 
-        // ---- Main draw function (calls all charts) ----
+        // ---- Main draw function ----
         function drawAll(sku, pts) {
             drawPriceTime(sku, pts);
             drawPriceResponse(sku, pts);
@@ -1780,21 +1766,18 @@
         }
 
         function clearChart() {
-            // Clear Price-Response
             els.chart.style.display = 'none';
             els.empty.style.display = 'flex';
             els.chart.innerHTML = '';
             resetStats();
             els.chartLabel.textContent = '';
 
-            // Clear Price Over Time
             els.priceTimeChart.style.display = 'none';
             els.priceTimeEmpty.style.display = 'flex';
             els.priceTimeChart.innerHTML = '';
             els.priceTimeLabel.textContent = '';
             ['ptMin', 'ptMax', 'ptAvg', 'ptCount'].forEach(id => $(id).textContent = '—');
 
-            // Clear RIAL and USD
             [els.contribChartRial, els.contribChartUsd].forEach(svg => { svg.style.display = 'none';
                 svg.innerHTML = ''; });
             [els.contribEmptyRial, els.contribEmptyUsd].forEach(el => el.style.display = 'flex');
