@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Revenue Management — C8 (Swap + Pulse)</title>
+    <!-- External libraries for export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* ===================== BASE STYLES ===================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --navy: #0b1a2e;
+            --blue: #1a3a5c;
+            --light: #eef3fa;
+            --border: #d8e0eb;
+            --muted: #6a7a8e;
+            --green: #1e7a3e;
+            --red: #b53b3b;
+            --orange: #c97d2b;
+            --purple: #7d3c98;
+        }
+        body {
+            font-family: Segoe UI, Roboto, system-ui, sans-serif;
+            background: #f4f7fc;
+            color: #1a2634;
+            padding: 18px;
+        }
+        .app {
+            max-width: 1450px;
+            margin: auto;
+        }
+        .header {
+            background: linear-gradient(145deg, #0b1a2e, #1a3a5c);
+            color: #fff;
+            padding: 18px 24px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 28px rgba(0, 20, 40, .25);
+        }
+        .header h1 {
+            font-size: 23px;
+            font-weight: 650;
+        }
+        .header small {
+            opacity: .7;
+            font-weight: 400;
+        }
+        .status {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            font-size: 13px;
+            opacity: .9;
+        }
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #4ade80;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .05);
+        }
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 13px;
+            font-weight: 650;
+            color: var(--navy);
+        }
+        .step {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .sub {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 400;
+        }
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .grid3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+        }
+        @media(max-width:850px) {
+            .grid2 {
+                grid-template-columns: 1fr;
+            }
+            .grid3 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+        input[type=text],
+        input[type=number],
+        select {
+            padding: 8px 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: #fafcff;
+            outline: none;
+        }
+        input[type=text]:focus,
+        input[type=number]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--blue);
+        }
+        input[type=number] {
+            width: 120px;
+        }
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 13px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: .15s;
+        }
+        .btn:hover {
+            opacity: .85;
+        }
+        .primary {
+            background: var(--blue);
+            color: white;
+        }
+        .success {
+            background: var(--green);
+            color: #fff;
+        }
+        .outline {
+            background: #fff;
+            color: var(--blue);
+            border: 2px solid var(--border);
+        }
+        .danger {
+            background: var(--red);
+            color: #fff;
+        }
+        .file {
+            display: none;
+        }
+        .filelabel {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--light);
+            border: 2px solid var(--border);
+            padding: 7px 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: .15s;
+        }
+        .filelabel:hover {
+            background: #e4ebf5;
+        }
+        textarea {
+            width: 100%;
+            min-height: 125px;
+            resize: vertical;
+            border: 2px solid var(--border);
+            border-radius: 9px;
+            padding: 10px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            background: #fafcff;
+        }
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+        .hint code {
+            background: #f0f3f8;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .tablewrap {
+            max-height: 330px;
+            overflow: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th {
+            position: sticky;
+            top: 0;
+            background: var(--light);
+            z-index: 2;
+            padding: 8px 9px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+        td {
+            padding: 6px 9px;
+            border-bottom: 1px solid #edf1f6;
+            white-space: nowrap;
+            max-width: 260px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: Consolas, monospace;
+        }
+        .skuRow {
+            display: grid;
+            grid-template-columns: minmax(200px, 1.5fr) 160px 130px auto auto auto auto;
+            gap: 10px;
+            align-items: center;
+        }
+        @media(max-width:800px) {
+            .skuRow {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .stats {
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e8edf3;
+        }
+        .stat {
+            font-size: 13px;
+        }
+        .stat b {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .stat span {
+            font-weight: 750;
+            color: var(--blue);
+            font-size: 16px;
+        }
+        .chartbox {
+            background: #fafcff;
+            border: 1px solid #edf1f6;
+            border-radius: 12px;
+            padding: 8px;
+            position: relative;
+        }
+        #priceTimeChart {
+            width: 100%;
+            height: 200px;
+            display: block;
+        }
+        #chart {
+            width: 100%;
+            height: 430px;
+            display: block;
+        }
+        #contribChartRial {
+            width: 100%;
+            height: 260px;
+            display: block;
+        }
+        #contribChartUsd {
+            width: 100%;
+            height: 260px;
+            display: block;
+        }
+        .legend {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #44566c;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .swatch {
+            display: inline-block;
+            width: 22px;
+            height: 3px;
+            vertical-align: middle;
+            margin-right: 5px;
+            border-radius: 2px;
+        }
+        .empty-chart {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--muted);
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+            min-height: 150px;
+        }
+        .empty-chart strong {
+            color: #2a3a4e;
+            font-size: 16px;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: var(--blue);
+            color: white;
+            padding: 11px 18px;
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: .25s;
+            pointer-events: none;
+            z-index: 20;
+            box-shadow: 0 7px 25px rgba(0, 0, 0, .2);
+            max-width: 420px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: none;
+        }
+        .toast.error {
+            background: var(--red);
+        }
+        .toast.success {
+            background: var(--green);
+        }
+        .badge {
+            font-size: 12px;
+            background: #f2f5f9;
+            border-radius: 20px;
+            padding: 5px 10px;
+            color: #53657a;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge input[type="checkbox"] {
+            margin-right: 2px;
+            accent-color: var(--blue);
+        }
+        footer {
+            text-align: center;
+            color: #8a9aae;
+            font-size: 12px;
+            padding: 8px;
+        }
+        .chart-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+        }
+        @media(max-width:900px) {
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .contrib-chartbox {
+            background: #fafcff;
+            border: 1px solid #edf1f6;
+            border-radius: 12px;
+            padding: 8px;
+            min-height: 260px;
+            position: relative;
+        }
+        .contrib-empty {
+            height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--muted);
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+        }
+        .contrib-empty strong {
+            color: #2a3a4e;
+            font-size: 16px;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .cost-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--navy);
+        }
+        .cost-input input {
+            width: 110px;
+            padding: 6px 8px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: #fafcff;
+            font-weight: 600;
+        }
+        .cost-input input:focus {
+            border-color: var(--blue);
+        }
+        .contrib-stats {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e8edf3;
+            font-size: 12px;
+        }
+        .contrib-stats .cs-item b {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 500;
+        }
+        .contrib-stats .cs-item span {
+            font-weight: 750;
+            font-size: 14px;
+        }
+        .cs-rial span {
+            color: var(--orange);
+        }
+        .cs-usd span {
+            color: var(--purple);
+        }
+        .fixed-cost-label {
+            font-weight: 600;
+            color: var(--navy);
+        }
+        .quarter-legend {
+            display: inline-flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #334;
+        }
+        .ql-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .ql-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .contrib-section {
+            margin-bottom: 12px;
+        }
+        .contrib-section:last-child {
+            margin-bottom: 0;
+        }
+        .contrib-divider {
+            border-top: 2px dashed #e0e6ef;
+            margin: 10px 0 12px 0;
+        }
+        .currency-badge {
+            font-size: 11px;
+            background: #eef3fa;
+            padding: 2px 10px;
+            border-radius: 12px;
+            color: #44566c;
+            font-weight: 600;
+        }
+        .currency-badge.rial {
+            color: var(--orange);
+        }
+        .currency-badge.usd {
+            color: var(--purple);
+        }
+        .left-charts {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .left-charts .chartbox:first-child {
+            flex: 1;
+            min-height: 180px;
+        }
+        .left-charts .chartbox:last-child {
+            flex: 2;
+            min-height: 380px;
+        }
+        .price-time-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #e8edf3;
+            font-size: 12px;
+        }
+        .price-time-stats .pt-item b {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 500;
+        }
+        .price-time-stats .pt-item span {
+            font-weight: 750;
+            color: var(--blue);
+            font-size: 14px;
+        }
+        #priceTimeEmpty {
+            height: 100%;
+        }
+        .price-time-legend {
+            display: inline-flex;
+            gap: 10px;
+            font-size: 10px;
+            color: #334;
+            align-items: center;
+        }
+        .price-time-legend .ptl-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .ptl-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .usd-time-label {
+            font-size: 10px;
+            color: var(--muted);
+            margin-left: 8px;
+        }
+        #chartContainer {
+            background: #f4f7fc;
+            padding: 10px;
+            border-radius: 12px;
+        }
+        .export-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        /* ---------- PULSE ANIMATION FOR LATEST USD POINT ---------- */
+        @keyframes pulse-latest {
+            0% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.4); }
+            100% { opacity: 0.5; transform: scale(1); }
+        }
+        .pulse-latest {
+            animation: pulse-latest 2s ease-in-out infinite;
+            transform-origin: center;
+        }
+        .pulse-latest-line {
+            animation: pulse-latest 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1>📈 Revenue Management Lab <small>· C8 (Swap + Pulse)</small></h1>
+            <div class="status">
+                <span><i class="dot"></i>Local / client-side</span>
+                <span id="recordCount">0 records</span>
+                <span id="skuCount">0 SKUs</span>
+            </div>
+        </header>
+
+        <!-- STEP 1: PRICING DATA -->
+        <section class="card">
+            <div class="title"><span class="step">1</span> Pricing Data</div>
+            <div class="toolbar">
+                <div class="controls">
+                    <label class="filelabel" for="jsonFile">📤 Load pricing_data JSON</label>
+                    <input class="file" id="jsonFile" type="file" accept=".json,application/json" />
+                    <button class="btn outline" id="applyJson">Apply pasted JSON</button>
+                    <button class="btn outline" id="downloadJson">Download current JSON</button>
+                    <span class="badge" id="fileName">embedded pricing_data</span>
+                </div>
+            </div>
+            <textarea id="pricingInput" spellcheck="false"></textarea>
+            <div class="hint">
+                Expected format: array of arrays
+                <code>[material, desc, uom, zd00, zd04, zd01, zd05, zd02, zd03, valid_from, valid_to]</code>.
+                The HTML contains the supplied <b>pricing_data</b> as its initial input; replace it or load another JSON file.
+            </div>
+        </section>
+
+        <!-- STEP 2: PRICING RECORDS -->
+        <section class="card">
+            <div class="title"><span class="step">2</span> Pricing Records <span class="sub">read-only view of pricing_data</span></div>
+            <div class="tablewrap">
+                <table>
+                    <thead>
+                        <tr><th>#</th><th>Material</th><th>Description</th><th>UOM</th><th>ZD00</th><th>ZD04</th><th>ZD01</th><th>ZD05</th><th>ZD02</th><th>ZD03</th><th>Valid From</th><th>Valid To</th></tr>
+                    </thead>
+                    <tbody id="pricingBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- STEP 3, 4, 7: SALES + DISCOUNT + EXCHANGE RATE -->
+        <section class="grid3">
+            <section class="card">
+                <div class="title"><span class="step">3</span> Sales Data (kg) <button class="btn outline" id="resetSales" style="margin-left:auto">↺ reset</button></div>
+                <textarea id="salesInput"></textarea>
+                <div class="hint">Month + 2023 + 2024 + 2025 + 2026. Tab or 2+ spaces separated.</div>
+            </section>
+            <section class="card">
+                <div class="title"><span class="step">4</span> Discount Data (%) <button class="btn outline" id="resetDiscount" style="margin-left:auto">↺ reset</button></div>
+                <textarea id="discountInput"></textarea>
+                <div class="hint">Discount is applied as effective price = selected price × (1 − discount / 100).</div>
+            </section>
+            <section class="card">
+                <div class="title"><span class="step">7</span> Exchange Rate <span class="sub">(USD per 1,000,000 IRR)</span> <button class="btn outline" id="resetExchange" style="margin-left:auto">↺ reset</button></div>
+                <textarea id="exchangeInput"></textarea>
+                <div class="hint">Example: <code>1.98</code> means 1 USD = 1,980,000 IRR. Month + 2023–2026 values.</div>
+            </section>
+        </section>
+
+        <!-- STEP 5: SKU, PRICE CONDITION & FIXED COST -->
+        <section class="card">
+            <div class="title"><span class="step">5</span> SKU &amp; Price Condition <span class="sub">with fixed cost per unit</span></div>
+            <div class="skuRow">
+                <select id="skuSelect"></select>
+                <select id="priceCondition">
+                    <option value="zd00">ZD00 — List price</option>
+                    <option value="zd04">ZD04</option>
+                    <option value="zd01">ZD01</option>
+                    <option value="zd05">ZD05</option>
+                    <option value="zd02">ZD02</option>
+                    <option value="zd03">ZD03</option>
+                </select>
+                <div class="cost-input">
+                    <span class="fixed-cost-label">Cost/unit</span>
+                    <input type="number" id="fixedCost" value="800000" step="1000" min="0" />
+                </div>
+                <button class="btn primary" id="plotBtn">📊 Plot</button>
+                <button class="btn outline" id="clearBtn">✕ Clear</button>
+                <div class="export-buttons">
+                    <button class="btn success" id="printBtn">🖨️ Print Charts (PDF)</button>
+                    <button class="btn success" id="exportBtn">💾 Export Data (Excel)</button>
+                </div>
+            </div>
+            <div class="hint" id="skuInfo">Select a SKU, pricing condition, and set the fixed cost per unit.</div>
+        </section>
+
+        <!-- ============ STEP 6: PRICE ANALYSIS (SWAPPED) ============ -->
+        <section class="card" id="chartContainer">
+            <div class="chart-row">
+                <!-- LEFT COLUMN: Price Over Time (top) + Total Contribution USD (bottom) -->
+                <div class="left-charts">
+                    <!-- Price Over Time -->
+                    <div>
+                        <div class="flex-between" style="margin-bottom:6px;">
+                            <div class="title" style="margin:0;font-size:15px;">📈 Price Over Time <span class="sub" id="priceTimeLabel"></span></div>
+                            <div class="price-time-legend">
+                                <span class="ptl-item"><span class="ptl-dot" style="background:#999;"></span>Q1</span>
+                                <span class="ptl-item"><span class="ptl-dot" style="background:#2ecc71;"></span>Q2</span>
+                                <span class="ptl-item"><span class="ptl-dot" style="background:#e74c3c;"></span>Q3</span>
+                                <span class="ptl-item"><span class="ptl-dot" style="background:#f1c40f;"></span>Q4</span>
+                            </div>
+                        </div>
+                        <div class="chartbox" id="priceTimeBox">
+                            <div id="priceTimeEmpty" class="empty-chart"><div style="font-size:28px;opacity:.35">📉</div><strong>No price data</strong><div>Plot a SKU to see price evolution.</div></div>
+                            <svg id="priceTimeChart" viewBox="0 0 1000 200" preserveAspectRatio="none" style="display:none"></svg>
+                        </div>
+                        <div class="price-time-stats" id="priceTimeStats">
+                            <div class="pt-item"><b>Min Price</b><span id="ptMin">—</span></div>
+                            <div class="pt-item"><b>Max Price</b><span id="ptMax">—</span></div>
+                            <div class="pt-item"><b>Avg Price</b><span id="ptAvg">—</span></div>
+                            <div class="pt-item"><b>Periods</b><span id="ptCount">—</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Total Contribution USD (TIME-SERIES) -->
+                    <div>
+                        <div class="flex-between" style="margin-bottom:6px;">
+                            <div class="title" style="margin:0;font-size:15px;">📊 Total Contribution <span class="currency-badge usd">USD</span> <span class="usd-time-label">(over time)</span></div>
+                            <span class="badge" id="contribCountUsd">0 points</span>
+                        </div>
+                        <div class="contrib-chartbox" id="contribChartboxUsd">
+                            <div class="contrib-empty" id="contribEmptyUsd"><div style="font-size:28px;opacity:.35">💵</div><strong>No data</strong><div>Exchange rate required for USD.</div></div>
+                            <svg id="contribChartUsd" viewBox="0 0 600 260" preserveAspectRatio="none" style="display:none"></svg>
+                        </div>
+                        <div class="contrib-stats cs-usd" id="contribStatsUsd">
+                            <div class="cs-item"><b>Peak</b><span data-stat="peak">—</span></div>
+                            <div class="cs-item"><b>Month of Peak</b><span data-stat="peakMonth">—</span></div>
+                            <div class="cs-item"><b>Latest</b><span data-stat="latest">—</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Total Contribution RIAL (top) + Price-Response (bottom) -->
+                <div>
+                    <!-- RIAL Contribution -->
+                    <div class="contrib-section">
+                        <div class="flex-between" style="margin-bottom:4px;">
+                            <div class="title" style="margin:0;font-size:14px;">📊 Total Contribution <span class="currency-badge rial">RIAL</span></div>
+                            <span class="badge" id="contribCountRial">0 points</span>
+                        </div>
+                        <div class="contrib-chartbox" id="contribChartboxRial">
+                            <div class="contrib-empty" id="contribEmptyRial"><div style="font-size:28px;opacity:.35">📈</div><strong>No data</strong><div>Plot a SKU to see contribution.</div></div>
+                            <svg id="contribChartRial" viewBox="0 0 600 260" preserveAspectRatio="none" style="display:none"></svg>
+                        </div>
+                        <div class="contrib-stats cs-rial" id="contribStatsRial">
+                            <div class="cs-item"><b>Peak</b><span data-stat="peak">—</span></div>
+                            <div class="cs-item"><b>Optimal Price</b><span data-stat="opt">—</span></div>
+                            <div class="cs-item"><b>Avg</b><span data-stat="avg">—</span></div>
+                        </div>
+                    </div>
+
+                    <div class="contrib-divider"></div>
+
+                    <!-- Price-Response -->
+                    <div>
+                        <div class="flex-between" style="margin-bottom:6px;">
+                            <div class="title" style="margin:0;font-size:15px;">📊 Price-Response <span class="sub" id="chartLabel"></span></div>
+                            <div class="legend">
+                                <span><i class="swatch" style="background:#1a3a5c"></i>Linear trend</span>
+                            </div>
+                        </div>
+                        <div class="controls" style="margin-bottom:6px;gap:14px;">
+                            <label class="badge"><input type="checkbox" id="showLinear" checked /> Linear trend</label>
+                            <span style="font-size:11px;color:var(--muted);margin-left:4px;">(50‑point curve)</span>
+                        </div>
+                        <div class="chartbox" id="chartbox">
+                            <div class="empty-chart" id="empty"><div style="font-size:42px;opacity:.35">📊</div><strong>No data plotted</strong><div>Load pricing_data, enter sales/discount data, select a SKU, then plot.</div></div>
+                            <svg id="chart" viewBox="0 0 1000 430" preserveAspectRatio="none" style="display:none"></svg>
+                        </div>
+                        <div class="stats">
+                            <div class="stat"><b>POINTS</b><span id="statPoints">—</span></div>
+                            <div class="stat"><b>PRICE RANGE</b><span id="statPrice">—</span></div>
+                            <div class="stat"><b>SALES RANGE</b><span id="statSales">—</span></div>
+                            <div class="stat"><b>CORR (price)</b><span id="statCorr">—</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>Revenue Management Lab · C8 · Swapped layout + pulse animation on latest USD point</footer>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        /* =========================================================
+           C8 - Swapped layout: Price-Response moved to right column,
+           USD Contribution moved to left column.
+           Added pulse animation for latest USD point.
+           ========================================================= */
+
+        // ---- DEFAULT DATA ----
+        const DEFAULT_PRICING_DATA = [
+            [
+                "30016354",
+                "شکلات سکه اي دارک کافه 3.5 کيلويي سوربن",
+                "PC",
+                50239743,
+                55263717,
+                56770909,
+                62448000,
+                64718836,
+                71190720,
+                "2026-08-19",
+                "9999-12-31"
+            ]
+        ];
+
+        const DEFAULT_SALES =
+            "Jan\t2329\t2970\t4981\t2294\nFeb\t3067\t4118\t4814\t1899\nMar\t2210\t2049\t1345\t1481\nApr\t1189\t3374\t2019\t2788\nMay\t1812\t2448\t2457\t1875\nJun\t1156\t1392\t1297\t1408\nJul\t1611\t1213\t2092\t2113\nAug\t1522\t1628\t2594\t2155\nSep\t2087\t2294\t3259\t\nOct\t2268\t2232\t3675\t\nNov\t2287\t3862\t4489\t\nDec\t2440\t4730\t5211\t";
+
+        const DEFAULT_DISCOUNT =
+            "Jan\t6.4\t7.8\t9.8\t5.8\nFeb\t6.0\t8.8\t8.4\t5.7\nMar\t5.2\t6.7\t3.3\t4.1\nApr\t5.6\t8.7\t8.1\t6.3\nMay\t5.4\t8.4\t7.2\t7.2\nJun\t5.7\t7.6\t4.9\t5.6\nJul\t4.6\t6.0\t7.1\t9.8\nAug\t6.5\t7.6\t7.1\t9.0\nSep\t6.9\t8.4\t8.9\t\nOct\t9.0\t7.4\t8.4\t\nNov\t8.0\t8.9\t8.0\t\nDec\t6.6\t9.0\t8.0\t";
+
+        const DEFAULT_EXCHANGE =
+            "Jan\t0.25\t0.44\t0.58\t1.37\nFeb\t0.25\t0.44\t0.58\t1.37\nMar\t0.25\t0.44\t0.58\t1.37\nApr\t0.27\t0.48\t0.58\t1.56\nMay\t0.27\t0.48\t0.58\t1.74\nJun\t0.27\t0.48\t0.67\t1.92\nJul\t0.29\t0.54\t0.67\t1.90\nAug\t0.29\t0.54\t0.67\t2.00\nSep\t0.29\t0.54\t0.67\t\nOct\t0.32\t0.54\t0.92\t\nNov\t0.32\t0.54\t0.92\t\nDec\t0.32\t0.54\t0.92\t";
+
+        // ---- Constants ----
+        const PRICE_LABELS = { zd00: 'ZD00 — List price', zd04: 'ZD04', zd01: 'ZD01', zd05: 'ZD05', zd02: 'ZD02',
+            zd03: 'ZD03' };
+        const quarterColors = {
+            'Q1': '#999',
+            'Q2': '#2ecc71',
+            'Q3': '#e74c3c',
+            'Q4': '#f1c40f'
+        };
+        const monthToQuarter = {
+            'Jan': 'Q1', 'Feb': 'Q1', 'Mar': 'Q1',
+            'Apr': 'Q2', 'May': 'Q2', 'Jun': 'Q2',
+            'Jul': 'Q3', 'Aug': 'Q3', 'Sep': 'Q3',
+            'Oct': 'Q4', 'Nov': 'Q4', 'Dec': 'Q4'
+        };
+        const monthNo = { 'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9,
+            'Oct': 10, 'Nov': 11, 'Dec': 12 };
+
+        function getQuarter(month) { return monthToQuarter[month] || 'Q1'; }
+
+        // ---- Global state ----
+        let data = [];
+        let chartPoints = null;
+        let currentSku = null;
+        let currentFixedCost = 800000;
+
+        // ---- DOM refs ----
+        const $ = id => document.getElementById(id);
+        const els = {
+            pricingBody: $('pricingBody'),
+            recordCount: $('recordCount'),
+            skuCount: $('skuCount'),
+            pricingInput: $('pricingInput'),
+            salesInput: $('salesInput'),
+            discountInput: $('discountInput'),
+            exchangeInput: $('exchangeInput'),
+            skuSelect: $('skuSelect'),
+            priceCondition: $('priceCondition'),
+            fixedCost: $('fixedCost'),
+            plotBtn: $('plotBtn'),
+            clearBtn: $('clearBtn'),
+            printBtn: $('printBtn'),
+            exportBtn: $('exportBtn'),
+            chart: $('chart'),
+            empty: $('empty'),
+            chartLabel: $('chartLabel'),
+            skuInfo: $('skuInfo'),
+            showLinear: $('showLinear'),
+            statPoints: $('statPoints'),
+            statPrice: $('statPrice'),
+            statSales: $('statSales'),
+            statCorr: $('statCorr'),
+            toast: $('toast'),
+            fileName: $('fileName'),
+            priceTimeChart: $('priceTimeChart'),
+            priceTimeEmpty: $('priceTimeEmpty'),
+            priceTimeLabel: $('priceTimeLabel'),
+            ptMin: $('ptMin'),
+            ptMax: $('ptMax'),
+            ptAvg: $('ptAvg'),
+            ptCount: $('ptCount'),
+            contribChartRial: $('contribChartRial'),
+            contribEmptyRial: $('contribEmptyRial'),
+            contribCountRial: $('contribCountRial'),
+            contribStatsRial: $('contribStatsRial'),
+            contribChartUsd: $('contribChartUsd'),
+            contribEmptyUsd: $('contribEmptyUsd'),
+            contribCountUsd: $('contribCountUsd'),
+            contribStatsUsd: $('contribStatsUsd'),
+            chartContainer: $('chartContainer'),
+        };
+
+        // ---- Helper functions ----
+        function num(v) { const n = Number(v); return Number.isFinite(n) ? n : 0; }
+
+        function dateText(v) {
+            if (v == null || v === '') return '';
+            if (v instanceof Date) return v.toISOString().slice(0, 10);
+            return String(v).slice(0, 10);
+        }
+
+        function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;',
+                '"': '&quot;', "'": '&#39;' } [c])); }
+
+        function normalize(rows) {
+            if (!Array.isArray(rows)) throw new Error('pricing_data must be an array');
+            return rows.filter(r => Array.isArray(r) && r.length >= 11 && String(r[0] || '').trim()).map((r, i) => ({
+                id: i + 1,
+                material: String(r[0]).trim(),
+                description: String(r[1] || '').trim(),
+                uom: String(r[2] || 'PC').trim(),
+                zd00: num(r[3]),
+                zd04: num(r[4]),
+                zd01: num(r[5]),
+                zd05: num(r[6]),
+                zd02: num(r[7]),
+                zd03: num(r[8]),
+                valid_from: dateText(r[9]),
+                valid_to: dateText(r[10])
+            }));
+        }
+
+        function parseTable(text) {
+            const values = {},
+                months = [],
+                years = [2023, 2024, 2025, 2026];
+            for (const line of text.split(/\r?\n/).filter(x => x.trim())) {
+                const p = line.trim().split(/\t|\s{2,}/).map(x => x.trim()).filter(Boolean);
+                if (p.length < 2) continue;
+                const month = p[0];
+                months.push(month);
+                values[month] = {};
+                for (let i = 1; i <= 4; i++) {
+                    const v = parseFloat((p[i] || '').replace(/,/g, '').replace('%', ''));
+                    values[month][years[i - 1]] = Number.isFinite(v) ? v : null;
+                }
+            }
+            return months.length ? { months, years, values } : null;
+        }
+
+        function getPrice(sku, year, month, key) {
+            const t = new Date(year, month - 1, 15).getTime();
+            const rows = data.filter(r => r.material === sku);
+            for (const r of rows) {
+                const from = r.valid_from ? new Date(r.valid_from).getTime() : -Infinity;
+                const to = r.valid_to ? new Date(r.valid_to).getTime() : Infinity;
+                if (t >= from && t <= to && r[key] > 0) return r[key];
+            }
+            return null;
+        }
+
+        function getExchangeRate(month, year) {
+            const ex = parseTable(els.exchangeInput.value);
+            if (!ex) return null;
+            const val = ex.values[month]?.[year];
+            return (val != null && Number.isFinite(val) && val > 0) ? val : null;
+        }
+
+        function compute(sku, key) {
+            const sales = parseTable(els.salesInput.value),
+                disc = parseTable(els.discountInput.value);
+            if (!sales || !disc) return [];
+            const pts = [];
+            for (const month of sales.months) {
+                for (const year of sales.years) {
+                    const s = sales.values[month]?.[year],
+                        d = disc.values[month]?.[year];
+                    if (!(s > 0) || d == null || !Number.isFinite(d)) continue;
+                    const p = getPrice(sku, year, monthNo[month], key);
+                    if (!(p > 0)) continue;
+                    pts.push({ month, year, sales: s, discount: d, listPrice: p, effectivePrice: p * (1 - d / 100) });
+                }
+            }
+            return pts.sort((a, b) => a.effectivePrice - b.effectivePrice);
+        }
+
+        function corr(x, y) {
+            if (x.length < 2) return null;
+            let sx = 0,
+                sy = 0,
+                sxy = 0,
+                sx2 = 0,
+                sy2 = 0,
+                n = x.length;
+            for (let i = 0; i < n; i++) { sx += x[i];
+                sy += y[i];
+                sxy += x[i] * y[i];
+                sx2 += x[i] * x[i];
+                sy2 += y[i] * y[i]; }
+            const den = Math.sqrt((n * sx2 - sx * sx) * (n * sy2 - sy * sy));
+            return den ? ((n * sxy - sx * sy) / den) : null;
+        }
+
+        function reg(x, y) {
+            if (x.length < 2) return null;
+            let sx = 0,
+                sy = 0,
+                sxy = 0,
+                sx2 = 0,
+                n = x.length;
+            for (let i = 0; i < n; i++) { sx += x[i];
+                sy += y[i];
+                sxy += x[i] * y[i];
+                sx2 += x[i] * x[i]; }
+            const den = n * sx2 - sx * sx;
+            if (!den) return null;
+            const b = (n * sxy - sx * sy) / den;
+            return { a: (sy - b * sx) / n, b };
+        }
+
+        function fmt(v) {
+            if (v == null || !Number.isFinite(v)) return '—';
+            if (v === 0) return '0';
+            const absV = Math.abs(v);
+            if (absV >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+            if (absV >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+            if (absV >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+            return v.toFixed(0);
+        }
+
+        function fmtUsd(v) {
+            if (v == null || !Number.isFinite(v)) return '—';
+            if (v === 0) return '$0';
+            if (Math.abs(v) >= 1e6) return '$' + (v / 1e6).toFixed(2) + 'M';
+            if (Math.abs(v) >= 1e3) return '$' + (v / 1e3).toFixed(0) + 'K';
+            return '$' + v.toFixed(0);
+        }
+
+        function linePath(xs, ys, X, Y) {
+            return xs.map((x, i) => (i ? 'L' : 'M') + X(x).toFixed(1) + ',' + Y(ys[i]).toFixed(1)).join(' ');
+        }
+
+        function catmullRom2bezier(points, tension) {
+            if (points.length < 2) return [];
+            if (points.length === 2) {
+                return [{ x1: points[0].x, y1: points[0].y, x2: points[1].x, y2: points[1].y, x: points[1].x, y: points[1]
+                        .y }];
+            }
+            tension = tension || 0.5;
+            const segs = [];
+            for (let i = 0; i < points.length - 1; i++) {
+                const p0 = points[i - 1] || points[i];
+                const p1 = points[i];
+                const p2 = points[i + 1];
+                const p3 = points[i + 2] || points[i + 1];
+                const dx1 = (p2.x - p0.x) * tension;
+                const dy1 = (p2.y - p0.y) * tension;
+                const dx2 = (p3.x - p1.x) * tension;
+                const dy2 = (p3.y - p1.y) * tension;
+                segs.push({
+                    x1: p1.x + dx1,
+                    y1: p1.y + dy1,
+                    x2: p2.x - dx2,
+                    y2: p2.y - dy2,
+                    x: p2.x,
+                    y: p2.y
+                });
+            }
+            return segs;
+        }
+
+        function toast(msg, type = 'info') {
+            els.toast.textContent = msg;
+            els.toast.className = 'toast show ' + type;
+            clearTimeout(toast.t);
+            toast.t = setTimeout(() => els.toast.className = 'toast', 3000);
+        }
+
+        function render() {
+            els.pricingInput.value = JSON.stringify(data.map(r => [r.material, r.description, r.uom, r.zd00, r.zd04,
+                r.zd01, r.zd05, r.zd02, r.zd03, r.valid_from, r.valid_to
+            ]), null, 2);
+            els.recordCount.textContent = data.length + ' records';
+            els.skuCount.textContent = new Set(data.map(r => r.material)).size + ' SKUs';
+            els.pricingBody.innerHTML = data.map((r, i) =>
+                `<tr>
+              <td>${i+1}</td><td><b>${esc(r.material)}</b></td><td title="${esc(r.description)}">${esc(r.description)}</td><td>${esc(r.uom)}</td>
+              <td>${r.zd00.toLocaleString()}</td><td>${r.zd04.toLocaleString()}</td><td>${r.zd01.toLocaleString()}</td>
+              <td>${r.zd05.toLocaleString()}</td><td>${r.zd02.toLocaleString()}</td><td>${r.zd03.toLocaleString()}</td>
+              <td>${esc(r.valid_from)}</td><td>${esc(r.valid_to)}</td></tr>`
+            ).join('') || '<tr><td colspan="12" style="text-align:center;padding:25px">No pricing records.</td></tr>';
+            const old = els.skuSelect.value;
+            const skus = [...new Set(data.map(r => r.material))].sort();
+            els.skuSelect.innerHTML = skus.map(s =>
+                `<option value="${esc(s)}">${esc(s)} — ${esc((data.find(r=>r.material===s)||{}).description||'')}</option>`
+                ).join('');
+            if (skus.includes(old)) els.skuSelect.value = old;
+            else if (skus.length) els.skuSelect.value = skus[0];
+            updateSkuInfo();
+        }
+
+        function updateSkuInfo() {
+            const sku = els.skuSelect.value,
+                rows = data.filter(r => r.material === sku);
+            els.skuInfo.textContent = sku ? `${rows.length} pricing records · ${(rows[0]?.description||sku)}` :
+                'No SKU selected.';
+        }
+
+        function resetStats() {
+            ['statPoints', 'statPrice', 'statSales', 'statCorr'].forEach(id => $(id).textContent = '—');
+            ['ptMin', 'ptMax', 'ptAvg', 'ptCount'].forEach(id => $(id).textContent = '—');
+        }
+
+        // ---------- DRAWING FUNCTIONS (with pulse animation for USD latest) ----------
+        function drawPriceTime(sku, pts) {
+            const svg = els.priceTimeChart;
+            const empty = els.priceTimeEmpty;
+            if (!pts || pts.length < 2) {
+                empty.style.display = 'flex';
+                svg.style.display = 'none';
+                svg.innerHTML = '';
+                els.priceTimeLabel.textContent = '';
+                els.ptMin.textContent = '—';
+                els.ptMax.textContent = '—';
+                els.ptAvg.textContent = '—';
+                els.ptCount.textContent = '—';
+                return;
+            }
+
+            const sorted = [...pts].sort((a, b) => {
+                if (a.year !== b.year) return a.year - b.year;
+                return monthNo[a.month] - monthNo[b.month];
+            });
+
+            const timePoints = sorted.map((p, i) => ({ x: i, y: p.effectivePrice, month: p.month, year: p.year }));
+            const xs = timePoints.map(p => p.x);
+            const ys = timePoints.map(p => p.y);
+            const minX = 0,
+                maxX = xs.length - 1;
+            const minY = Math.min(...ys),
+                maxY = Math.max(...ys);
+            const padY = (maxY - minY || 1) * 0.1;
+            const y0 = Math.max(0, minY - padY),
+                y1 = maxY + padY;
+
+            const W = 1000,
+                H = 200,
+                L = 60,
+                R = 20,
+                T = 16,
+                B = 28,
+                pw = W - L - R,
+                ph = H - T - B;
+            const X = v => L + (v - minX) / (maxX - minX || 1) * pw;
+            const Y = v => T + ph - (v - y0) / (y1 - y0) * ph;
+
+            empty.style.display = 'none';
+            svg.style.display = 'block';
+            svg.innerHTML = '';
+
+            const add = (tag, attrs, text) => {
+                const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+                Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+                if (text != null) e.textContent = text;
+                svg.appendChild(e);
+                return e;
+            };
+
+            add('rect', { x: 0, y: 0, width: W, height: H, fill: '#fafcff' });
+
+            for (let i = 0; i <= 4; i++) {
+                const yv = y0 + (y1 - y0) * i / 4;
+                add('line', { x1: L, y1: Y(yv), x2: L + pw, y2: Y(yv), stroke: '#e7edf5' });
+                add('text', { x: L - 6, y: Y(yv) + 3, 'text-anchor': 'end', fill: '#64748b', 'font-size': 9 }, fmt(yv));
+            }
+            const step = Math.max(1, Math.floor(xs.length / 10));
+            for (let i = 0; i < xs.length; i += step) {
+                const p = timePoints[i];
+                const label = p.month + ' ' + p.year;
+                add('text', { x: X(i), y: H - 8, 'text-anchor': 'middle', fill: '#64748b', 'font-size': 9 }, label);
+            }
+            add('line', { x1: L, y1: T + ph, x2: L + pw, y2: T + ph, stroke: '#8796aa' });
+            add('line', { x1: L, y1: T, x2: L, y2: T + ph, stroke: '#8796aa' });
+            add('text', { x: L + pw / 2, y: H - 2, 'text-anchor': 'middle', fill: '#334155', 'font-size': 10,
+                'font-weight': '500' }, 'Time');
+            add('text', { x: 14, y: T + ph / 2, transform: `rotate(-90 14 ${T+ph/2})`, 'text-anchor': 'middle',
+                fill: '#334155', 'font-size': 10, 'font-weight': '500' }, 'Effective Price');
+
+            const segments = [];
+            let currentQ = null;
+            let currentPts = [];
+            for (let i = 0; i < timePoints.length; i++) {
+                const p = timePoints[i];
+                const q = getQuarter(p.month);
+                if (q !== currentQ) {
+                    if (currentPts.length > 0) {
+                        segments.push({ quarter: currentQ, points: currentPts });
+                    }
+                    currentQ = q;
+                    currentPts = [p];
+                } else {
+                    currentPts.push(p);
+                }
+            }
+            if (currentPts.length > 0) {
+                segments.push({ quarter: currentQ, points: currentPts });
+            }
+
+            for (const seg of segments) {
+                const ptsSeg = seg.points;
+                if (ptsSeg.length < 2) {
+                    const p = ptsSeg[0];
+                    add('circle', { cx: X(p.x), cy: Y(p.y), r: 4, fill: quarterColors[seg.quarter] || '#999',
+                        stroke: '#fff', 'stroke-width': 1 });
+                    continue;
+                }
+                const bez = catmullRom2bezier(ptsSeg.map(p => ({ x: p.x, y: p.y })), 0.5);
+                if (bez.length === 0) continue;
+                let d = 'M' + X(ptsSeg[0].x).toFixed(1) + ',' + Y(ptsSeg[0].y).toFixed(1);
+                for (let i = 0; i < bez.length; i++) {
+                    const b = bez[i];
+                    const x1 = X(b.x1),
+                        y1 = Y(b.y1);
+                    const x2 = X(b.x2),
+                        y2 = Y(b.y2);
+                    const x = X(b.x),
+                        y = Y(b.y);
+                    d += 'C' + x1.toFixed(1) + ',' + y1.toFixed(1) + ' ' + x2.toFixed(1) + ',' + y2.toFixed(1) + ' ' + x
+                        .toFixed(1) + ',' + y.toFixed(1);
+                }
+                add('path', { d, fill: 'none', stroke: quarterColors[seg.quarter] || '#999', 'stroke-width': 2.5,
+                    'stroke-linejoin': 'round' });
+                for (const p of ptsSeg) {
+                    add('circle', { cx: X(p.x), cy: Y(p.y), r: 4, fill: quarterColors[seg.quarter] || '#999',
+                        stroke: '#fff', 'stroke-width': 1 });
+                }
+            }
+
+            const avg = ys.reduce((a, b) => a + b, 0) / ys.length;
+            els.ptMin.textContent = fmt(Math.min(...ys));
+            els.ptMax.textContent = fmt(Math.max(...ys));
+            els.ptAvg.textContent = fmt(avg);
+            els.ptCount.textContent = xs.length;
+            els.priceTimeLabel.textContent = `· ${sku} · ${PRICE_LABELS[els.priceCondition.value]}`;
+        }
+
+        function drawSingleContribution(svg, empty, statsEl, pts, fixedCost, currency, exchangeRateMap, mode) {
+            const isUsd = (currency === 'usd');
+            const color = isUsd ? '#7d3c98' : '#c97d2b';
+            const strokeColor = isUsd ? '#7d3c98' : '#c97d2b';
+
+            if (!pts || pts.length < 2) {
+                empty.style.display = 'flex';
+                svg.style.display = 'none';
+                svg.innerHTML = '';
+                statsEl.querySelectorAll('span').forEach(el => el.textContent = '—');
+                return;
+            }
+
+            const contribData = pts
+                .map(p => {
+                    const ex = exchangeRateMap ? exchangeRateMap[p.month]?.[p.year] : null;
+                    const contribRial = p.sales * (p.effectivePrice - fixedCost);
+                    let contrib = contribRial;
+                    if (isUsd && ex != null && ex > 0) {
+                        contrib = contribRial / (ex * 1e6);
+                    } else if (isUsd) {
+                        return null;
+                    }
+                    return { ...p, contribution: contrib, effectivePrice: p.effectivePrice };
+                })
+                .filter(p => p && p.effectivePrice > fixedCost && Number.isFinite(p.contribution));
+
+            if (contribData.length < 2) {
+                empty.style.display = 'flex';
+                svg.style.display = 'none';
+                svg.innerHTML = '';
+                statsEl.querySelectorAll('span').forEach(el => el.textContent = '—');
+                return;
+            }
+
+            let sortedData;
+            if (mode === 'time') {
+                sortedData = [...contribData].sort((a, b) => {
+                    if (a.year !== b.year) return a.year - b.year;
+                    return monthNo[a.month] - monthNo[b.month];
+                });
+            } else {
+                sortedData = [...contribData].sort((a, b) => a.effectivePrice - b.effectivePrice);
+            }
+
+            empty.style.display = 'none';
+            svg.style.display = 'block';
+            svg.innerHTML = '';
+
+            const W = 600,
+                H = 260,
+                L = 52,
+                R = 16,
+                T = 14,
+                Bpad = 32,
+                pw = W - L - R,
+                ph = H - T - Bpad;
+
+            let xs, ys, xLabels;
+            if (mode === 'time') {
+                xs = sortedData.map((_, i) => i);
+                ys = sortedData.map(p => p.contribution);
+                xLabels = sortedData.map(p => p.month + ' ' + p.year);
+            } else {
+                xs = sortedData.map(p => p.effectivePrice);
+                ys = sortedData.map(p => p.contribution);
+                xLabels = null;
+            }
+
+            const minX = Math.min(...xs),
+                maxX = Math.max(...xs);
+            const minY = Math.min(...ys),
+                maxY = Math.max(...ys);
+            const padX = (maxX - minX || 1) * 0.06;
+            const padY = (maxY - minY || 1) * 0.10;
+            const x0 = Math.max(0, minX - padX);
+            const x1 = maxX + padX;
+            const y0 = Math.max(0, minY - padY);
+            const y1 = maxY + padY;
+
+            const X = v => L + (v - x0) / (x1 - x0) * pw;
+            const Y = v => T + ph - (v - y0) / (y1 - y0) * ph;
+
+            const add = (tag, attrs, text) => {
+                const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+                Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+                if (text != null) e.textContent = text;
+                svg.appendChild(e);
+                return e;
+            };
+
+            add('rect', { x: 0, y: 0, width: W, height: H, fill: '#fafcff' });
+
+            for (let i = 0; i <= 4; i++) {
+                const xv = x0 + (x1 - x0) * i / 4,
+                    yv = y0 + (y1 - y0) * i / 4;
+                add('line', { x1: X(xv), y1: T, x2: X(xv), y2: T + ph, stroke: '#e7edf5' });
+                add('line', { x1: L, y1: Y(yv), x2: L + pw, y2: Y(yv), stroke: '#e7edf5' });
+                if (mode === 'time') {
+                    const idx = Math.round(i * (xs.length - 1) / 4);
+                    if (idx < xs.length) {
+                        add('text', { x: X(xv), y: H - 14, 'text-anchor': 'middle', fill: '#64748b', 'font-size': 9 },
+                            xLabels[idx]);
+                    }
+                } else {
+                    add('text', { x: X(xv), y: H - 14, 'text-anchor': 'middle', fill: '#64748b', 'font-size': 9 },
+                    fmt(xv));
+                }
+                add('text', { x: L - 6, y: Y(yv) + 3, 'text-anchor': 'end', fill: '#64748b', 'font-size': 9 },
+                    isUsd ? fmtUsd(yv) : fmt(yv));
+            }
+            add('line', { x1: L, y1: T + ph, x2: L + pw, y2: T + ph, stroke: '#8796aa' });
+            add('line', { x1: L, y1: T, x2: L, y2: T + ph, stroke: '#8796aa' });
+            add('text', { x: L + pw / 2, y: H - 2, 'text-anchor': 'middle', fill: '#334155', 'font-size': 10,
+                'font-weight': '500' }, mode === 'time' ? 'Time' : 'Effective Price');
+            add('text', { x: 12, y: T + ph / 2, transform: `rotate(-90 12 ${T+ph/2})`, 'text-anchor': 'middle',
+                fill: '#334155', 'font-size': 10, 'font-weight': '500' }, isUsd ? 'Contribution (USD)' :
+                'Contribution (RIAL)');
+
+            if (mode === 'time') {
+                // ---- USD time-series with pulse animation on latest ----
+                const timePoints = sortedData.map((p, i) => ({ x: i, y: p.contribution, month: p.month }));
+                const segments = [];
+                let currentQ = null;
+                let currentPts = [];
+                for (let i = 0; i < timePoints.length; i++) {
+                    const p = timePoints[i];
+                    const q = getQuarter(p.month);
+                    if (q !== currentQ) {
+                        if (currentPts.length > 0) {
+                            segments.push({ quarter: currentQ, points: currentPts });
+                        }
+                        currentQ = q;
+                        currentPts = [p];
+                    } else {
+                        currentPts.push(p);
+                    }
+                }
+                if (currentPts.length > 0) {
+                    segments.push({ quarter: currentQ, points: currentPts });
+                }
+
+                for (const seg of segments) {
+                    const ptsSeg = seg.points;
+                    if (ptsSeg.length < 2) {
+                        const p = ptsSeg[0];
+                        add('circle', { cx: X(p.x), cy: Y(p.y), r: 3.5, fill: quarterColors[seg.quarter] || '#999',
+                            stroke: '#fff', 'stroke-width': 1 });
+                        continue;
+                    }
+                    const bez = catmullRom2bezier(ptsSeg.map(p => ({ x: p.x, y: p.y })), 0.5);
+                    if (bez.length === 0) continue;
+                    let d = 'M' + X(ptsSeg[0].x).toFixed(1) + ',' + Y(ptsSeg[0].y).toFixed(1);
+                    for (let i = 0; i < bez.length; i++) {
+                        const b = bez[i];
+                        const x1 = X(b.x1),
+                            y1 = Y(b.y1);
+                        const x2 = X(b.x2),
+                            y2 = Y(b.y2);
+                        const x = X(b.x),
+                            y = Y(b.y);
+                        d += 'C' + x1.toFixed(1) + ',' + y1.toFixed(1) + ' ' + x2.toFixed(1) + ',' + y2.toFixed(1) + ' ' +
+                            x.toFixed(1) + ',' + y.toFixed(1);
+                    }
+                    add('path', { d, fill: 'none', stroke: quarterColors[seg.quarter] || '#999', 'stroke-width': 2.5,
+                        'stroke-linejoin': 'round' });
+                    for (const p of ptsSeg) {
+                        add('circle', { cx: X(p.x), cy: Y(p.y), r: 3.5, fill: quarterColors[seg.quarter] || '#999',
+                            stroke: '#fff', 'stroke-width': 1 });
+                    }
+                }
+
+                // ---- Latest point with pulse animation ----
+                const latest = sortedData[sortedData.length - 1];
+                const latestX = X(sortedData.length - 1);
+                const latestY = Y(latest.contribution);
+
+                // Dashed lines (apply pulse class)
+                const hLine = add('line', {
+                    x1: L,
+                    y1: latestY,
+                    x2: latestX,
+                    y2: latestY,
+                    stroke: '#ff6b6b',
+                    'stroke-width': 1.5,
+                    'stroke-dasharray': '5,5'
+                });
+                hLine.classList.add('pulse-latest-line');
+
+                const vLine = add('line', {
+                    x1: latestX,
+                    y1: latestY,
+                    x2: latestX,
+                    y2: T + ph,
+                    stroke: '#ff6b6b',
+                    'stroke-width': 1.5,
+                    'stroke-dasharray': '5,5'
+                });
+                vLine.classList.add('pulse-latest-line');
+
+                // Value label on y-axis
+                add('text', { x: L - 8, y: latestY + 3, 'text-anchor': 'end', fill: '#ff6b6b', 'font-size': 9,
+                    'font-weight': 'bold' }, fmtUsd(latest.contribution));
+                // Month label on x-axis
+                const latestLabel = latest.month + ' ' + latest.year;
+                add('text', { x: latestX, y: T + ph + 16, 'text-anchor': 'middle', fill: '#ff6b6b', 'font-size': 9,
+                    'font-weight': 'bold' }, latestLabel);
+
+                // Highlighted point (circle with pulse)
+                const pulseCircle = add('circle', { cx: latestX, cy: latestY, r: 7, fill: '#ff6b6b', stroke: '#fff',
+                    'stroke-width': 2 });
+                pulseCircle.classList.add('pulse-latest');
+
+                // Stats
+                const peak = Math.max(...ys);
+                const peakIdx = ys.indexOf(peak);
+                const peakMonth = sortedData[peakIdx].month + ' ' + sortedData[peakIdx].year;
+                const latestVal = latest.contribution;
+                const spanPeak = statsEl.querySelector('[data-stat="peak"]');
+                const spanPeakMonth = statsEl.querySelector('[data-stat="peakMonth"]');
+                const spanLatest = statsEl.querySelector('[data-stat="latest"]');
+                if (spanPeak) spanPeak.textContent = fmtUsd(peak);
+                if (spanPeakMonth) spanPeakMonth.textContent = peakMonth;
+                if (spanLatest) spanLatest.textContent = fmtUsd(latestVal);
+            } else {
+                // ---- RIAL price mode (no pulse) ----
+                const ptsLine = sortedData.map(p => ({ x: X(p.effectivePrice), y: Y(p.contribution) }));
+                const d = ptsLine.map((p, i) => (i ? 'L' : 'M') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+                add('path', { d, fill: 'none', stroke: strokeColor, 'stroke-width': 2.5, 'stroke-linejoin': 'round' });
+                sortedData.forEach(p => {
+                    const cx = X(p.effectivePrice),
+                        cy = Y(p.contribution);
+                    const c = add('circle', { cx, cy, r: 4.5, fill: color, stroke: '#fff', 'stroke-width': 1.5 });
+                    const tt = add('title', {},
+                        `${p.month} ${p.year} · Price ${p.effectivePrice.toFixed(0)} · Contrib ${isUsd ? fmtUsd(p.contribution) : fmt(p.contribution)}`
+                        );
+                    c.appendChild(tt);
+                });
+                const peak = Math.max(...ys);
+                const peakIdx = ys.indexOf(peak);
+                const optPrice = xs[peakIdx];
+                const avg = ys.reduce((a, b) => a + b, 0) / ys.length;
+                const spanPeak = statsEl.querySelector('[data-stat="peak"]');
+                const spanOpt = statsEl.querySelector('[data-stat="opt"]');
+                const spanAvg = statsEl.querySelector('[data-stat="avg"]');
+                if (spanPeak) spanPeak.textContent = isUsd ? fmtUsd(peak) : fmt(peak);
+                if (spanOpt) spanOpt.textContent = fmt(optPrice);
+                if (spanAvg) spanAvg.textContent = isUsd ? fmtUsd(avg) : fmt(avg);
+            }
+        }
+
+        function drawContributions(pts) {
+            const fixedCost = parseFloat(els.fixedCost.value) || 0;
+            currentFixedCost = fixedCost;
+
+            const exData = parseTable(els.exchangeInput.value);
+            const exMap = {};
+            if (exData) {
+                for (const m of exData.months) {
+                    exMap[m] = {};
+                    for (const y of exData.years) {
+                        exMap[m][y] = exData.values[m]?.[y] ?? null;
+                    }
+                }
+            }
+
+            // RIAL (price mode)
+            drawSingleContribution(
+                els.contribChartRial,
+                els.contribEmptyRial,
+                els.contribStatsRial,
+                pts,
+                fixedCost,
+                'rial',
+                null,
+                'price'
+            );
+            const rialCount = pts ? pts.filter(p => p.effectivePrice > fixedCost).length : 0;
+            els.contribCountRial.textContent = rialCount + ' pts';
+
+            // USD (time mode)
+            drawSingleContribution(
+                els.contribChartUsd,
+                els.contribEmptyUsd,
+                els.contribStatsUsd,
+                pts,
+                fixedCost,
+                'usd',
+                exMap,
+                'time'
+            );
+            const usdCount = pts ? pts.filter(p => {
+                const ex = exMap[p.month]?.[p.year];
+                return p.effectivePrice > fixedCost && ex != null && ex > 0;
+            }).length : 0;
+            els.contribCountUsd.textContent = usdCount + ' pts';
+        }
+
+        function drawPriceResponse(sku, pts) {
+            // This is the Price-Response chart (moved to right column)
+            const svg = els.chart;
+            const empty = els.empty;
+            if (!pts || pts.length < 3) {
+                empty.style.display = 'flex';
+                svg.style.display = 'none';
+                svg.innerHTML = '';
+                resetStats();
+                els.chartLabel.textContent = '';
+                return;
+            }
+            empty.style.display = 'none';
+            svg.style.display = 'block';
+            svg.innerHTML = '';
+
+            const W = 1000,
+                H = 430,
+                L = 78,
+                R = 28,
+                T = 24,
+                B = 55,
+                pw = W - L - R,
+                ph = H - T - B;
+            const xs = pts.map(p => p.effectivePrice),
+                ys = pts.map(p => p.sales);
+            const minX = Math.min(...xs),
+                maxX = Math.max(...xs),
+                minY = Math.min(...ys),
+                maxY = Math.max(...ys);
+            const padX = (maxX - minX || 1) * .08,
+                padY = (maxY - minY || 1) * .12;
+            const x0 = minX - padX,
+                x1 = maxX + padX,
+                y0 = Math.max(0, minY - padY),
+                y1 = maxY + padY;
+            const X = v => L + (v - x0) / (x1 - x0) * pw;
+            const Y = v => T + ph - (v - y0) / (y1 - y0) * ph;
+
+            const add = (tag, attrs, text) => {
+                const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+                Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+                if (text != null) e.textContent = text;
+                svg.appendChild(e);
+                return e;
+            };
+
+            add('rect', { x: 0, y: 0, width: W, height: H, fill: '#fafcff' });
+
+            for (let i = 0; i <= 5; i++) {
+                const xv = x0 + (x1 - x0) * i / 5,
+                    yv = y0 + (y1 - y0) * i / 5;
+                add('line', { x1: X(xv), y1: T, x2: X(xv), y2: T + ph, stroke: '#e7edf5' });
+                add('line', { x1: L, y1: Y(yv), x2: W - R, y2: Y(yv), stroke: '#e7edf5' });
+                add('text', { x: X(xv), y: H - 24, 'text-anchor': 'middle', fill: '#64748b', 'font-size': 11 }, fmt(xv));
+                add('text', { x: L - 10, y: Y(yv) + 4, 'text-anchor': 'end', fill: '#64748b', 'font-size': 11 }, fmt(yv));
+            }
+            add('line', { x1: L, y1: T + ph, x2: W - R, y2: T + ph, stroke: '#8796aa' });
+            add('line', { x1: L, y1: T, x2: L, y2: T + ph, stroke: '#8796aa' });
+            add('text', { x: L + pw / 2, y: H - 5, 'text-anchor': 'middle', fill: '#334155', 'font-size': 13,
+                'font-weight': '600' }, 'Effective Price (per unit)');
+            add('text', { x: 17, y: T + ph / 2, transform: `rotate(-90 17 ${T+ph/2})`, 'text-anchor': 'middle',
+                fill: '#334155', 'font-size': 13, 'font-weight': '600' }, 'Sales (kg)');
+
+            if (els.showLinear.checked) {
+                const rr = reg(xs, ys);
+                if (rr) {
+                    const a = [x0, x1],
+                        b = a.map(v => rr.a + rr.b * v);
+                    add('path', { d: linePath(a, b, X, Y), fill: 'none', stroke: '#1a3a5c', 'stroke-width': 3 });
+                }
+            }
+
+            pts.forEach(p => {
+                const q = getQuarter(p.month);
+                const fillColor = quarterColors[q] || '#1a3a5c';
+                const c = add('circle', { cx: X(p.effectivePrice), cy: Y(p.sales), r: 6, fill: fillColor,
+                    stroke: '#fff', 'stroke-width': 2 });
+                const tt = add('title', {},
+                    `${p.month} ${p.year} · Price ${p.effectivePrice.toFixed(0)} · Sales ${p.sales.toFixed(0)} kg · Discount ${p.discount}% · ${q}`
+                    );
+                c.appendChild(tt);
+            });
+
+            const legX = W - 210,
+                legY = T + 10;
+            add('rect', { x: legX, y: legY, width: 195, height: 105, fill: 'white', stroke: '#ccc', rx: 6 });
+            let lx = legX + 12,
+                ly = legY + 18;
+            const quarterLabels = {
+                'Q1': 'Q1: January – March',
+                'Q2': 'Q2: April – June',
+                'Q3': 'Q3: July – September',
+                'Q4': 'Q4: October – December'
+            };
+            for (const [q, col] of Object.entries(quarterColors)) {
+                const label = quarterLabels[q] || q;
+                add('rect', { x: lx, y: ly - 6, width: 12, height: 12, fill: col, rx: 2 });
+                add('text', { x: lx + 18, y: ly + 4, 'font-size': 11, fill: '#334' }, label);
+                ly += 22;
+            }
+
+            const cCorr = corr(xs, ys);
+            els.statPoints.textContent = pts.length;
+            els.statPrice.textContent = fmt(minX) + ' – ' + fmt(maxX);
+            els.statSales.textContent = fmt(minY) + ' – ' + fmt(maxY);
+            els.statCorr.textContent = cCorr == null ? '—' : cCorr.toFixed(3);
+            els.chartLabel.textContent = `· ${sku} · ${PRICE_LABELS[els.priceCondition.value]}`;
+            els.skuInfo.textContent = `${pts.length} usable observations · ${data.filter(r=>r.material===sku).length} pricing records`;
+        }
+
+        // ---- Main draw function (calls all charts) ----
+        function drawAll(sku, pts) {
+            drawPriceTime(sku, pts);
+            drawPriceResponse(sku, pts);
+            drawContributions(pts);
+        }
+
+        // ---- Print (PDF) ----
+        function printCharts() {
+            if (!chartPoints || chartPoints.length < 3) {
+                toast('Please plot a SKU first.', 'error');
+                return;
+            }
+            const container = els.chartContainer;
+            html2canvas(container, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#f4f7fc',
+                logging: false,
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('l', 'mm', 'a4');
+                const imgWidth = 297;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pdf.internal.pageSize.getHeight();
+
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pdf.internal.pageSize.getHeight();
+                }
+                pdf.save('Revenue_Charts.pdf');
+                toast('PDF exported successfully.', 'success');
+            }).catch(err => {
+                console.error(err);
+                toast('Failed to generate PDF.', 'error');
+            });
+        }
+
+        // ---- Export Excel ----
+        function exportData() {
+            if (!chartPoints || chartPoints.length < 3) {
+                toast('Please plot a SKU first.', 'error');
+                return;
+            }
+            const fixedCost = parseFloat(els.fixedCost.value) || 0;
+            const sku = els.skuSelect.value;
+            const priceKey = els.priceCondition.value;
+            const exData = parseTable(els.exchangeInput.value);
+            const exMap = {};
+            if (exData) {
+                for (const m of exData.months) {
+                    exMap[m] = {};
+                    for (const y of exData.years) {
+                        exMap[m][y] = exData.values[m]?.[y] ?? null;
+                    }
+                }
+            }
+
+            const rows = [];
+            const sorted = [...chartPoints].sort((a, b) => {
+                if (a.year !== b.year) return a.year - b.year;
+                return monthNo[a.month] - monthNo[b.month];
+            });
+            for (const p of sorted) {
+                const ex = exMap[p.month]?.[p.year];
+                const effectivePrice = p.effectivePrice;
+                const sales = p.sales;
+                const discount = p.discount;
+                const revenueUSD = (ex && ex > 0) ? (sales * effectivePrice) / (ex * 1e6) : null;
+                const contributionUSD = (ex && ex > 0 && effectivePrice > fixedCost) ?
+                    (sales * (effectivePrice - fixedCost)) / (ex * 1e6) : null;
+                rows.push({
+                    'Year-Month': `${p.year}-${p.month}`,
+                    'Price (IRR)': effectivePrice,
+                    'Sales (kg)': sales,
+                    'Discount (%)': discount,
+                    'Effective Price (IRR)': effectivePrice,
+                    'Revenue (USD)': revenueUSD,
+                    'Contribution (USD)': contributionUSD,
+                });
+            }
+
+            const ws = XLSX.utils.json_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Data');
+            const colWidths = [
+                { wch: 14 }, { wch: 16 }, { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 14 }, { wch: 16 }
+            ];
+            ws['!cols'] = colWidths;
+            const wbname = `Revenue_Data_${sku}_${priceKey}.xlsx`;
+            XLSX.writeFile(wb, wbname);
+            toast('Excel exported successfully.', 'success');
+        }
+
+        // ---- Plot and Clear ----
+        function plot() {
+            const sku = els.skuSelect.value;
+            if (!sku) { toast('Select a SKU.', 'error'); return; }
+            const fixedCost = parseFloat(els.fixedCost.value);
+            if (isNaN(fixedCost) || fixedCost < 0) {
+                toast('Enter a valid fixed cost (≥ 0).', 'error');
+                return;
+            }
+            currentFixedCost = fixedCost;
+            const pts = compute(sku, els.priceCondition.value);
+            chartPoints = pts;
+            currentSku = sku;
+            drawAll(sku, pts);
+            if (pts.length < 3) toast(`Only ${pts.length} usable observations; at least 3 are needed.`, 'error');
+        }
+
+        function clearChart() {
+            // Clear Price-Response
+            els.chart.style.display = 'none';
+            els.empty.style.display = 'flex';
+            els.chart.innerHTML = '';
+            resetStats();
+            els.chartLabel.textContent = '';
+
+            // Clear Price Over Time
+            els.priceTimeChart.style.display = 'none';
+            els.priceTimeEmpty.style.display = 'flex';
+            els.priceTimeChart.innerHTML = '';
+            els.priceTimeLabel.textContent = '';
+            ['ptMin', 'ptMax', 'ptAvg', 'ptCount'].forEach(id => $(id).textContent = '—');
+
+            // Clear RIAL and USD
+            [els.contribChartRial, els.contribChartUsd].forEach(svg => { svg.style.display = 'none';
+                svg.innerHTML = ''; });
+            [els.contribEmptyRial, els.contribEmptyUsd].forEach(el => el.style.display = 'flex');
+            els.contribCountRial.textContent = '0 points';
+            els.contribCountUsd.textContent = '0 points';
+            els.contribStatsRial.querySelectorAll('span').forEach(el => el.textContent = '—');
+            els.contribStatsUsd.querySelectorAll('span').forEach(el => el.textContent = '—');
+
+            currentSku = null;
+            chartPoints = null;
+        }
+
+        // ---- Apply pricing ----
+        function applyPricing(raw, source = 'input') {
+            try {
+                const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                const normalized = normalize(parsed);
+                if (!normalized.length) throw new Error('No valid pricing records found.');
+                data = normalized;
+                render();
+                clearChart();
+                els.fileName.textContent = source;
+                toast(`Loaded ${data.length} pricing records.`, 'success');
+            } catch (e) {
+                toast('Invalid pricing_data: ' + e.message, 'error');
+            }
+        }
+
+        // ---- INIT ----
+        function init() {
+            data = normalize(DEFAULT_PRICING_DATA);
+            els.salesInput.value = DEFAULT_SALES;
+            els.discountInput.value = DEFAULT_DISCOUNT;
+            els.exchangeInput.value = DEFAULT_EXCHANGE;
+            render();
+
+            els.skuSelect.addEventListener('change', updateSkuInfo);
+            els.plotBtn.addEventListener('click', plot);
+            els.clearBtn.addEventListener('click', clearChart);
+            els.priceCondition.addEventListener('change', () => { if (currentSku) plot(); });
+            els.fixedCost.addEventListener('change', () => { if (currentSku && chartPoints) drawContributions(
+                chartPoints); });
+            els.fixedCost.addEventListener('input', () => { if (currentSku && chartPoints) drawContributions(
+                chartPoints); });
+            els.showLinear.addEventListener('change', () => { if (currentSku && chartPoints) drawPriceResponse(
+                    currentSku, chartPoints); });
+
+            els.printBtn.addEventListener('click', printCharts);
+            els.exportBtn.addEventListener('click', exportData);
+
+            $('resetSales').addEventListener('click', () => { els.salesInput.value = DEFAULT_SALES;
+                toast('Sales reset.', 'success'); });
+            $('resetDiscount').addEventListener('click', () => { els.discountInput.value = DEFAULT_DISCOUNT;
+                toast('Discount reset.', 'success'); });
+            $('resetExchange').addEventListener('click', () => { els.exchangeInput.value = DEFAULT_EXCHANGE;
+                toast('Exchange rate reset.', 'success'); });
+
+            $('applyJson').addEventListener('click', () => applyPricing(els.pricingInput.value, 'pasted pricing_data'));
+            $('downloadJson').addEventListener('click', () => {
+                const blob = new Blob([JSON.stringify(data.map(r => [r.material, r.description, r.uom, r.zd00,
+                    r.zd04, r.zd01, r.zd05, r.zd02, r.zd03, r.valid_from, r.valid_to
+                ]), null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'pricing_data.json';
+                a.click();
+                URL.revokeObjectURL(a.href);
+            });
+            $('jsonFile').addEventListener('change', e => {
+                const f = e.target.files[0];
+                if (!f) return;
+                const rd = new FileReader();
+                rd.onload = ev => applyPricing(ev.target.result, f.name);
+                rd.readAsText(f);
+            });
+            document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') plot(); });
+        }
+
+        // ---- Start ----
+        init();
+    </script>
+</body>
+</html>
