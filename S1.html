@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>راهنمای تغذیه ورزشی </title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" />
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', 'Segoe UI', Tahoma, sans-serif;
+            background: #f5f0eb;
+            color: #1e2a2f;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ===== CONTAINERS ===== */
+        .guide-wrapper {
+            max-width: 1200px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            padding: 40px 35px 50px;
+            margin-bottom: 30px;
+            transition: all 0.2s;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1a3c3f;
+            text-align: center;
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+        }
+
+        .subhead {
+            text-align: center;
+            font-size: 1rem;
+            color: #5e6f74;
+            border-bottom: 2px solid #e8e0d8;
+            padding-bottom: 18px;
+            margin-bottom: 28px;
+            font-weight: 300;
+        }
+
+        .subhead strong {
+            color: #2a5a5e;
+            font-weight: 600;
+        }
+
+        /* ===== PRINCIPLE BANNER ===== */
+        .principle-box {
+            background: #f0f6f4;
+            border-radius: 18px;
+            padding: 18px 28px;
+            margin-bottom: 32px;
+            border-right: 6px solid #2f7a6e;
+            font-size: 0.98rem;
+            line-height: 1.8;
+            color: #1f3d3a;
+        }
+
+        .principle-box strong {
+            color: #1b5e54;
+        }
+
+        /* ===== TIMELINE GRID ===== */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-top: 6px;
+        }
+
+        /* ===== CARD ===== */
+        .phase-card {
+            background: #fcfaf8;
+            border-radius: 24px;
+            padding: 22px 28px 26px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #eee8e2;
+            transition: border-color 0.2s;
+        }
+
+        .phase-card:hover {
+            border-color: #c4d3cd;
+        }
+
+        .phase-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 6px 12px;
+        }
+
+        .phase-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a3c3f;
+        }
+
+        .phase-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #e3ece8;
+            color: #1b5e54;
+            padding: 4px 14px;
+            border-radius: 40px;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+
+        .phase-macro {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #3b6b63;
+            background: #eef5f2;
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 30px;
+            margin-bottom: 10px;
+        }
+
+        .phase-goal {
+            font-size: 0.9rem;
+            color: #3a5552;
+            background: #f3f0ec;
+            padding: 8px 16px;
+            border-radius: 14px;
+            margin: 6px 0 14px 0;
+            line-height: 1.7;
+        }
+
+        .food-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            list-style: none;
+            padding: 0;
+            margin: 6px 0 0 0;
+        }
+
+        .food-list li {
+            background: #ffffff;
+            border: 1px solid #e6ddd4;
+            border-radius: 40px;
+            padding: 5px 18px 5px 18px;
+            font-size: 0.92rem;
+            color: #1f2e2b;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .food-list li::before {
+            content: "•";
+            color: #2f7a6e;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        /* ===== SCIENTIFIC VERIFICATION ===== */
+        .sci-check {
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px dashed #ddd6ce;
+            font-size: 0.85rem;
+            color: #3d5a55;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 14px;
+        }
+
+        .sci-check .badge-ok {
+            background: #d9e8e2;
+            color: #1a5a4e;
+            font-weight: 600;
+            padding: 1px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+        }
+
+        .sci-check .ref {
+            color: #5c7a73;
+            font-size: 0.78rem;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer-note {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e8e0d8;
+            text-align: center;
+            font-size: 0.82rem;
+            color: #6c7e79;
+            line-height: 1.8;
+        }
+
+        .footer-note a {
+            color: #2a6b5e;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* ===== THERMOS MINI CARD ===== */
+        .thermos-section {
+            max-width: 1200px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+            padding: 28px 30px 32px;
+        }
+
+        .thermos-section h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a3c3f;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .thermos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .thermos-item {
+            background: #f8f5f2;
+            border-radius: 18px;
+            padding: 14px 16px 16px;
+            border: 1px solid #e8e0d8;
+            text-align: center;
+            font-size: 0.8rem;
+            line-height: 1.7;
+        }
+
+        .thermos-item .label {
+            font-weight: 700;
+            color: #1a3c3f;
+            display: block;
+            margin-bottom: 2px;
+            font-size: 0.78rem;
+        }
+
+        .thermos-item .food {
+            color: #2b554a;
+            font-weight: 500;
+        }
+
+        .thermos-item .time {
+            color: #6c7e79;
+            font-size: 0.7rem;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 740px) {
+            .timeline-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .phase-card.full-width {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .guide-wrapper {
+                padding: 20px 14px 28px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            .phase-card {
+                padding: 16px 16px 20px;
+            }
+            .food-list li {
+                font-size: 0.82rem;
+                padding: 4px 12px;
+            }
+            .thermos-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            body {
+                background: white;
+                padding: 8px;
+            }
+            .guide-wrapper {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                border-radius: 16px;
+                padding: 24px 20px 30px;
+            }
+            .phase-card:hover {
+                border-color: #eee8e2;
+            }
+            .thermos-section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                border-radius: 16px;
+            }
+            .sci-check .ref {
+                color: #444;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== MAIN GUIDE ===== -->
+    <div class="guide-wrapper" id="mainGuide">
+
+        <h1>🥗 راهنمای تغذیه ورزشی </h1>
+        <div class="subhead">
+            بهینه‌سازی <strong>گلوکز، انسولین</strong> و <strong>سنتز پروتئین عضلانی</strong> با غذاهای سنتی و اصیل 
+        </div>
+
+        <!-- اصل علمی -->
+        <div class="principle-box">
+            <strong>🧪 اصل علمی:</strong> تنظیم دقیق قند خون (گلوکز) و هورمون انسولین، کلید ورود اسیدهای آمینه به عضلات و بازسازی آن‌ها پس از تمرین است. با انتخاب درست میان‌وعده‌های متنوع در زمان مناسب، انرژی و بازدهی ورزشی خود را به حداکثر برسانید.
+        </div>
+
+        <!-- ===== ۵ مرحله ===== -->
+        <div class="timeline-grid">
+
+            <!-- ۱. قبل از تمرین -->
+            <div class="phase-card full-width">
+                <div class="phase-header">
+                    <span class="phase-title">۱. قبل از تمرین</span>
+                    <span class="phase-badge">۲ تا ۳ ساعت قبل</span>
+                </div>
+                <div class="phase-macro">کربوهیدرات پیچیده + پروتئین کم‌چرب + فیبر کنترل‌شده</div>
+                <div class="phase-goal">🎯 تأمین ذخایر گلیکوژن کبد و عضله، آزادسازی تدریجی گلوکز، جلوگیری از افت ناگهانی قند خون</div>
+                <ul class="food-list">
+                    <li>عدسی یا خوراک لوبیا چینی با نان سنگک و کمی لیمو عمانی</li>
+                    <li>فیله مرغ کباب‌شده با کته کم‌روغن و گوجه کبابی</li>
+                    <li>نان سنگک + پنیر کم‌چرب + گردو + خیار و گوجه</li>
+                </ul>
+                <div class="sci-check">
+                    <span class="badge-ok">✓ تأیید علمی</span>
+                    <span>مطالعات نشان می‌دهند وعدهٔ کربوهیدراتی قبل از تمرین، ذخایر گلیکوژن را تا ۴۲٪ افزایش می‌دهد[reference:19]</span>
+                    <span class="ref">JSSM, 2018</span>
+                </div>
+            </div>
+
+            <!-- ۲. سوخت‌رسانی سریع -->
+            <div class="phase-card">
+                <div class="phase-header">
+                    <span class="phase-title">۲. سوخت‌رسانی سریع</span>
+                    <span class="phase-badge">۳۰ تا ۴۰ دقیقه قبل</span>
+                </div>
+                <div class="phase-macro">کربوهیدرات ساده + چربی و فیبر بسیار کم</div>
+                <div class="phase-goal">🎯 افزایش سریع گلوکز خون بدون درگیر کردن سنگین دستگاه گوارش</div>
+                <ul class="food-list">
+                    <li>۲ تا ۳ عدد خرما (مصافتی یا زاهدی) با ۲ عدد گردو</li>
+                    <li>۱ عدد موز یا شیره انگور/خرما حل‌شده در آب</li>
+                    <li>۲ عدد انجیر خشک یا برگه زردآلو (قیسی)</li>
+                </ul>
+                <div class="sci-check">
+                    <span class="badge-ok">✓ تأیید علمی</span>
+                    <span>شاخص گلیسمی بالا، انسولین و اکسیداسیون کربوهیدرات را افزایش می‌دهد<br>[reference:20]</span>
+                    <span class="ref">PubMed, 2012</span>
+                </div>
+            </div>
+
+            <!-- ۳. حین تمرین -->
+            <div class="phase-card">
+                <div class="phase-header">
+                    <span class="phase-title">۳. حین تمرین</span>
+                    <span class="phase-badge">تمرینات بالای ۶۰ دقیقه</span>
+                </div>
+                <div class="phase-macro">کربوهیدرات سریع‌الجذب + الکترولیت‌ها (بدون چربی/پروتئین)</div>
+                <div class="phase-goal">🎯 ثابت نگه‌داشتن گلوکز خون، جلوگیری از افت توان، تأمین الکترولیت‌ها و آبرسانی</div>
+                <ul class="food-list">
+                    <li>شربت سکنجبین خیار کم‌شیرین با یک پنس نمک دریا</li>
+                    <li>شربت گلاب و تخم‌شربتی / خاکشیر با عسل رقیق‌شده</li>
+                    <li>آب نارگیل طبیعی یا آب رقیق‌شده با عسل و نمک</li>
+                </ul>
+                <div class="sci-check">
+                    <span class="badge-ok">✓ تأیید علمی</span>
+                    <span>کم‌آبی ۲٪ از وزن بدن عملکرد را مختل می‌کند؛ مصرف مایعات ضروری است<br>[reference:21]</span>
+                    <span class="ref">JSSM, 2006</span>
+                </div>
+            </div>
+
+            <!-- ۴. بلافاصله بعد تمرین (پنجره طلایی) -->
+            <div class="phase-card full-width">
+                <div class="phase-header">
+                    <span class="phase-title">۴. بلافاصله بعد تمرین</span>
+                    <span class="phase-badge">۳۰ دقیقه بعد — پنجره طلایی</span>
+                </div>
+                <div class="phase-macro">کربوهیدرات زودجذب + پروتئین زودجذب (غنی از لوسین)</div>
+                <div class="phase-goal">🎯 تحریک ترشح انسولین برای باز کردن کانال‌های سلولی، توقف تخریب عضله و شروع MPS</div>
+                <ul class="food-list">
+                    <li>یک لیوان شیر کم‌چرب + ۱ قاشق عسل + پودر وی</li>
+                    <li>شیر برنج کم‌شیرین تهیه‌شده با شیر کم‌چرب و دارچین</li>
+                    <li>معجون فشرده: خرما + شیر + مکمل وی + پودر پسته</li>
+                </ul>
+                <div class="sci-check">
+                    <span class="badge-ok">✓ تأیید علمی</span>
+                    <span>نسبت ۴:۱ کربوهیدرات به پروتئین، سنتز گلیکوژن را بیشینه کرده و تخریب عضله را کاهش می‌دهد<br>[reference:22]</span>
+                    <span class="ref">JSSM, 2004</span>
+                </div>
+            </div>
+
+            <!-- ۵. بازسازی کامل -->
+            <div class="phase-card full-width">
+                <div class="phase-header">
+                    <span class="phase-title">۵. بازسازی کامل</span>
+                    <span class="phase-badge">۱ تا ۲ ساعت بعد — وعده ترمیمی</span>
+                </div>
+                <div class="phase-macro">پروتئین کامل + کربوهیدرات مرکب + چربی‌های مفید</div>
+                <div class="phase-goal">🎯 بازسازی کامل ذخایر گلیکوژن، ترمیم تارهای عضلانی آسیب‌دیده و کاهش التهاب بدن</div>
+                <ul class="food-list">
+                    <li>چلو کباب فیله گوسفندی/مرغ با کته و سماق</li>
+                    <li>تاس کباب گوشت کم‌چرب یا جوجه‌کباب با نان سنگک</li>
+                </ul>
+                <div class="sci-check">
+                    <span class="badge-ok">✓ تأیید علمی</span>
+                    <span>دریافت پروتئین و کربوهیدرات پس از تمرین، حالت آنابولیک ایجاد کرده و بازسازی را تسریع می‌کند<br>[reference:23]</span>
+                    <span class="ref">JSSM, 2010</span>
+                </div>
+            </div>
+
+        </div><!-- /timeline-grid -->
+
+        <div class="footer-note">
+            📚 مبتنی بر اصول علمی <strong>Journal of Sports Science and Medicine</strong> و منابع معتبر بین‌المللی ·
+            طراحی برای چاپ در باشگاه‌های ورزشی
+        </div>
+
+    </div><!-- /guide-wrapper -->
+
+    <!-- ===== THERMOS / MINI VERSION ===== -->
+    <div class="thermos-section" id="thermosGuide">
+        <h2>🧃</h2>
+        <div class="thermos-grid">
+
+            <div class="thermos-item">
+                <span class="label">🥘 قبل از تمرین</span>
+                <span class="food">عدسی / مرغ کبابی / نان+پنیر+گردو</span>
+                <span class="time">۲-۳ ساعت قبل</span>
+            </div>
+
+            <div class="thermos-item">
+                <span class="label">⚡ سوخت‌رسانی سریع</span>
+                <span class="food">خرما+گردو / موز / شیره انگور</span>
+                <span class="time">۳۰-۴۰ دقیقه قبل</span>
+            </div>
+
+            <div class="thermos-item">
+                <span class="label">💧 حین تمرین</span>
+                <span class="food">سکنجبین خیار / گلاب+تخم‌شربتی / آب نارگیل</span>
+                <span class="time">تمرینات بالای ۶۰ دقیقه</span>
+            </div>
+
+            <div class="thermos-item">
+                <span class="label">✨ پنجره طلایی</span>
+                <span class="food">شیر+عسل+وی / شیر برنج / خرما+شیر+وی</span>
+                <span class="time">۳۰ دقیقه بعد</span>
+            </div>
+
+            <div class="thermos-item">
+                <span class="label">🔄 بازسازی کامل</span>
+                <span class="food">چلو کباب / تاس کباب با نان سنگک</span>
+                <span class="time">۱-۲ ساعت بعد</span>
+            </div>
+
+        </div>
+        <div style="text-align:center;margin-top:14px;font-size:0.7rem;color:#6c7e79;">
+            برش بزنید و روی قمقمه یا شیکر خود بچسبانید
+        </div>
+    </div>
+
+</body>
+</html>
