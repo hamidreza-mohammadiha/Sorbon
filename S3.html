@@ -1,0 +1,2828 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>پلتفرم باشگاه فروشندگان</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #FDF6EE;
+            --caramel: #C4956A;
+            --caramel-light: #E8D5C0;
+            --peach: #F2A88D;
+            --peach-light: #FDE8E0;
+            --chocolate: #7A5C3A;
+            --chocolate-light: #A88B6E;
+            --gold: #F5C542;
+            --gold-light: #FFF0C0;
+            --gray: #D0D0D0;
+            --gray-dark: #A0A0A0;
+            --white: #FFFFFF;
+            --shadow: 0 8px 30px rgba(122, 92, 58, 0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Vazir', 'Vazirmatn', sans-serif;
+            --header-h: 60px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--cream);
+            color: var(--chocolate);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--caramel);
+            border-radius: 10px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--white);
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(122, 92, 58, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--caramel-light);
+            height: var(--header-h);
+            min-height: var(--header-h);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-brand .logo-icon {
+            font-size: 22px;
+            color: var(--caramel);
+        }
+
+        .header-brand h1 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--chocolate);
+            letter-spacing: -0.3px;
+            white-space: nowrap;
+        }
+
+        .header-brand h1 span {
+            color: var(--caramel);
+        }
+
+        .burger-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--chocolate);
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .burger-btn:hover {
+            background: var(--peach-light);
+        }
+
+        /* ===== BURGER MENU ===== */
+        .menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.30);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .menu-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .menu-panel {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            max-width: 82vw;
+            height: 100%;
+            background: var(--white);
+            box-shadow: -8px 0 40px rgba(0, 0, 0, 0.10);
+            z-index: 300;
+            transition: var(--transition);
+            padding: 20px 16px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-panel.open {
+            right: 0;
+        }
+
+        .menu-close {
+            align-self: flex-start;
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--chocolate);
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .menu-close:hover {
+            background: var(--peach-light);
+        }
+
+        .menu-panel .menu-brand {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--chocolate);
+            padding: 6px 0 14px;
+            border-bottom: 2px solid var(--caramel-light);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .menu-panel .menu-brand i {
+            color: var(--caramel);
+            font-size: 20px;
+        }
+
+        .menu-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .menu-nav .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--chocolate);
+            font-weight: 500;
+            font-size: 14px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: right;
+        }
+
+        .menu-nav .nav-item i {
+            width: 22px;
+            font-size: 16px;
+            color: var(--caramel);
+        }
+
+        .menu-nav .nav-item:hover {
+            background: var(--peach-light);
+        }
+
+        .menu-nav .nav-item.active {
+            background: var(--caramel);
+            color: var(--white);
+        }
+
+        .menu-nav .nav-item.active i {
+            color: var(--white);
+        }
+
+        .menu-footer {
+            padding-top: 12px;
+            border-top: 2px solid var(--caramel-light);
+            font-size: 12px;
+            color: var(--gray-dark);
+            text-align: center;
+        }
+
+        /* ===== MAIN ===== */
+        .main {
+            flex: 1;
+            padding: 16px 14px 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ===== PAGES ===== */
+        .page {
+            display: none;
+            animation: fadeUp 0.35s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title i {
+            color: var(--caramel);
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--gray-dark);
+            margin-bottom: 14px;
+        }
+
+        /* ===== LANDING ===== */
+        .landing-hero {
+            text-align: center;
+            padding: 8px 0 4px;
+        }
+
+        .landing-hero .hero-badge {
+            display: inline-block;
+            background: var(--gold-light);
+            color: var(--chocolate);
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .landing-hero h2 {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--chocolate);
+            line-height: 1.3;
+        }
+
+        .landing-hero h2 span {
+            color: var(--caramel);
+        }
+
+        .landing-hero .subtitle {
+            font-size: 14px;
+            color: var(--chocolate-light);
+            max-width: 560px;
+            margin: 8px auto 4px;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        /* ===== PROGRESS BAR (LTR) ===== */
+        .budget-progress-wrap {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin: 14px 0 18px;
+            box-shadow: var(--shadow);
+            direction: ltr;
+        }
+
+        .budget-progress-wrap .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .budget-progress-wrap .budget-header .budget-label {
+            font-weight: 600;
+        }
+
+        .budget-progress-wrap .budget-header .budget-value {
+            font-weight: 700;
+            color: var(--caramel);
+            direction: ltr;
+        }
+
+        .budget-progress {
+            height: 10px;
+            background: var(--caramel-light);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            direction: ltr;
+        }
+
+        .budget-progress .fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, var(--caramel), var(--gold));
+            transition: width 1s ease;
+            width: 67%;
+            position: relative;
+        }
+
+        .budget-progress .fill .label-on-bar {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--chocolate);
+            background: var(--white);
+            padding: 0 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+            direction: ltr;
+        }
+
+        .budget-progress-wrap .budget-foot {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--gray-dark);
+            margin-top: 4px;
+            direction: ltr;
+        }
+
+        .budget-progress-wrap .budget-foot .end-label {
+            font-weight: 600;
+            color: var(--chocolate);
+        }
+
+        /* ===== STORY ===== */
+        .story-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin: 16px 0;
+            box-shadow: var(--shadow);
+            border-right: 4px solid var(--caramel);
+        }
+
+        .story-section h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .story-section h3 i {
+            color: var(--caramel);
+        }
+
+        .story-section p {
+            line-height: 1.9;
+            font-size: 14px;
+            color: var(--chocolate);
+        }
+
+        .story-section .highlight-box {
+            background: var(--peach-light);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-top: 10px;
+            border-right: 4px solid var(--peach);
+            font-size: 13px;
+        }
+
+        /* ===== RULES ===== */
+        .rules-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 14px 0;
+        }
+
+        .rules-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--caramel);
+        }
+
+        .rules-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rules-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rules-card ul li {
+            padding: 4px 0;
+            font-size: 13px;
+            line-height: 1.6;
+            border-bottom: 1px solid var(--caramel-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .rules-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .rules-card ul li .li-icon {
+            color: var(--caramel);
+            font-weight: 700;
+        }
+
+        .rules-card .formula {
+            background: var(--cream);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--chocolate);
+            text-align: center;
+            border: 1px dashed var(--caramel);
+        }
+
+        /* ===== REWARD TABLE ===== */
+        .reward-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px 16px;
+            margin: 14px 0;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .reward-section .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .reward-section .section-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reward-section .section-header h3 i {
+            color: var(--caramel);
+        }
+
+        .reward-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 420px;
+        }
+
+        .reward-table th {
+            text-align: right;
+            padding: 8px 12px;
+            background: var(--cream);
+            color: var(--chocolate);
+            font-weight: 700;
+            border-bottom: 2px solid var(--caramel-light);
+            font-size: 12px;
+        }
+
+        .reward-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--caramel-light);
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .reward-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .reward-table .status-badge {
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .reward-table .status-badge.approved {
+            background: var(--gray);
+            color: #666;
+        }
+
+        .reward-table .row-approved {
+            background: transparent;
+        }
+
+        .reward-table .prize-name.approved {
+            color: var(--gray-dark);
+        }
+
+        .reward-table .prize-icon.approved {
+            color: var(--gray);
+        }
+
+        /* ===== COUNTER ===== */
+        .counter-section {
+            background: linear-gradient(135deg, var(--caramel), var(--chocolate));
+            border-radius: var(--radius);
+            padding: 20px 20px;
+            margin: 14px 0 8px;
+            text-align: center;
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .counter-section .counter-icon {
+            font-size: 26px;
+            opacity: 0.8;
+        }
+
+        .counter-section .counter-label {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .counter-section .counter-number {
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin: 2px 0;
+            font-family: var(--font);
+            direction: ltr;
+            display: inline-block;
+        }
+
+        .counter-section .counter-sub {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* ===== ADMIN ===== */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .admin-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--caramel-light);
+            padding-bottom: 8px;
+        }
+
+        .admin-card .file-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 8px 0;
+        }
+
+        .admin-card .btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--caramel);
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background: var(--chocolate);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--caramel);
+            color: var(--caramel);
+        }
+        .btn-outline:hover {
+            background: var(--caramel);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--gold);
+            color: var(--chocolate);
+        }
+        .btn-success:hover {
+            background: #e0b030;
+            transform: translateY(-2px);
+        }
+
+        .admin-card .upload-area {
+            border: 2px dashed var(--caramel-light);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            text-align: center;
+            color: var(--gray-dark);
+            font-size: 13px;
+            margin: 8px 0;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .admin-card .upload-area:hover {
+            border-color: var(--caramel);
+            background: var(--cream);
+        }
+
+        .admin-card .upload-area i {
+            font-size: 24px;
+            color: var(--caramel);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .week-table-wrap {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid var(--caramel-light);
+            border-radius: var(--radius-sm);
+        }
+
+        .week-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .week-table th {
+            background: var(--cream);
+            padding: 6px 10px;
+            text-align: right;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            font-size: 11px;
+        }
+
+        .week-table td {
+            padding: 4px 10px;
+            border-bottom: 1px solid var(--caramel-light);
+            font-size: 12px;
+        }
+
+        .week-table .week-input {
+            width: 60px;
+            padding: 3px 6px;
+            border: 1px solid var(--caramel-light);
+            border-radius: 6px;
+            font-family: var(--font);
+            font-size: 12px;
+            background: var(--cream);
+            transition: var(--transition);
+        }
+
+        .week-table .week-input:focus {
+            border-color: var(--caramel);
+            outline: none;
+            background: var(--white);
+        }
+
+        /* ===== BUSINESS MANAGER ===== */
+        .bm-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .bm-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .bm-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--caramel-light);
+            padding-bottom: 8px;
+        }
+
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--caramel-light);
+            font-size: 13px;
+        }
+
+        .rank-item:last-child {
+            border-bottom: none;
+        }
+
+        .rank-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--chocolate);
+            flex-shrink: 0;
+        }
+
+        .rank-num.gold {
+            background: var(--gold);
+        }
+        .rank-num.silver {
+            background: var(--gray);
+        }
+        .rank-num.bronze {
+            background: var(--peach);
+        }
+
+        .rank-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rank-info .name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .rank-info .score {
+            font-size: 11px;
+            color: var(--gray-dark);
+        }
+
+        .rank-badge {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--caramel);
+        }
+
+        .league-tag {
+            display: inline-block;
+            padding: 1px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .league-tag.serie-a {
+            background: var(--gold-light);
+            color: var(--chocolate);
+        }
+
+        .league-tag.serie-b {
+            background: var(--peach-light);
+            color: var(--chocolate);
+        }
+
+        .pledge-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--caramel-light);
+            font-size: 13px;
+        }
+
+        .pledge-item:last-child {
+            border-bottom: none;
+        }
+
+        .pledge-item .pledge-label {
+            font-weight: 500;
+        }
+
+        .pledge-item .pledge-value {
+            font-weight: 700;
+            color: var(--caramel);
+        }
+
+        /* ===== RSM ===== */
+        .rsm-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .rsm-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .rsm-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--caramel-light);
+            padding-bottom: 8px;
+        }
+
+        .team-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+        }
+
+        .team-profile .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--caramel-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--caramel);
+            flex-shrink: 0;
+        }
+
+        .team-profile .team-info .team-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .team-profile .team-info .team-desc {
+            font-size: 12px;
+            color: var(--gray-dark);
+        }
+
+        /* Team Members Table inside RSM */
+        .team-members-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .team-members-table th {
+            text-align: right;
+            padding: 4px 8px;
+            background: var(--cream);
+            font-weight: 700;
+            border-bottom: 2px solid var(--caramel-light);
+            font-size: 11px;
+        }
+
+        .team-members-table td {
+            padding: 4px 8px;
+            border-bottom: 1px solid var(--caramel-light);
+            font-size: 12px;
+        }
+
+        .team-members-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .guaranteed-reward {
+            background: var(--gold-light);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-right: 4px solid var(--gold);
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        /* ===== SELLER ===== */
+        .seller-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .seller-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .seller-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--caramel-light);
+            padding-bottom: 8px;
+        }
+
+        .sfi-hint {
+            background: var(--peach-light);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border-right: 4px solid var(--peach);
+            margin-bottom: 8px;
+        }
+
+        .sfi-hint .hint-label {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .sfi-hint .hint-text {
+            font-size: 13px;
+            color: var(--chocolate-light);
+            margin-top: 2px;
+        }
+
+        .progress-bar-wrap {
+            margin: 8px 0;
+        }
+
+        .progress-bar-wrap .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--caramel-light);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, var(--caramel), var(--gold));
+            transition: width 0.8s ease;
+            width: 0%;
+        }
+
+        /* Full team ranking table in Seller (درون تیم) */
+        .intra-team-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .intra-team-table th {
+            text-align: right;
+            padding: 4px 8px;
+            background: var(--cream);
+            font-weight: 700;
+            border-bottom: 2px solid var(--caramel-light);
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .intra-team-table td {
+            padding: 4px 8px;
+            border-bottom: 1px solid var(--caramel-light);
+            font-size: 12px;
+        }
+
+        .intra-team-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .intra-team-table .highlight-row {
+            background: var(--gold-light);
+        }
+
+        /* ===== LEAGUE LEADERBOARD ===== */
+        .league-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            margin: 14px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .league-section .league-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .league-section .league-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .league-tabs {
+            display: flex;
+            gap: 6px;
+        }
+
+        .league-tabs .league-tab {
+            padding: 5px 16px;
+            border-radius: 20px;
+            border: 2px solid var(--caramel-light);
+            background: transparent;
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--chocolate);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .league-tabs .league-tab.active {
+            background: var(--caramel);
+            color: var(--white);
+            border-color: var(--caramel);
+        }
+
+        .league-tabs .league-tab:hover:not(.active) {
+            background: var(--peach-light);
+        }
+
+        .league-table-wrap {
+            overflow-x: auto;
+        }
+
+        .league-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 520px;
+        }
+
+        .league-table th {
+            text-align: right;
+            padding: 8px 12px;
+            background: var(--cream);
+            color: var(--chocolate);
+            font-weight: 700;
+            border-bottom: 2px solid var(--caramel-light);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .league-table td {
+            padding: 7px 12px;
+            border-bottom: 1px solid var(--caramel-light);
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .league-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .league-table .rank-col {
+            font-weight: 700;
+            text-align: center;
+            width: 40px;
+        }
+
+        .league-table .team-col {
+            font-weight: 600;
+        }
+
+        .league-table .rsm-col {
+            color: var(--gray-dark);
+            font-size: 12px;
+        }
+
+        .league-table .score-col {
+            font-weight: 700;
+            color: var(--caramel);
+            text-align: center;
+        }
+
+        .league-table .medal {
+            color: var(--gold);
+        }
+
+        /* ===== SIMULATION CONTROLS (LTR) ===== */
+        .sim-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin: 14px 0 6px;
+            flex-wrap: wrap;
+            direction: ltr;
+        }
+
+        .sim-controls .sim-btn {
+            padding: 6px 20px;
+            border: 2px solid var(--caramel);
+            border-radius: 30px;
+            background: var(--white);
+            font-family: var(--font);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--chocolate);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sim-controls .sim-btn:hover {
+            background: var(--caramel);
+            color: var(--white);
+        }
+
+        .sim-controls .sim-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sim-controls .sim-month-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--chocolate);
+            min-width: 110px;
+            text-align: center;
+            direction: ltr;
+        }
+
+        .sim-controls .sim-progress {
+            font-size: 12px;
+            color: var(--gray-dark);
+            direction: ltr;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 820px) {
+            .admin-grid,
+            .bm-dashboard,
+            .rsm-dashboard,
+            .seller-dashboard {
+                grid-template-columns: 1fr;
+            }
+            .rules-section {
+                grid-template-columns: 1fr;
+            }
+            .bm-dashboard .bm-card:last-child {
+                grid-column: 1;
+            }
+            .rsm-dashboard .rsm-card:last-child {
+                grid-column: 1;
+            }
+            .seller-dashboard .seller-card:last-child {
+                grid-column: 1;
+            }
+            .admin-card:last-child {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --header-h: 52px;
+            }
+            body {
+                font-size: 13px;
+            }
+            .header {
+                padding: 6px 12px;
+            }
+            .header-brand h1 {
+                font-size: 14px;
+            }
+            .header-brand .logo-icon {
+                font-size: 18px;
+            }
+            .burger-btn {
+                font-size: 20px;
+                padding: 2px 8px;
+            }
+            .main {
+                padding: 12px 10px 24px;
+            }
+            .landing-hero h2 {
+                font-size: 20px;
+            }
+            .landing-hero .subtitle {
+                font-size: 13px;
+            }
+            .page-title {
+                font-size: 17px;
+            }
+            .page-subtitle {
+                font-size: 12px;
+            }
+            .story-section {
+                padding: 14px 14px;
+            }
+            .story-section h3 {
+                font-size: 15px;
+            }
+            .story-section p {
+                font-size: 13px;
+            }
+            .rules-card {
+                padding: 12px 14px;
+            }
+            .rules-card h4 {
+                font-size: 14px;
+            }
+            .rules-card ul li {
+                font-size: 12px;
+            }
+            .rules-card .formula {
+                font-size: 12px;
+            }
+            .reward-section {
+                padding: 12px 12px;
+            }
+            .reward-section .section-header h3 {
+                font-size: 15px;
+            }
+            .reward-table {
+                font-size: 12px;
+                min-width: 340px;
+            }
+            .reward-table th,
+            .reward-table td {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+            .counter-section .counter-number {
+                font-size: 32px;
+            }
+            .counter-section .counter-label {
+                font-size: 12px;
+            }
+            .admin-card {
+                padding: 12px 14px;
+            }
+            .admin-card h4 {
+                font-size: 14px;
+            }
+            .admin-card .btn {
+                font-size: 12px;
+                padding: 5px 12px;
+            }
+            .bm-card,
+            .rsm-card,
+            .seller-card {
+                padding: 12px 14px;
+            }
+            .bm-card h4,
+            .rsm-card h4,
+            .seller-card h4 {
+                font-size: 14px;
+            }
+            .rank-item {
+                font-size: 12px;
+                padding: 4px 0;
+            }
+            .rank-info .name {
+                font-size: 12px;
+            }
+            .rank-info .score {
+                font-size: 10px;
+            }
+            .league-section {
+                padding: 12px 14px;
+            }
+            .league-section .league-header h3 {
+                font-size: 15px;
+            }
+            .league-tabs .league-tab {
+                font-size: 12px;
+                padding: 4px 12px;
+            }
+            .league-table {
+                font-size: 12px;
+                min-width: 380px;
+            }
+            .league-table th,
+            .league-table td {
+                padding: 5px 8px;
+                font-size: 12px;
+            }
+            .sim-controls .sim-btn {
+                font-size: 13px;
+                padding: 4px 14px;
+            }
+            .sim-controls .sim-month-label {
+                font-size: 13px;
+                min-width: 80px;
+            }
+            .menu-panel {
+                width: 260px;
+                right: -280px;
+                padding: 16px 12px 20px;
+            }
+            .menu-nav .nav-item {
+                font-size: 13px;
+                padding: 9px 12px;
+            }
+            .budget-progress-wrap {
+                padding: 12px 14px;
+            }
+            .budget-progress-wrap .budget-header {
+                font-size: 12px;
+            }
+            .guaranteed-reward {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            .sfi-hint {
+                padding: 8px 12px;
+            }
+            .sfi-hint .hint-label {
+                font-size: 12px;
+            }
+            .sfi-hint .hint-text {
+                font-size: 12px;
+            }
+            .team-profile .avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            .team-profile .team-info .team-name {
+                font-size: 14px;
+            }
+            .week-table {
+                font-size: 11px;
+            }
+            .week-table th,
+            .week-table td {
+                padding: 4px 6px;
+                font-size: 11px;
+            }
+            .week-table .week-input {
+                width: 48px;
+                font-size: 11px;
+                padding: 2px 4px;
+            }
+            .intra-team-table {
+                font-size: 11px;
+            }
+            .intra-team-table th,
+            .intra-team-table td {
+                padding: 3px 6px;
+                font-size: 11px;
+            }
+            .team-members-table {
+                font-size: 11px;
+            }
+            .team-members-table th,
+            .team-members-table td {
+                padding: 3px 6px;
+                font-size: 11px;
+            }
+            .budget-progress .fill .label-on-bar {
+                font-size: 7px;
+                right: -24px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .landing-hero h2 {
+                font-size: 17px;
+            }
+            .header-brand h1 {
+                font-size: 12px;
+            }
+            .counter-section .counter-number {
+                font-size: 26px;
+            }
+            .league-table {
+                min-width: 300px;
+                font-size: 11px;
+            }
+            .league-table th,
+            .league-table td {
+                padding: 4px 6px;
+                font-size: 11px;
+            }
+            .reward-table {
+                min-width: 280px;
+                font-size: 11px;
+            }
+            .reward-table th,
+            .reward-table td {
+                padding: 4px 6px;
+                font-size: 11px;
+            }
+            .sim-controls .sim-month-label {
+                min-width: 60px;
+                font-size: 11px;
+            }
+            .budget-progress .fill .label-on-bar {
+                font-size: 6px;
+                right: -20px;
+            }
+        }
+
+        .text-center {
+            text-align: center;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .text-muted {
+            color: var(--gray-dark);
+            font-size: 12px;
+        }
+        .text-sm {
+            font-size: 12px;
+        }
+
+        .admin-note {
+            font-size: 12px;
+            color: var(--gray-dark);
+            margin-top: 6px;
+            padding: 8px 12px;
+            background: var(--cream);
+            border-radius: var(--radius-sm);
+            border-right: 3px solid var(--caramel);
+        }
+
+        .download-txt-btn {
+            margin-top: 6px;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 2px dashed var(--caramel-light);
+            margin: 16px 0;
+        }
+
+        /* League table wrapper for BM */
+        .bm-league-wrap {
+            margin-top: 6px;
+        }
+
+        .bm-league-wrap .bm-league-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--caramel);
+            margin: 10px 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bm-league-wrap .bm-league-title:first-child {
+            margin-top: 0;
+        }
+
+        .bm-league-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .bm-league-table th {
+            text-align: right;
+            padding: 4px 8px;
+            background: var(--cream);
+            font-weight: 700;
+            border-bottom: 2px solid var(--caramel-light);
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .bm-league-table td {
+            padding: 4px 8px;
+            border-bottom: 1px solid var(--caramel-light);
+            font-size: 12px;
+        }
+
+        .bm-league-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .bm-league-table .highlight-row {
+            background: var(--gold-light);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-brand">
+            <i class="fas fa-crown logo-icon"></i>
+            <h1>باشگاه <span>فروشندگان</span></h1>
+        </div>
+        <button class="burger-btn" id="burgerToggle" aria-label="منو">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- ===== MENU OVERLAY ===== -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- ===== MENU PANEL ===== -->
+    <nav class="menu-panel" id="menuPanel">
+        <button class="menu-close" id="menuClose" aria-label="بستن منو">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="menu-brand">
+            <i class="fas fa-crown"></i>
+            باشگاه فروشندگان
+        </div>
+        <div class="menu-nav">
+            <button class="nav-item active" data-page="landing">
+                <i class="fas fa-home"></i>
+                خانه
+            </button>
+            <button class="nav-item" data-page="admin">
+                <i class="fas fa-user-cog"></i>
+                مدیریت
+            </button>
+            <button class="nav-item" data-page="bm">
+                <i class="fas fa-chart-line"></i>
+                مدیر کسب و کار
+            </button>
+            <button class="nav-item" data-page="rsm">
+                <i class="fas fa-users"></i>
+                مدیر فروش منطقه
+            </button>
+            <button class="nav-item" data-page="seller">
+                <i class="fas fa-user"></i>
+                فروشنده
+            </button>
+        </div>
+        <div class="menu-footer">
+            <i class="fas fa-trophy" style="color:var(--gold);"></i>
+            نسخه ۳.۰ – فصل ۱۴۰۶
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main">
+
+        <!-- ============================================================ -->
+        <!-- PAGE: LANDING -->
+        <!-- ============================================================ -->
+        <section class="page active" id="page-landing">
+
+            <div class="landing-hero">
+                <div class="hero-badge">
+                    <i class="fas fa-star" style="color:var(--gold);"></i>
+                    فصل جدید – رقابت ۱۴۰۶
+                </div>
+                <h2>
+                    به <span>پلتفرم باشگاه فروشندگان</span>
+                    خوش آمدید
+                </h2>
+                <p class="subtitle">
+                    بستری برای رهبری، انگیزه‌بخشی و پاداش‌دهی به تیم‌های فروش از طریق گیمیفیکیشن هوشمند
+                </p>
+            </div>
+
+            <!-- Progress Bar (LTR) -->
+            <div class="budget-progress-wrap">
+                <div class="budget-header">
+                    <span class="budget-label"><i class="fas fa-coins" style="color:var(--gold);"></i> بودجه جوایز فصل</span>
+                    <span class="budget-value" id="budgetDisplay">$67,000 of $100,000</span>
+                </div>
+                <div class="budget-progress">
+                    <div class="fill" id="budgetFill" style="width:67%;">
+                        <span class="label-on-bar" id="barLabel">67%</span>
+                    </div>
+                </div>
+                <div class="budget-foot">
+                    <span>$0</span>
+                    <span class="end-label">$100,000</span>
+                </div>
+            </div>
+
+            <!-- Story -->
+            <div class="story-section">
+                <h3><i class="fas fa-scroll"></i> داستان و روایت بازی</h3>
+                <p>
+                    ۱۴ تیم به رهبری مدیرفروش مناطق در یک لیگ سالانه با هم برای دریافت جوایز نقدی و غیر نقدی رقابت خواهند کرد.
+                    به فروشنده با بیشترین امتیاز در بخش فروش اختصاصی یک کارت هدیه ۱۰۰ دلاری تعلق می‌گیرد.
+                </p>
+                <div class="highlight-box">
+                    <p>
+                        <strong>⚡ لیگ‌ها:</strong> دو لیگ مختلف ۷ تیمی وجود دارد.
+                        ۴ تیم اول لیگ قهرمانان در انتهای هر فصل به ترتیب <strong>۱۰,۰۰۰</strong>، <strong>۸,۰۰۰</strong>، <strong>۵,۰۰۰</strong> و <strong>۴,۰۰۰</strong> دلار پاداش می‌گیرند.
+                        ۳ تیم انتهایی به لیگ برتر سقوط می‌کنند. ۳ تیم برتر لیگ برتر به ترتیب <strong>۳,۰۰۰</strong>، <strong>۲,۰۰۰</strong> و <strong>۱,۰۰۰</strong> دلار پاداش می‌گیرند و برای فصل آینده به لیگ قهرمانان صعود می‌کنند.
+                    </p>
+                    <p style="margin-top:8px;">
+                        <strong>✈️ جایزه ویژه:</strong> در صورت تحقق برنامه فروش سالیانه کلی، به ازای هر درصد بالای ۹۵٪،
+                        یک سفر ۷ روزه خارجی به همراه مرخصی برای یکی از اعضای پلتفرم (فروشنده، مدیر فروش منطقه یا اعضای تیم کسب و کار)
+                        در رویداد اختتامیه قرعه‌کشی خواهد شد.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Rules -->
+            <div class="rules-section">
+                <div class="rules-card">
+                    <h4>⭐ معیارهای جایزه اختصاصی ماهانه</h4>
+                    <ul>
+                        <li><span class="li-icon">•</span> تعداد محصول فروخته شده از محصول اختصاصی انتخاب شده برای هر ماه توسط تیم بیزنس</li>
+                        <li><span class="li-icon">•</span> درصد تحقق تارگت ماهانه تیم</li>
+                    </ul>
+                    <div class="formula">⭐ امتیاز = (تعداد محصول) × (درصد تحقق تارگت)</div>
+                </div>
+                <div class="rules-card">
+                    <h4>🏆 معیارهای ارزیابی تیم‌ها</h4>
+                    <ul>
+                        <li><span class="li-icon">•</span> درصد رشد حجمی فروش (از ماه دوم) %</li>
+                        <li><span class="li-icon">•</span> درصد پوشش (Coverage %)</li>
+                        <li><span class="li-icon">•</span> درصد تحقق تارگت (AOP %)</li>
+                        <li><span class="li-icon">•</span> میانگین تعداد سطر فاکتور فروشندگان هر تیم (# Line per Invoice)</li>
+                    </ul>
+                    <div class="formula">🏆 امتیاز = (رشد) × (پوشش) × (تحقق) × (میانگین سطر)</div>
+                </div>
+            </div>
+
+            <!-- Reward Table -->
+            <div class="reward-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-gift"></i> جدول جوایز مصوب</h3>
+                    <span style="font-size:12px;color:var(--gray-dark);">
+                        <span style="background:var(--gray);padding:2px 10px;border-radius:12px;color:#666;">⚪ مصوب</span>
+                    </span>
+                </div>
+                <div class="reward-table-wrap">
+                    <table class="reward-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>جایزه</th>
+                                <th>دسته</th>
+                                <th>مبلغ (دلار)</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rewardTableBody">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Counter -->
+            <div class="counter-section" id="counterSection">
+                <div class="counter-icon"><i class="fas fa-coins"></i></div>
+                <div class="counter-label">مجموع جوایز تخصیص‌یافته در فصل</div>
+                <div class="counter-number" id="counterNumber">$۰</div>
+                <div class="counter-sub">✨ به تمام فروشندگان برتر تعلق می‌گیرد</div>
+            </div>
+
+            <!-- LEAGUE LEADERBOARD (with %Coverage and %AOP) -->
+            <div class="league-section" id="leagueSection">
+                <div class="league-header">
+                    <h3><i class="fas fa-trophy" style="color:var(--gold);"></i> رتبه‌بندی تیم‌ها</h3>
+                    <div class="league-tabs" id="leagueTabs">
+                        <button class="league-tab active" data-league="A">🏆 لیگ قهرمانان</button>
+                        <button class="league-tab" data-league="B">⚽ لیگ برتر</button>
+                    </div>
+                </div>
+                <div class="league-table-wrap">
+                    <table class="league-table" id="leagueTable">
+                        <thead>
+                            <tr>
+                                <th>رتبه</th>
+                                <th>نام تیم</th>
+                                <th>مدیر فروش منطقه</th>
+                                <th style="text-align:center;">درصد پوشش</th>
+                                <th style="text-align:center;">درصد تحقق</th>
+                                <th style="text-align:center;">امتیاز نهایی</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leagueTableBody">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Simulation Controls (LTR) -->
+                <div class="sim-controls">
+                    <button class="sim-btn" id="simPrev"><i class="fas fa-chevron-left"></i> Previous</button>
+                    <span class="sim-month-label" id="simMonthLabel">January</span>
+                    <button class="sim-btn" id="simNext">Next <i class="fas fa-chevron-right"></i></button>
+                    <span class="sim-progress" id="simProgress">1 / 12</span>
+                </div>
+                <div style="text-align:center;font-size:12px;color:var(--gray-dark);margin-top:4px;">
+                    <i class="fas fa-calendar-alt"></i> Season 2027 – Monthly Cumulative Results
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: ADMIN -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-admin">
+            <h2 class="page-title"><i class="fas fa-user-cog"></i> پنل مدیریت</h2>
+            <p class="page-subtitle">تنظیمات پیشرفته گیمیفیکیشن، پارامترها و داده‌های هفتگی</p>
+
+            <div class="admin-grid">
+                <!-- Gamification Logic -->
+                <div class="admin-card">
+                    <h4><i class="fas fa-dice-d6"></i> منطق گیمیفیکیشن</h4>
+                    <p style="font-size:13px;color:var(--gray-dark);margin-bottom:10px;">
+                        دانلود نمونه JSON، ویرایش و آپلود مجدد برای اعمال Hyper-Parameters.
+                    </p>
+                    <div class="file-actions">
+                        <button class="btn btn-primary" id="downloadJson"><i class="fas fa-download"></i> دانلود نمونه JSON</button>
+                        <button class="btn btn-outline" id="uploadJsonBtn"><i class="fas fa-upload"></i> آپلود JSON</button>
+                        <input type="file" id="jsonFileInput" accept=".json" style="display:none;">
+                    </div>
+                    <div id="jsonUploadStatus" style="font-size:12px;color:var(--caramel);margin-top:4px;"></div>
+                </div>
+
+                <!-- Weekly Sales XLSX -->
+                <div class="admin-card">
+                    <h4><i class="fas fa-file-excel"></i> نتایج فروش هفتگی</h4>
+                    <p style="font-size:13px;color:var(--gray-dark);margin-bottom:10px;">
+                        دانلود وضعیت آخرین هفته، تکمیل با داده‌های جدید و آپلود مجدد.
+                    </p>
+                    <div class="file-actions">
+                        <button class="btn btn-primary" id="downloadXlsx"><i class="fas fa-download"></i> دانلود XLSX نمونه</button>
+                        <button class="btn btn-outline" id="uploadXlsxBtn"><i class="fas fa-upload"></i> آپلود XLSX</button>
+                        <input type="file" id="xlsxFileInput" accept=".xlsx,.xls" style="display:none;">
+                    </div>
+                    <div id="xlsxUploadStatus" style="font-size:12px;color:var(--caramel);margin-top:4px;"></div>
+                </div>
+
+                <!-- Full Input Table 52 weeks -->
+                <div class="admin-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-table"></i> جدول ورودی هفتگی (۵۲ هفته)</h4>
+                    <p style="font-size:13px;color:var(--gray-dark);margin-bottom:8px;">
+                        آخرین وضعیت را دانلود کنید، داده‌های هفته‌های گذشته را وارد و مجدداً آپلود نمایید.
+                    </p>
+                    <div class="file-actions" style="margin-bottom:10px;">
+                        <button class="btn btn-success" id="downloadWeekStatus"><i class="fas fa-download"></i> دانلود وضعیت آخرین هفته</button>
+                        <button class="btn btn-outline" id="uploadWeekBtn"><i class="fas fa-upload"></i> آپلود جدول کامل</button>
+                        <input type="file" id="weekFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+                    </div>
+                    <div class="week-table-wrap">
+                        <table class="week-table">
+                            <thead>
+                                <tr>
+                                    <th>هفته</th>
+                                    <th>تعداد فروش</th>
+                                    <th>تحقق تارگت %</th>
+                                    <th>پوشش %</th>
+                                    <th>رشد %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="weekTableBody">
+                                <!-- JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="font-size:11px;color:var(--gray-dark);margin-top:6px;text-align:left;">
+                        <i class="fas fa-info-circle"></i> ۵۲ هفته – داده‌های پیش‌فرض نمایشی
+                    </div>
+                </div>
+
+                <!-- Download TXT: Gamification Model -->
+                <div class="admin-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-file-alt"></i> مدل گیمیفیکیشن – مستندات</h4>
+                    <p style="font-size:13px;color:var(--gray-dark);margin-bottom:8px;">
+                        دانلود فایل متنی شامل توضیح کامل مدل گیمیفیکیشن، پارامترها و قوانین پلتفرم (به انگلیسی).
+                    </p>
+                    <button class="btn btn-primary download-txt-btn" id="downloadTxtDoc">
+                        <i class="fas fa-file-download"></i> دانلود Gamification Model (.txt)
+                    </button>
+                    <div class="admin-note">
+                        <i class="fas fa-info-circle" style="color:var(--caramel);"></i>
+                        این فایل را ویرایش کرده و در نسخه‌های بعدی (S4, S5, …) برای کالیبره کردن مدل ارسال کنید.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: BUSINESS MANAGER (Separate League Tables) -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-bm">
+            <h2 class="page-title"><i class="fas fa-chart-line"></i> داشبورد مدیر کسب و کار</h2>
+            <p class="page-subtitle">نمایش کامل رتبه‌بندی، لیگ‌ها و جوایز تعهدشده</p>
+
+            <div class="bm-dashboard">
+                <!-- RSM Ranking -->
+                <div class="bm-card">
+                    <h4><i class="fas fa-flag"></i> رتبه‌بندی مدیران فروش منطقه (RSM)</h4>
+                    <div id="rsmRankingList"></div>
+                </div>
+
+                <!-- Sellers Ranking -->
+                <div class="bm-card">
+                    <h4><i class="fas fa-users"></i> رتبه‌بندی فروشندگان</h4>
+                    <div style="margin-bottom:8px;">
+                        <span class="league-tag serie-a">لیگ قهرمانان</span>
+                        <span class="league-tag serie-b" style="margin-right:6px;">لیگ برتر</span>
+                    </div>
+                    <div id="sellerRankingList"></div>
+                </div>
+
+                <!-- Pledged Rewards -->
+                <div class="bm-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-hand-holding-heart"></i> جوایز تعهدشده</h4>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                        <div>
+                            <div style="font-weight:600;color:var(--caramel);font-size:13px;">ماهانه</div>
+                            <div id="monthlyPledges"></div>
+                        </div>
+                        <div>
+                            <div style="font-weight:600;color:var(--caramel);font-size:13px;">فصلی</div>
+                            <div id="quarterlyPledges"></div>
+                        </div>
+                        <div>
+                            <div style="font-weight:600;color:var(--caramel);font-size:13px;">سالانه</div>
+                            <div id="annualPledges"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Separate League Tables (BM) -->
+                <div class="bm-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-trophy" style="color:var(--gold);"></i> رتبه‌بندی لیگ‌ها – جزئیات کامل</h4>
+                    <div class="bm-league-wrap">
+                        <div class="bm-league-title">🏆 لیگ قهرمانان</div>
+                        <div style="overflow-x:auto;">
+                            <table class="bm-league-table" id="bmLeagueA">
+                                <thead>
+                                    <tr>
+                                        <th>رتبه</th>
+                                        <th>نام تیم</th>
+                                        <th>RSM</th>
+                                        <th style="text-align:center;">رشد %</th>
+                                        <th style="text-align:center;">پوشش %</th>
+                                        <th style="text-align:center;">تحقق %</th>
+                                        <th style="text-align:center;">میانگین سطر</th>
+                                        <th style="text-align:center;">🏆 امتیاز نهایی</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bmLeagueABody">
+                                    <!-- JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <hr class="section-divider">
+                    <div class="bm-league-wrap">
+                        <div class="bm-league-title">⚽ لیگ برتر</div>
+                        <div style="overflow-x:auto;">
+                            <table class="bm-league-table" id="bmLeagueB">
+                                <thead>
+                                    <tr>
+                                        <th>رتبه</th>
+                                        <th>نام تیم</th>
+                                        <th>RSM</th>
+                                        <th style="text-align:center;">رشد %</th>
+                                        <th style="text-align:center;">پوشش %</th>
+                                        <th style="text-align:center;">تحقق %</th>
+                                        <th style="text-align:center;">میانگین سطر</th>
+                                        <th style="text-align:center;">🏆 امتیاز نهایی</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bmLeagueBBody">
+                                    <!-- JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: RSM (Team Profile + Members) -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-rsm">
+            <h2 class="page-title"><i class="fas fa-users"></i> داشبورد مدیر فروش منطقه</h2>
+            <p class="page-subtitle">نمایه تیم، اعضا و جوایز تضمینی</p>
+
+            <div class="rsm-dashboard">
+                <div class="rsm-card">
+                    <h4><i class="fas fa-id-card"></i> نمایه تیم</h4>
+                    <div class="team-profile">
+                        <div class="avatar"><i class="fas fa-user-tie"></i></div>
+                        <div class="team-info">
+                            <div class="team-name">تیم اطلس</div>
+                            <div class="team-desc">منطقه شمال – ۱۲ فروشنده</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;font-size:13px;">
+                        <div>📍 رتبه کلی: <strong>#۲</strong></div>
+                        <div>🏆 امتیاز تیم: <strong>۸,۴۲۰</strong></div>
+                        <div>📈 رشد حجمی: <strong>+۱۲.۴٪</strong></div>
+                        <div>📊 پوشش: <strong>۷۸٪</strong></div>
+                        <div>🎯 تحقق تارگت: <strong>۹۲٪</strong></div>
+                    </div>
+                </div>
+
+                <div class="rsm-card">
+                    <h4><i class="fas fa-users"></i> اعضای تیم</h4>
+                    <div style="overflow-x:auto;">
+                        <table class="team-members-table" id="teamMembersTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>نام فروشنده</th>
+                                    <th style="text-align:center;">⭐ امتیاز</th>
+                                    <th style="text-align:center;">تحقق %</th>
+                                    <th style="text-align:center;">پوشش %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teamMembersBody">
+                                <!-- JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="rsm-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-medal"></i> جوایز تضمینی</h4>
+                    <div class="guaranteed-reward">
+                        <span>🏅 پاداش ماهانه – بهترین فروشنده تیم</span>
+                        <span style="font-weight:700;">$ ۱۰۰ کارت هدیه</span>
+                    </div>
+                    <div class="guaranteed-reward" style="margin-top:6px;border-right-color:var(--caramel);">
+                        <span>🎯 پاداش فصلی – تحقق ۱۰۰٪ تارگت</span>
+                        <span style="font-weight:700;">$ ۵۰۰</span>
+                    </div>
+                    <div class="guaranteed-reward" style="margin-top:6px;border-right-color:var(--gold);">
+                        <span>🌟 پاداش سالانه – صعود به لیگ قهرمانان</span>
+                        <span style="font-weight:700;">سفر ۷ روزه + مرخصی</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: SELLER (with full criteria table) -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-seller">
+            <h2 class="page-title"><i class="fas fa-user"></i> داشبورد فروشنده</h2>
+            <p class="page-subtitle">راهنمای SFI، پیشرفت شخصی و رتبه‌بندی درون تیم</p>
+
+            <div class="seller-dashboard">
+                <div class="seller-card">
+                    <h4><i class="fas fa-lightbulb"></i> راهنمای SFI</h4>
+                    <div class="sfi-hint">
+                        <div class="hint-label">🎯 تمرکز فروش این ماه</div>
+                        <div class="hint-text">محصول اختصاصی: <strong>شکلات های سکه ای دارک</strong> – هدف: ۲۰۰ واحد</div>
+                    </div>
+                    <div class="sfi-hint" style="border-right-color:var(--caramel);">
+                        <div class="hint-label">📊 وضعیت فعلی شما</div>
+                        <div class="hint-text">۱۲۸ واحد فروخته‌اید – <strong>۶۴٪</strong> از هدف ماهانه</div>
+                    </div>
+                    <div class="sfi-hint" style="border-right-color:var(--gold);">
+                        <div class="hint-label">⭐ امتیاز جایزه اختصاصی</div>
+                        <div class="hint-text">امتیاز شما: <strong>۲,۵۶۰</strong> – رتبه: <strong>#۳</strong> در تیم</div>
+                    </div>
+                </div>
+
+                <div class="seller-card">
+                    <h4><i class="fas fa-chart-pie"></i> پیشرفت شخصی</h4>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-label"><span>تحقق تارگت ماهانه</span><span>۶۴٪</span></div>
+                        <div class="progress-bar"><div class="fill" style="width:64%;"></div></div>
+                    </div>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-label"><span>پوشش محصولات</span><span>۷۸٪</span></div>
+                        <div class="progress-bar"><div class="fill" style="width:78%;"></div></div>
+                    </div>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-label"><span>رشد حجمی (نسبت به ماه قبل)</span><span>+۹٪</span></div>
+                        <div class="progress-bar"><div class="fill" style="width:9%;background:linear-gradient(90deg,var(--peach),var(--caramel));"></div></div>
+                    </div>
+                    <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:13px;background:var(--cream);padding:8px 12px;border-radius:var(--radius-sm);">
+                        <span>🏅 رتبه شما در تیم</span>
+                        <span style="font-weight:700;color:var(--caramel);">#۳ از ۱۲</span>
+                    </div>
+                </div>
+
+                <!-- Full intra-team ranking table -->
+                <div class="seller-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-ranking-star"></i> رتبه‌بندی درون تیم – جزئیات کامل</h4>
+                    <div style="overflow-x:auto;">
+                        <table class="intra-team-table" id="intraTeamTable">
+                            <thead>
+                                <tr>
+                                    <th>رتبه</th>
+                                    <th>نام فروشنده</th>
+                                    <th style="text-align:center;">تعداد محصول</th>
+                                    <th style="text-align:center;">تحقق تارگت %</th>
+                                    <th style="text-align:center;">⭐ امتیاز</th>
+                                    <th style="text-align:center;">پوشش %</th>
+                                    <th style="text-align:center;">رشد %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="intraTeamBody">
+                                <!-- JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================================ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // ============================
+            // 1. MENU
+            // ============================
+            const burgerBtn = document.getElementById('burgerToggle');
+            const menuPanel = document.getElementById('menuPanel');
+            const menuOverlay = document.getElementById('menuOverlay');
+            const menuClose = document.getElementById('menuClose');
+
+            function openMenu() {
+                menuPanel.classList.add('open');
+                menuOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMenu() {
+                menuPanel.classList.remove('open');
+                menuOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            burgerBtn.addEventListener('click', openMenu);
+            menuClose.addEventListener('click', closeMenu);
+            menuOverlay.addEventListener('click', closeMenu);
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+
+            // ============================
+            // 2. NAVIGATION
+            // ============================
+            const navItems = document.querySelectorAll('.nav-item');
+            const pages = {
+                landing: document.getElementById('page-landing'),
+                admin: document.getElementById('page-admin'),
+                bm: document.getElementById('page-bm'),
+                rsm: document.getElementById('page-rsm'),
+                seller: document.getElementById('page-seller'),
+            };
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageId = this.dataset.page;
+                    if (!pageId || !pages[pageId]) return;
+                    navItems.forEach(n => n.classList.remove('active'));
+                    this.classList.add('active');
+                    Object.keys(pages).forEach(key => pages[key].classList.remove('active'));
+                    pages[pageId].classList.add('active');
+                    closeMenu();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            // ============================
+            // 3. REWARD TABLE (all "مصوب")
+            // ============================
+            const rewards = [
+                { id: 1, name: 'کارت هدیه ۱۰۰$', category: 'ماهانه', amount: 100 },
+                { id: 2, name: 'پاداش نقدی ۵۰۰$', category: 'فصلی', amount: 500 },
+                { id: 3, name: 'سفر ۷ روزه خارجی', category: 'سالانه', amount: 3000 },
+                { id: 4, name: 'پاداش لیگ قهرمانان – مقام اول', category: 'فصلی', amount: 10000 },
+                { id: 5, name: 'پاداش لیگ قهرمانان – مقام دوم', category: 'فصلی', amount: 8000 },
+                { id: 6, name: 'پاداش لیگ برتر – مقام اول', category: 'فصلی', amount: 3000 },
+                { id: 7, name: 'پاداش ویژه رشد ۹۵٪+', category: 'سالانه', amount: 2000 },
+                { id: 8, name: 'جایزه بهترین فروشنده ماه', category: 'ماهانه', amount: 250 },
+            ];
+
+            const tbody = document.getElementById('rewardTableBody');
+            rewards.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = 'row-approved';
+                tr.innerHTML = `
+                    <td>${r.id}</td>
+                    <td class="prize-name approved">
+                        <i class="fas fa-circle prize-icon approved" style="margin-left:6px;font-size:10px;"></i>
+                        ${r.name}
+                    </td>
+                    <td>${r.category}</td>
+                    <td>$${r.amount.toLocaleString()}</td>
+                    <td><span class="status-badge approved">⚪ مصوب</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // ============================
+            // 4. COUNTER
+            // ============================
+            const counterEl = document.getElementById('counterNumber');
+            const target = 100000;
+            let current = 0;
+            const duration = 2800;
+            const startTime = performance.now();
+
+            function formatNumber(num) {
+                return '$' + Math.floor(num).toLocaleString('en-US');
+            }
+
+            function animateCounter(time) {
+                const elapsed = time - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                current = eased * target;
+                counterEl.textContent = formatNumber(current);
+                if (progress < 1) requestAnimationFrame(animateCounter);
+                else counterEl.textContent = formatNumber(target);
+            }
+            requestAnimationFrame(animateCounter);
+
+            // ============================
+            // 5. ADMIN: JSON
+            // ============================
+            document.getElementById('downloadJson').addEventListener('click', function() {
+                const sample = {
+                    hyperParameters: {
+                        starMultiplier: 1.0,
+                        trophyWeight: 0.85,
+                        weeklyBonusCap: 500,
+                        leaguePromotionThreshold: 0.75,
+                        monthlyFocus: 'شکلات های سکه ای دارک',
+                        teamEvaluation: ['growth', 'coverage', 'aop', 'linePerInvoice']
+                    }
+                };
+                const blob = new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'gamification_sample.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('uploadJsonBtn').addEventListener('click', function() {
+                document.getElementById('jsonFileInput').click();
+            });
+            document.getElementById('jsonFileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    try {
+                        JSON.parse(ev.target.result);
+                        document.getElementById('jsonUploadStatus').textContent = '✅ JSON با موفقیت آپلود شد';
+                    } catch (err) {
+                        document.getElementById('jsonUploadStatus').textContent = '❌ خطا: JSON نامعتبر';
+                    }
+                };
+                reader.readAsText(file);
+                this.value = '';
+            });
+
+            // ============================
+            // 6. ADMIN: XLSX
+            // ============================
+            document.getElementById('downloadXlsx').addEventListener('click', function() {
+                alert('📥 فایل XLSX نمونه دانلود شد (شبیه‌سازی)');
+            });
+            document.getElementById('uploadXlsxBtn').addEventListener('click', function() {
+                document.getElementById('xlsxFileInput').click();
+            });
+            document.getElementById('xlsxFileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                document.getElementById('xlsxUploadStatus').textContent =
+                    '✅ فایل "' + file.name + '" با موفقیت آپلود شد (' + (file.size / 1024).toFixed(1) + ' KB)';
+                this.value = '';
+            });
+
+            // ============================
+            // 7. ADMIN: 52-Week Table
+            // ============================
+            const weekTbody = document.getElementById('weekTableBody');
+            const weekData = [];
+            for (let w = 1; w <= 52; w++) {
+                weekData.push({
+                    week: w,
+                    sales: Math.floor(50 + Math.random() * 200),
+                    targetPct: (70 + Math.random() * 30).toFixed(1),
+                    coverage: (60 + Math.random() * 35).toFixed(1),
+                    growth: (Math.random() * 20 - 5).toFixed(1)
+                });
+            }
+
+            function renderWeekTable(data) {
+                weekTbody.innerHTML = '';
+                data.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight:600;">هفته ${d.week}</td>
+                        <td><input class="week-input" type="number" value="${d.sales}" data-week="${d.week}" data-field="sales"></td>
+                        <td><input class="week-input" type="number" step="0.1" value="${d.targetPct}" data-week="${d.week}" data-field="targetPct"></td>
+                        <td><input class="week-input" type="number" step="0.1" value="${d.coverage}" data-week="${d.week}" data-field="coverage"></td>
+                        <td><input class="week-input" type="number" step="0.1" value="${d.growth}" data-week="${d.week}" data-field="growth"></td>
+                    `;
+                    weekTbody.appendChild(tr);
+                });
+                document.querySelectorAll('.week-input').forEach(inp => {
+                    inp.addEventListener('change', function() {
+                        const week = parseInt(this.dataset.week);
+                        const field = this.dataset.field;
+                        const val = parseFloat(this.value);
+                        const idx = weekData.findIndex(d => d.week === week);
+                        if (idx !== -1 && !isNaN(val)) weekData[idx][field] = val;
+                    });
+                });
+            }
+            renderWeekTable(weekData);
+
+            document.getElementById('downloadWeekStatus').addEventListener('click', function() {
+                let csv = 'هفته,تعداد فروش,تحقق تارگت %,پوشش %,رشد %\n';
+                weekData.forEach(d => { csv += `${d.week},${d.sales},${d.targetPct},${d.coverage},${d.growth}\n`; });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'weekly_status_week52.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('uploadWeekBtn').addEventListener('click', function() {
+                document.getElementById('weekFileInput').click();
+            });
+            document.getElementById('weekFileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const newData = weekData.map(d => ({
+                    ...d,
+                    sales: Math.floor(40 + Math.random() * 220),
+                    targetPct: (65 + Math.random() * 35).toFixed(1),
+                    coverage: (55 + Math.random() * 40).toFixed(1),
+                    growth: (Math.random() * 22 - 6).toFixed(1),
+                }));
+                weekData.splice(0, weekData.length, ...newData);
+                renderWeekTable(weekData);
+                alert('✅ داده‌های هفتگی با موفقیت به‌روزرسانی شدند!');
+                this.value = '';
+            });
+
+            // ============================
+            // 8. BUSINESS MANAGER: Rankings
+            // ============================
+            const rsmNames = ['احمد رضایی', 'سارا کریمی', 'مهدی عباسی', 'لیلا محمدی', 'علی نوری', 'زهرا حسینی', 'رضا صادقی'];
+            const rsmScores = [9850, 9120, 8700, 8350, 7800, 7200, 6500];
+            const rsmList = document.getElementById('rsmRankingList');
+            rsmNames.forEach((name, i) => {
+                const rank = i + 1;
+                let cls = '';
+                if (rank === 1) cls = 'gold';
+                else if (rank === 2) cls = 'silver';
+                else if (rank === 3) cls = 'bronze';
+                const div = document.createElement('div');
+                div.className = 'rank-item';
+                div.innerHTML =
+                    `<span class="rank-num ${cls}">${rank}</span><div class="rank-info"><div class="name">${name}</div><div class="score">⭐ ${rsmScores[i]} امتیاز</div></div><span class="rank-badge">${rank <= 3 ? '🏆' : ''}</span>`;
+                rsmList.appendChild(div);
+            });
+
+            const sellerNames = ['امیر حسینی', 'نیما شریفی', 'فاطمه زارع', 'محسن ملکی', 'ترنم عباسی', 'کیان رضوی', 'پریسا نوری',
+                'یاسین احمدی'
+            ];
+            const sellerScores = [3200, 3050, 2900, 2700, 2550, 2400, 2200, 2000];
+            const sellerLeagues = ['serie-a', 'serie-a', 'serie-a', 'serie-a', 'serie-b', 'serie-b', 'serie-b', 'serie-b'];
+            const sellerList = document.getElementById('sellerRankingList');
+            sellerNames.forEach((name, i) => {
+                const rank = i + 1;
+                const league = sellerLeagues[i];
+                const div = document.createElement('div');
+                div.className = 'rank-item';
+                div.innerHTML =
+                    `<span class="rank-num" style="background:${league === 'serie-a' ? 'var(--gold-light)' : 'var(--peach-light)'}">${rank}</span><div class="rank-info"><div class="name">${name} <span class="league-tag ${league}">${league === 'serie-a' ? 'قهرمانان' : 'برتر'}</span></div><div class="score">🏆 ${sellerScores[i]} امتیاز</div></div><span class="rank-badge">${rank <= 3 ? '⭐' : ''}</span>`;
+                sellerList.appendChild(div);
+            });
+
+            // Pledged Rewards
+            const monthlyPledges = document.getElementById('monthlyPledges');
+            [{ label: 'بهترین فروشنده ماه', value: '$۱۰۰ کارت هدیه' }, { label: 'تیم برتر ماه', value: '$۵۰۰' }]
+            .forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'pledge-item';
+                div.innerHTML =
+                    `<span class="pledge-label">${d.label}</span><span class="pledge-value">${d.value}</span>`;
+                monthlyPledges.appendChild(div);
+            });
+            const quarterlyPledges = document.getElementById('quarterlyPledges');
+            [{ label: 'مقام اول لیگ قهرمانان', value: '$۱۰,۰۰۰' }, { label: 'مقام دوم لیگ قهرمانان', value: '$۸,۰۰۰' },
+                { label: 'مقام اول لیگ برتر', value: '$۳,۰۰۰' }
+            ].forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'pledge-item';
+                div.innerHTML =
+                    `<span class="pledge-label">${d.label}</span><span class="pledge-value">${d.value}</span>`;
+                quarterlyPledges.appendChild(div);
+            });
+            const annualPledges = document.getElementById('annualPledges');
+            [{ label: 'قهرمان سال', value: 'سفر ۷ روزه + مرخصی' }, { label: 'تیم برتر سال', value: '$۱۵,۰۰۰' }]
+            .forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'pledge-item';
+                div.innerHTML =
+                    `<span class="pledge-label">${d.label}</span><span class="pledge-value">${d.value}</span>`;
+                annualPledges.appendChild(div);
+            });
+
+            // ============================
+            // 9. BM: Separate League Tables (full details)
+            // ============================
+            // Generate detailed team data for BM leagues
+            const bmTeamDataA = [
+                { name: 'تیم اطلس', rsm: 'احمد رضایی', growth: 12.4, coverage: 78, aop: 92, avgLines: 4.2 },
+                { name: 'تیم هرمس', rsm: 'سارا کریمی', growth: 15.1, coverage: 82, aop: 95, avgLines: 4.5 },
+                { name: 'تیم زئوس', rsm: 'مهدی عباسی', growth: 8.7, coverage: 70, aop: 85, avgLines: 3.8 },
+                { name: 'تیم آپولو', rsm: 'لیلا محمدی', growth: 10.2, coverage: 74, aop: 88, avgLines: 4.0 },
+                { name: 'تیم آرتمیس', rsm: 'علی نوری', growth: 6.5, coverage: 66, aop: 80, avgLines: 3.5 },
+                { name: 'تیم پوزئیدون', rsm: 'زهرا حسینی', growth: 5.0, coverage: 62, aop: 76, avgLines: 3.2 },
+                { name: 'تیم دیمتر', rsm: 'رضا صادقی', growth: 3.8, coverage: 58, aop: 72, avgLines: 3.0 },
+            ];
+
+            const bmTeamDataB = [
+                { name: 'تیم آرس', rsm: 'محمد تقی‌پور', growth: 9.0, coverage: 68, aop: 82, avgLines: 3.6 },
+                { name: 'تیم آتنا', rsm: 'نرگس احمدی', growth: 7.2, coverage: 64, aop: 78, avgLines: 3.3 },
+                { name: 'تیم هفائستوس', rsm: 'کریم موسوی', growth: 5.8, coverage: 60, aop: 74, avgLines: 3.1 },
+                { name: 'تیم دیونیسوس', rsm: 'شبنم رضایی', growth: 4.5, coverage: 56, aop: 70, avgLines: 2.9 },
+                { name: 'تیم آفرودیت', rsm: 'حسین کریمی', growth: 3.2, coverage: 52, aop: 66, avgLines: 2.7 },
+                { name: 'تیم هادس', rsm: 'مینا نوروزی', growth: 2.0, coverage: 48, aop: 62, avgLines: 2.5 },
+                { name: 'تیم پرسئوس', rsm: 'سعید غفاری', growth: 1.0, coverage: 44, aop: 58, avgLines: 2.3 },
+            ];
+
+            // Calculate final score: growth * coverage * aop * avgLines (scaled)
+            function calcFinalScore(d) {
+                return Math.round((d.growth / 10 + 1) * (d.coverage / 100) * (d.aop / 100) * d.avgLines * 10000);
+            }
+
+            function renderBMLeagueTable(data, tbodyId) {
+                const tbody = document.getElementById(tbodyId);
+                const enriched = data.map(d => ({ ...d, finalScore: calcFinalScore(d) }));
+                enriched.sort((a, b) => b.finalScore - a.finalScore);
+                tbody.innerHTML = '';
+                enriched.forEach((d, idx) => {
+                    const rank = idx + 1;
+                    const tr = document.createElement('tr');
+                    if (rank <= 3) tr.className = 'highlight-row';
+                    tr.innerHTML = `
+                        <td>${rank} ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : ''}</td>
+                        <td style="font-weight:600;">${d.name}</td>
+                        <td>${d.rsm}</td>
+                        <td style="text-align:center;">${d.growth}%</td>
+                        <td style="text-align:center;">${d.coverage}%</td>
+                        <td style="text-align:center;">${d.aop}%</td>
+                        <td style="text-align:center;">${d.avgLines}</td>
+                        <td style="text-align:center;font-weight:700;color:var(--caramel);">${d.finalScore.toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            renderBMLeagueTable(bmTeamDataA, 'bmLeagueABody');
+            renderBMLeagueTable(bmTeamDataB, 'bmLeagueBBody');
+
+            // ============================
+            // 10. RSM: Team Members
+            // ============================
+            const teamMembers = [
+                { name: 'امیر حسینی', score: 3200, aop: 92, coverage: 85 },
+                { name: 'نیما شریفی', score: 3050, aop: 88, coverage: 80 },
+                { name: 'فاطمه زارع', score: 2900, aop: 85, coverage: 78 },
+                { name: 'محسن ملکی', score: 2700, aop: 80, coverage: 74 },
+                { name: 'ترنم عباسی', score: 2550, aop: 76, coverage: 70 },
+                { name: 'کیان رضوی', score: 2400, aop: 72, coverage: 66 },
+                { name: 'پریسا نوری', score: 2200, aop: 68, coverage: 62 },
+                { name: 'یاسین احمدی', score: 2000, aop: 64, coverage: 58 },
+            ];
+            const teamMembersBody = document.getElementById('teamMembersBody');
+            teamMembers.sort((a, b) => b.score - a.score);
+            teamMembers.forEach((m, idx) => {
+                const rank = idx + 1;
+                const tr = document.createElement('tr');
+                if (rank === 1) tr.style.background = 'var(--gold-light)';
+                tr.innerHTML = `
+                    <td>${rank}</td>
+                    <td>${m.name}</td>
+                    <td style="text-align:center;">${m.score.toLocaleString()}</td>
+                    <td style="text-align:center;">${m.aop}%</td>
+                    <td style="text-align:center;">${m.coverage}%</td>
+                `;
+                teamMembersBody.appendChild(tr);
+            });
+
+            // ============================
+            // 11. SELLER: Intra-Team Ranking (full criteria)
+            // ============================
+            const intraTeamData = [
+                { name: 'امیر حسینی', units: 185, aop: 92, coverage: 85, growth: 14 },
+                { name: 'نیما شریفی', units: 172, aop: 88, coverage: 80, growth: 11 },
+                { name: 'فاطمه زارع', units: 160, aop: 85, coverage: 78, growth: 9 },
+                { name: 'محسن ملکی', units: 148, aop: 80, coverage: 74, growth: 7 },
+                { name: 'ترنم عباسی', units: 135, aop: 76, coverage: 70, growth: 5 },
+                { name: 'کیان رضوی', units: 125, aop: 72, coverage: 66, growth: 3 },
+                { name: 'پریسا نوری', units: 110, aop: 68, coverage: 62, growth: 1 },
+                { name: 'یاسین احمدی', units: 98, aop: 64, coverage: 58, growth: -1 },
+            ];
+
+            const intraTeamBody = document.getElementById('intraTeamBody');
+            // Calculate star score: units * aop%
+            const enrichedIntra = intraTeamData.map(d => ({
+                ...d,
+                starScore: Math.round(d.units * (d.aop / 100))
+            }));
+            enrichedIntra.sort((a, b) => b.starScore - a.starScore);
+            enrichedIntra.forEach((d, idx) => {
+                const rank = idx + 1;
+                const tr = document.createElement('tr');
+                if (rank === 1) tr.className = 'highlight-row';
+                tr.innerHTML = `
+                    <td>${rank} ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : ''}</td>
+                    <td>${d.name}</td>
+                    <td style="text-align:center;">${d.units}</td>
+                    <td style="text-align:center;">${d.aop}%</td>
+                    <td style="text-align:center;font-weight:700;color:var(--caramel);">${d.starScore.toLocaleString()}</td>
+                    <td style="text-align:center;">${d.coverage}%</td>
+                    <td style="text-align:center;">${d.growth}%</td>
+                `;
+                intraTeamBody.appendChild(tr);
+            });
+
+            // ============================
+            // 12. LEAGUE LEADERBOARD + SIMULATION (LTR)
+            // ============================
+            const leagueTeams = {
+                A: [
+                    { name: 'تیم اطلس', rsm: 'احمد رضایی', base: 920 },
+                    { name: 'تیم هرمس', rsm: 'سارا کریمی', base: 880 },
+                    { name: 'تیم زئوس', rsm: 'مهدی عباسی', base: 840 },
+                    { name: 'تیم آپولو', rsm: 'لیلا محمدی', base: 810 },
+                    { name: 'تیم آرتمیس', rsm: 'علی نوری', base: 760 },
+                    { name: 'تیم پوزئیدون', rsm: 'زهرا حسینی', base: 710 },
+                    { name: 'تیم دیمتر', rsm: 'رضا صادقی', base: 660 },
+                ],
+                B: [
+                    { name: 'تیم آرس', rsm: 'محمد تقی‌پور', base: 620 },
+                    { name: 'تیم آتنا', rsm: 'نرگس احمدی', base: 590 },
+                    { name: 'تیم هفائستوس', rsm: 'کریم موسوی', base: 560 },
+                    { name: 'تیم دیونیسوس', rsm: 'شبنم رضایی', base: 530 },
+                    { name: 'تیم آفرودیت', rsm: 'حسین کریمی', base: 490 },
+                    { name: 'تیم هادس', rsm: 'مینا نوروزی', base: 450 },
+                    { name: 'تیم پرسئوس', rsm: 'سعید غفاری', base: 410 },
+                ]
+            };
+
+            function generateMonthlyScores(teams, months = 12) {
+                const result = {};
+                teams.forEach((t, idx) => {
+                    const scores = [];
+                    for (let m = 0; m < months; m++) {
+                        const variation = (Math.random() * 200) - 80;
+                        const trend = (m / months) * 60 * (idx % 2 === 0 ? 1 : -0.5);
+                        let val = t.base + variation + trend + (Math.random() * 40);
+                        val = Math.max(100, Math.min(1400, val));
+                        scores.push(Math.round(val));
+                    }
+                    result[t.name] = scores;
+                });
+                return result;
+            }
+
+            const monthlyDataA = generateMonthlyScores(leagueTeams.A);
+            const monthlyDataB = generateMonthlyScores(leagueTeams.B);
+
+            function getCumulativeScores(league, monthIdx) {
+                const teams = league === 'A' ? leagueTeams.A : leagueTeams.B;
+                const data = league === 'A' ? monthlyDataA : monthlyDataB;
+                const results = teams.map(t => {
+                    const scores = data[t.name] || [];
+                    const cumulative = scores.slice(0, monthIdx + 1).reduce((a, b) => a + b, 0);
+                    // Simulate coverage % and AOP % based on performance
+                    const baseCov = 50 + Math.random() * 40;
+                    const baseAop = 50 + Math.random() * 40;
+                    const perfFactor = cumulative / 1000;
+                    const coverage = Math.min(99, Math.round(baseCov + perfFactor * 2));
+                    const aop = Math.min(99, Math.round(baseAop + perfFactor * 1.5));
+                    return { name: t.name, rsm: t.rsm, score: cumulative, coverage, aop };
+                });
+                results.sort((a, b) => b.score - a.score);
+                return results;
+            }
+
+            let currentMonth = 0;
+            const totalMonths = 12;
+            let currentLeague = 'A';
+
+            const leagueTableBody = document.getElementById('leagueTableBody');
+            const simMonthLabel = document.getElementById('simMonthLabel');
+            const simProgress = document.getElementById('simProgress');
+            const simPrev = document.getElementById('simPrev');
+            const simNext = document.getElementById('simNext');
+
+            // Georgian month names (LTR)
+            const georgianMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+                'October', 'November', 'December'
+            ];
+
+            function renderLeagueTable() {
+                const data = getCumulativeScores(currentLeague, currentMonth);
+                leagueTableBody.innerHTML = '';
+                data.forEach((d, idx) => {
+                    const rank = idx + 1;
+                    const tr = document.createElement('tr');
+                    let medal = '';
+                    if (rank === 1) medal = '🥇';
+                    else if (rank === 2) medal = '🥈';
+                    else if (rank === 3) medal = '🥉';
+                    tr.innerHTML = `
+                        <td class="rank-col">${rank} ${medal}</td>
+                        <td class="team-col">${d.name}</td>
+                        <td class="rsm-col">${d.rsm}</td>
+                        <td style="text-align:center;">${d.coverage}%</td>
+                        <td style="text-align:center;">${d.aop}%</td>
+                        <td class="score-col">${d.score.toLocaleString()}</td>
+                    `;
+                    if (rank === 1) tr.style.background = 'var(--gold-light)';
+                    else if (rank === 2) tr.style.background = 'var(--peach-light)';
+                    else if (rank === 3) tr.style.background = 'var(--cream)';
+                    leagueTableBody.appendChild(tr);
+                });
+                // Update month label with Georgian name
+                simMonthLabel.textContent = georgianMonths[currentMonth];
+                simProgress.textContent = `${currentMonth + 1} / ${totalMonths}`;
+                simPrev.disabled = currentMonth === 0;
+                simNext.disabled = currentMonth === totalMonths - 1;
+            }
+
+            document.querySelectorAll('.league-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.league-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentLeague = this.dataset.league;
+                    renderLeagueTable();
+                });
+            });
+
+            simPrev.addEventListener('click', function() {
+                if (currentMonth > 0) { currentMonth--;
+                    renderLeagueTable(); }
+            });
+            simNext.addEventListener('click', function() {
+                if (currentMonth < totalMonths - 1) { currentMonth++;
+                    renderLeagueTable(); }
+            });
+
+            renderLeagueTable();
+
+            // ============================
+            // 13. DOWNLOAD TXT: Gamification Model (S3)
+            // ============================
+            document.getElementById('downloadTxtDoc').addEventListener('click', function() {
+                const content = `============================================================
+        SELLERS CLUB PLATFORM - GAMIFICATION MODEL
+        ============================================================
+
+        VERSION: 3.0 (S3)
+        DATE: 2026
+        COMPETITION: 2027 Season (14 Teams, 2 Leagues)
+
+        ============================================================
+        1. OVERVIEW
+        ============================================================
+        The Sellers Club Platform (SFI) is a gamified sales performance
+        system designed to motivate, track, and reward sales teams.
+        14 teams, led by Regional Sales Managers (RSMs), compete
+        annually in a two-league structure.
+
+        ============================================================
+        2. LEAGUE STRUCTURE
+        ============================================================
+        - League A (Champions League): 7 teams
+        - League B (Premier League): 7 teams
+
+        Promotion & Relegation:
+        - Top 3 teams in League B promote to League A
+        - Bottom 3 teams in League A relegate to League B
+
+        ============================================================
+        3. EVALUATION CRITERIA
+        ============================================================
+
+        A. Individual Monthly Bonus (⭐):
+        - Product volume sold (selected monthly focus product)
+        - Monthly team target achievement %
+        Formula: Score = (Units Sold) × (Target Achievement %)
+
+        B. Team Evaluation (🏆):
+        - Volume Growth % (from month 2 onward)
+        - Coverage %
+        - AOP (Target Achievement) %
+        - Average # of Invoice Lines per Seller per Team
+        Formula: Score = Growth × Coverage × AOP × AvgLines
+
+        ============================================================
+        4. REWARDS STRUCTURE
+        ============================================================
+
+        Monthly Rewards:
+        - Best Seller: $100 Gift Card
+        - Best Team: $500
+
+        Seasonal Rewards (per season):
+        League A:
+        - 1st Place: $10,000
+        - 2nd Place: $8,000
+        - 3rd Place: $5,000
+        - 4th Place: $4,000
+
+        League B:
+        - 1st Place: $3,000
+        - 2nd Place: $2,000
+        - 3rd Place: $1,000
+
+        Annual Rewards:
+        - Champion: 7-day international trip + paid leave
+        - Best Team: $15,000
+
+        Special Bonus:
+        - For every 1% above 95% annual sales target achievement,
+          one lucky participant (Seller, RSM, or Business Team member)
+          wins a 7-day international trip + paid leave
+          (draw at closing ceremony)
+
+        ============================================================
+        5. HYPER-PARAMETERS (Configurable via JSON)
+        ============================================================
+        {
+          "starMultiplier": 1.0,
+          "trophyWeight": 0.85,
+          "weeklyBonusCap": 500,
+          "leaguePromotionThreshold": 0.75,
+          "monthlyFocus": "شکلات های سکه ای دارک",
+          "teamEvaluation": ["growth", "coverage", "aop", "linePerInvoice"]
+        }
+
+        ============================================================
+        6. DATA INPUT
+        ============================================================
+        - Weekly sales results: .xlsx file (52 weeks)
+        - Full input table with 52 weeks of data
+        - Download latest status, add past weeks data, re-upload
+
+        ============================================================
+        7. SIMULATION
+        ============================================================
+        The platform simulates the 2027 season month-by-month.
+        Users can navigate through months using Previous / Next
+        (LTR orientation) to see cumulative results and team rankings.
+        Georgian month names are displayed (January - December).
+
+        ============================================================
+        8. USER ROLES
+        ============================================================
+        - Admin: Full control, JSON upload, XLSX management
+        - Business Manager: Dashboard with separate League A & B tables
+          showing full details (Growth %, Coverage %, AOP %, Avg Lines,
+          Final Score) sorted by Final Score.
+        - RSM (Team Captain): Team profile, detailed member rankings
+          with Score, AOP %, Coverage %
+        - Seller: SFI hints, personal progress, intra-team ranking
+          with full criteria (Units, AOP %, Star Score, Coverage %, Growth %)
+
+        ============================================================
+        9. CONTACT & FEEDBACK
+        ============================================================
+        For modifications and calibration (S4, S5, ...),
+        please edit this document and send it back in this chat.
+
+        ============================================================`;
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'gamification_model_S3.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+        });
+    </script>
+
+</body>
+</html>
