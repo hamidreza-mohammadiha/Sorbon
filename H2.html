@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>باشگاه مشتریان سوربون</title>
+    
+    <!-- Vazirmatn Font -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        .dir-ltr {
+            direction: ltr;
+        }
+        /* Sorbon logo font approximation */
+        .sorbon-logo {
+            font-family: 'Brush Script MT', 'Segoe Script', 'Dancing Script', cursive;
+            color: #5D2E2E;
+            letter-spacing: -1px;
+            font-weight: 700;
+        }
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 6px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: #1E3A8A;
+            border-radius: 4px;
+        }
+        /* Blur effect for help overlay */
+        .blurred {
+            filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+        }
+        /* Smooth transitions */
+        .transition-all-custom {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 pb-10 relative">
+
+    <!-- ============================================= -->
+    <!-- MAIN APP CONTENT (will be blurred when help shows) -->
+    <!-- ============================================= -->
+    <div id="app-content" class="transition-all-custom">
+
+        <!-- Header / Profile Section (1.5x bigger) -->
+        <header class="bg-white p-6 shadow-sm border-b border-gray-200 sticky top-0 z-20">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-18 h-18 bg-teal-50 rounded-full flex items-center justify-center text-4xl border border-teal-100" style="width: 4.5rem; height: 4.5rem;">
+                        🏪
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl text-gray-900">فروشگاه سپهر</h1>
+                        <p class="text-sm text-gray-500 mt-1">آقای سپهر قاسمی - تهران، خیابان ولیعصر</p>
+                        <p class="text-sm text-gray-500 mt-1 dir-ltr text-right">۰۹۱۲۳۴۵۶۷۸۹</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Help Button -->
+                    <button id="help-btn" class="p-3 text-xl text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" title="راهنما">
+                        ❓
+                    </button>
+                    <!-- Burger Menu Button -->
+                    <button id="menu-btn" class="p-3 text-2xl text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                        ☰
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Back-end / Admin Panel (Hidden by default) -->
+        <div id="admin-panel" class="hidden bg-white p-5 border-b border-gray-300 shadow-inner sticky top-[104px] z-10 max-h-[65vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-lg text-blue-900 flex items-center gap-2">
+                    <span>⚙️</span> پنل مدیریت
+                </h2>
+                <span class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">هفته جاری: ۳۰</span>
+            </div>
+
+            <!-- Recommendations Selector -->
+            <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-5">
+                <h3 class="font-bold text-sm text-blue-900 mb-3 flex items-center gap-2">
+                    <span>✨</span> انتخاب ۳ محصول پیشنهادی
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <select id="rec-select-1" class="p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500"></select>
+                    <select id="rec-select-2" class="p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500"></select>
+                    <select id="rec-select-3" class="p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500"></select>
+                </div>
+            </div>
+
+            <!-- Week Amounts Table -->
+            <h3 class="font-bold text-sm text-gray-700 mb-3">مقادیر سفارشات هفتگی</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-right min-w-[600px]">
+                    <thead class="bg-gray-50 text-gray-600">
+                        <tr>
+                            <th class="p-2 font-medium">محصول</th>
+                            <th class="p-2 font-medium text-xs">وزن (گرم)</th>
+                            <th class="p-2 font-medium">هفته ۱</th>
+                            <th class="p-2 font-medium">هفته ۲</th>
+                            <th class="p-2 font-medium">هفته ۳</th>
+                            <th class="p-2 font-medium text-blue-800">هفته ۳۰</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Suggestion Section (1.5x bigger) -->
+        <section class="p-5 mt-3">
+            <h2 class="font-bold text-lg mb-4 flex items-center gap-2 text-gray-800">
+                <span>✨</span> پیشنهاد محصولات منتخب:
+            </h2>
+            <div id="recommendations-container" class="grid grid-cols-3 gap-4">
+                <!-- Rendered via JS -->
+            </div>
+        </section>
+
+        <!-- Milestone Progress Bar Section -->
+        <section class="p-5 bg-white mx-4 rounded-xl shadow-sm border border-gray-100 mb-5">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="font-bold text-base text-gray-800 flex items-center gap-2">
+                    <span>🏆</span> پیشرفت افزایش سفارش (هدف: ۱۰ کالا)
+                </h2>
+                <span id="milestone-text" class="text-base font-bold text-blue-900 dir-ltr">۰ / ۱۰</span>
+            </div>
+            <div class="w-full bg-gray-100 rounded-full h-5 flex overflow-hidden" dir="ltr">
+                <div id="milestone-bar" class="bg-[#1E3A8A] h-5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </section>
+
+        <!-- Previous Purchases Section -->
+        <section class="px-5">
+            <h2 class="font-bold text-lg mb-4 flex items-center gap-2 text-gray-800">
+                <span>📋</span> تاریخچه سفارشات
+            </h2>
+            <div id="orders-list" class="space-y-3"></div>
+
+            <!-- Pagination Controls -->
+            <div id="pagination" class="flex justify-center items-center gap-2 mt-6 dir-ltr">
+                <!-- Rendered via JS -->
+            </div>
+        </section>
+
+    </div><!-- /app-content -->
+
+
+    <!-- ============================================= -->
+    <!-- HELP OVERLAY (راهنما) -->
+    <!-- ============================================= -->
+    <div id="help-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-md"></div>
+
+        <!-- Help Content Card -->
+        <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto p-6 z-10 border border-gray-200">
+            <!-- Red Close Button (top right) -->
+            <button id="help-close-btn" class="absolute top-3 right-3 w-9 h-9 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-md transition-colors">
+                ✕
+            </button>
+
+            <!-- Logo -->
+            <div class="text-center mt-4 mb-6">
+                <div class="sorbon-logo text-5xl">Sorbon</div>
+                <div class="text-xs text-gray-400 mt-1 tracking-widest">CONFECTIONERY</div>
+            </div>
+
+            <!-- Help Content -->
+            <div class="text-sm text-gray-700 leading-7 space-y-4">
+                <h2 class="font-bold text-lg text-blue-900 text-center mb-4">راهنمای داشبورد باشگاه مشتریان</h2>
+                
+                <p>به باشگاه مشتریان <span class="font-bold text-[#5D2E2E]">سوربون</span> خوش آمدید! 🎉</p>
+                
+                <p>در این داشبورد می‌توانید:</p>
+                
+                <ul class="space-y-2 pr-4">
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-800 mt-1">◀</span>
+                        <span>پروفایل فروشگاه خود را در بالای صفحه مشاهده کنید.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-800 mt-1">◀</span>
+                        <span>پیشنهادهای هوشمند محصولات را بر اساس الگوی خرید شما ببینید.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-800 mt-1">◀</span>
+                        <span>میزان پیشرفت خود را در افزایش تنوع سفارشات پیگیری کنید (هدف: ۱۰ کالا).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-800 mt-1">◀</span>
+                        <span>تاریخچه سفارشات خود را با نمودارهای بصری بررسی کنید.</span>
+                    </li>
+                </ul>
+
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mt-4">
+                    <p class="text-xs text-blue-900 leading-6">
+                        <span class="font-bold">💡 نکته:</span><br>
+                        نوارهای <span class="font-bold text-blue-800">آبی</span> نشان‌دهنده میزان سفارش فعلی شماست و <span class="font-bold text-rose-500">خط‌چین قرمز</span> نشان‌دهنده سفارش قبلی شما می‌باشد.
+                    </p>
+                </div>
+
+                <p class="text-center text-gray-500 text-xs mt-6">با آرزوی موفقیت برای شما 🌟</p>
+            </div>
+
+            <!-- Signature / Footer -->
+            <div class="mt-8 pt-5 border-t border-gray-100 text-center">
+                <div class="sorbon-logo text-3xl">Sorbon</div>
+                <p class="text-xs text-gray-400 mt-1">تیم پشتیبانی سوربون</p>
+                <div class="mt-3 text-2xl">🍫 🍬 🍭 🧁 🍩</div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // ==========================================
+        // Data Generation: >20 Confectionery Items with Weights
+        // ==========================================
+        const MAX_QTY = 50;
+        const TARGET_MILESTONE = 10;
+        const ITEMS_PER_PAGE = 10;
+
+        const productNames = [
+            "شکلات تخته‌ای", "آبنبات", "آبنبات چوبی", "کاپ‌کیک", "دونات", 
+            "بیسکویت", "کیک", "پای", "پودینگ", "عسل", 
+            "شیر", "شکلات صبحانه", "پاستیل", "آدامس", "مافین", 
+            "پیراشکی", "ویفر", "رولت", "تارت", "ژله", 
+            "مربا", "کاکائو", "شکلات تلخ", "شکلات سفید", "شکلات شیری"
+        ];
+        
+        const productEmojis = [
+            "🍫", "🍬", "🍭", "🧁", "🍩", 
+            "🍪", "🍰", "🥧", "🍮", "🍯", 
+            "🥛", "🍫", "🍬", "🍭", "🧁", 
+            "🍩", "🍪", "🍰", "🥧", "🍮", 
+            "🍯", "🥛", "🍫", "🍬", "🍭"
+        ];
+
+        // Generate products with weights (grams)
+        const productsData = productNames.map((name, i) => ({
+            id: i + 1,
+            name,
+            emoji: productEmojis[i],
+            weight: Math.floor(Math.random() * 450) + 50, // 50g to 500g
+            w1: Math.floor(Math.random() * 20) + 5,
+            w2: Math.floor(Math.random() * 20) + 5,
+            w3: Math.floor(Math.random() * 20) + 5,  // Previous week
+            w30: Math.floor(Math.random() * 30) + 5, // Current week
+        }));
+
+        // ==========================================
+        // State
+        // ==========================================
+        let currentPage = 1;
+        let recommendedIds = [1, 4, 7]; // Default recommendations (product IDs)
+
+        // ==========================================
+        // Core Functions
+        // ==========================================
+
+        // --- Render Recommendations ---
+        function renderRecommendations() {
+            const container = document.getElementById('recommendations-container');
+            container.innerHTML = '';
+
+            recommendedIds.forEach(id => {
+                const product = productsData.find(p => p.id === id);
+                if (!product) return;
+                const html = `
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center transition-transform hover:scale-105">
+                        <span class="text-5xl mb-2">${product.emoji}</span>
+                        <span class="text-sm font-medium text-center text-gray-700">${product.name}</span>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // --- Render Milestone ---
+        function renderMilestone() {
+            const increasedCount = productsData.filter(p => p.w30 > p.w3).length;
+            const milestonePercent = Math.min((increasedCount / TARGET_MILESTONE) * 100, 100);
+            
+            document.getElementById('milestone-text').innerText = `${increasedCount} / ۱۰`;
+            document.getElementById('milestone-bar').style.width = `${milestonePercent}%`;
+        }
+
+        // --- Render Orders List (with pagination & weight sort) ---
+        function renderOrders() {
+            // Sort by weight descending (not shown in UI)
+            const sortedProducts = [...productsData].sort((a, b) => b.weight - a.weight);
+            
+            const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const pageProducts = sortedProducts.slice(start, start + ITEMS_PER_PAGE);
+
+            const ordersList = document.getElementById('orders-list');
+            ordersList.innerHTML = '';
+
+            pageProducts.forEach(product => {
+                const prev = product.w3;
+                const current = product.w30;
+                
+                const currentPercent = Math.min((current / MAX_QTY) * 100, 100);
+                const prevPercent = Math.min((prev / MAX_QTY) * 100, 100);
+
+                const isIncreased = current > prev;
+                const checkIcon = isIncreased ? '✅' : '⭕';
+
+                // DOM order: check, progress, emoji
+                // In RTL this renders as: check (right), progress (center), emoji (left)
+                const html = `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3">
+                        <!-- Check mark (right side in RTL) -->
+                        <span class="text-2xl w-8 text-center flex-shrink-0">${checkIcon}</span>
+                        
+                        <!-- Progress Bar Container -->
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <span class="text-sm font-bold text-gray-800">${product.name}</span>
+                                <span class="text-xs text-gray-500 dir-ltr bg-gray-50 px-2 py-0.5 rounded font-mono">${prev} → ${current}</span>
+                            </div>
+                            <!-- Bar (LTR direction) with dashed previous indicator -->
+                            <div class="relative w-full bg-gray-100 rounded-full h-3.5" dir="ltr">
+                                <!-- Dark blue fill: current amount -->
+                                <div class="bg-[#1E3A8A] h-3.5 rounded-full transition-all duration-300" style="width: ${currentPercent}%"></div>
+                                
+                                <!-- Dashed line indicator: previous status -->
+                                <div class="absolute top-[-3px] bottom-[-3px] border-l-2 border-dashed border-rose-500 z-10" 
+                                     style="left: ${prevPercent}%; transform: translateX(-1px);"
+                                     title="سفارش قبلی: ${prev}">
+                                </div>
+                                <!-- Small floating label for previous status -->
+                                <div class="absolute -top-4 text-[9px] text-rose-500 font-bold whitespace-nowrap" 
+                                     style="left: ${prevPercent}%; transform: translateX(-50%);">
+                                    ${prev}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Emoji (left side in RTL) -->
+                        <span class="text-2xl w-10 text-center flex-shrink-0">${product.emoji}</span>
+                    </div>
+                `;
+                ordersList.insertAdjacentHTML('beforeend', html);
+            });
+
+            renderPagination(totalPages);
+        }
+
+        // --- Render Pagination Controls ---
+        function renderPagination(totalPages) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                currentPage === 1 
+                ? 'bg-gray-100 text-gray-300 cursor-not-allowed' 
+                : 'bg-blue-900 text-white hover:bg-blue-800'
+            }`;
+            prevBtn.innerText = '‹';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderOrders(); } };
+            pagination.appendChild(prevBtn);
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `w-9 h-9 rounded-lg text-sm font-bold transition-colors ${
+                    i === currentPage 
+                    ? 'bg-blue-900 text-white' 
+                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                }`;
+                pageBtn.innerText = i;
+                pageBtn.onclick = () => { currentPage = i; renderOrders(); };
+                pagination.appendChild(pageBtn);
+            }
+
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                currentPage === totalPages 
+                ? 'bg-gray-100 text-gray-300 cursor-not-allowed' 
+                : 'bg-blue-900 text-white hover:bg-blue-800'
+            }`;
+            nextBtn.innerText = '›';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderOrders(); } };
+            pagination.appendChild(nextBtn);
+        }
+
+        // --- Render Admin Table ---
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+
+            // Sort by weight for consistency in admin too
+            const sortedForAdmin = [...productsData].sort((a, b) => b.weight - a.weight);
+
+            sortedForAdmin.forEach((product) => {
+                const realIndex = productsData.findIndex(p => p.id === product.id);
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-100 hover:bg-gray-50 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-2 text-xs text-gray-700 whitespace-nowrap">${product.emoji} ${product.name}</td>
+                    <td class="p-2 text-xs text-gray-400 dir-ltr text-center">${product.weight}</td>
+                    <td class="p-2"><input type="number" value="${product.w1}" data-index="${realIndex}" data-week="w1" class="w-14 p-1 border border-gray-300 rounded text-center dir-ltr focus:outline-none focus:border-blue-500 text-xs"></td>
+                    <td class="p-2"><input type="number" value="${product.w2}" data-index="${realIndex}" data-week="w2" class="w-14 p-1 border border-gray-300 rounded text-center dir-ltr focus:outline-none focus:border-blue-500 text-xs"></td>
+                    <td class="p-2"><input type="number" value="${product.w3}" data-index="${realIndex}" data-week="w3" class="w-14 p-1 border border-gray-300 rounded text-center dir-ltr focus:outline-none focus:border-blue-500 text-xs"></td>
+                    <td class="p-2"><input type="number" value="${product.w30}" data-index="${realIndex}" data-week="w30" class="w-14 p-1 border border-blue-500 rounded text-center dir-ltr focus:outline-none focus:ring-1 focus:ring-blue-500 bg-blue-50/30 text-xs font-bold"></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Attach listeners
+            tbody.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    const week = e.target.getAttribute('data-week');
+                    const value = parseInt(e.target.value) || 0;
+                    
+                    productsData[index][week] = value;
+                    
+                    // Re-render main dashboard
+                    renderMilestone();
+                    renderOrders();
+                });
+            });
+        }
+
+        // --- Render Recommendation Selects in Admin ---
+        function renderRecommendationSelects() {
+            const selectIds = ['rec-select-1', 'rec-select-2', 'rec-select-3'];
+            
+            selectIds.forEach((selectId, idx) => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '';
+                
+                // Sort alphabetically for easier finding
+                const sortedNames = [...productsData].sort((a, b) => a.name.localeCompare(b.name, 'fa'));
+                
+                sortedNames.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id;
+                    option.text = `${product.emoji} ${product.name}`;
+                    if (product.id === recommendedIds[idx]) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+
+                // Listener
+                select.addEventListener('change', (e) => {
+                    recommendedIds[idx] = parseInt(e.target.value);
+                    renderRecommendations();
+                });
+            });
+        }
+
+        // ==========================================
+        // Initialization & Event Listeners
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial renders
+            renderRecommendations();
+            renderMilestone();
+            renderOrders();
+            renderAdminTable();
+            renderRecommendationSelects();
+
+            // --- Burger Menu Toggle ---
+            const menuBtn = document.getElementById('menu-btn');
+            const adminPanel = document.getElementById('admin-panel');
+            
+            menuBtn.addEventListener('click', () => {
+                adminPanel.classList.toggle('hidden');
+                if (adminPanel.classList.contains('hidden')) {
+                    menuBtn.innerHTML = '☰';
+                    menuBtn.classList.remove('bg-gray-100');
+                } else {
+                    menuBtn.innerHTML = '✕';
+                    menuBtn.classList.add('bg-gray-100');
+                }
+            });
+
+            // --- Help Overlay Logic ---
+            const helpBtn = document.getElementById('help-btn');
+            const helpOverlay = document.getElementById('help-overlay');
+            const helpCloseBtn = document.getElementById('help-close-btn');
+            const appContent = document.getElementById('app-content');
+
+            function openHelp() {
+                helpOverlay.classList.remove('hidden');
+                appContent.classList.add('blurred');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeHelp() {
+                helpOverlay.classList.add('hidden');
+                appContent.classList.remove('blurred');
+                document.body.style.overflow = '';
+            }
+
+            helpBtn.addEventListener('click', openHelp);
+            helpCloseBtn.addEventListener('click', closeHelp);
+            
+            // Also close on backdrop click
+            helpOverlay.querySelector('.absolute.inset-0').addEventListener('click', closeHelp);
+        });
+    </script>
+</body>
+</html>
