@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>باشگاه مشتریان سوربن</title>
+    
+    <!-- Vazirmatn Font -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        .dir-ltr {
+            direction: ltr;
+        }
+        .sorbon-logo {
+            font-family: 'Brush Script MT', 'Segoe Script', 'Dancing Script', cursive;
+            color: #5D2E2E;
+            letter-spacing: -1px;
+            font-weight: 700;
+        }
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 6px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: #1E3A8A;
+            border-radius: 4px;
+        }
+        .blurred {
+            filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+        }
+        .transition-all-custom {
+            transition: all 0.3s ease;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-in {
+            animation: popIn 0.3s ease-out forwards;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .code-shimmer {
+            background: linear-gradient(90deg, #f0fdfa 0%, #ccfbf1 50%, #f0fdfa 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 pb-10 relative">
+
+    <!-- ============================================= -->
+    <!-- MAIN APP CONTENT -->
+    <!-- ============================================= -->
+    <div id="app-content" class="transition-all-custom">
+
+        <!-- Header / Profile Section -->
+        <header class="bg-white p-6 shadow-sm border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="bg-teal-50 rounded-full flex items-center justify-center text-4xl border border-teal-100 flex-shrink-0" style="width: 4.5rem; height: 4.5rem;">
+                        🏪
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl text-gray-900">فروشگاه سپهر</h1>
+                        <p class="text-sm text-gray-500 mt-1">آقای سپهر قاسمی - تهران، خیابان ولیعصر</p>
+                        <p class="text-sm text-gray-500 mt-1 dir-ltr text-right">۰۹۱۲۳۴۵۶۷۸۹</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="help-btn" class="p-3 text-xl text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" title="راهنما">
+                        ❓
+                    </button>
+                    <button id="menu-btn" class="p-3 text-2xl text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                        ☰
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== Discount KPI (درصد تخفیف کسب شده) ===== -->
+            <div class="mt-6 pt-5 border-t border-gray-100">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-sm font-bold text-gray-700 flex items-center gap-1.5">
+                        <span class="text-base">🎁</span> درصد تخفیف کسب شده
+                    </span>
+                    <span id="discount-percent" class="text-base font-bold text-teal-700">۰٪</span>
+                </div>
+
+                <div class="relative h-8 mx-3" dir="ltr">
+                    <div class="absolute top-1/2 left-0 right-0 h-1.5 bg-gray-100 rounded-full -translate-y-1/2"></div>
+                    <div id="discount-bar" class="absolute top-1/2 left-0 h-1.5 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full -translate-y-1/2 transition-all duration-500" style="width: 0%"></div>
+                    <div id="discount-bullets" class="absolute inset-0"></div>
+                </div>
+
+                <div class="flex justify-between text-[10px] text-gray-400 mt-2 mx-3" dir="ltr">
+                    <span>۱ کالا</span>
+                    <span>۱۰ کالا</span>
+                </div>
+
+                <!-- Submit Button -->
+                <button id="claim-discount-btn" class="w-full mt-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 bg-gradient-to-l from-teal-500 to-teal-600 text-white shadow-md hover:shadow-lg hover:from-teal-600 hover:to-teal-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
+                    🎟️ دریافت کد تخفیف
+                </button>
+            </div>
+        </header>
+
+        <!-- Back-end / Admin Panel (Hidden by default) -->
+        <div id="admin-panel" class="hidden bg-white p-5 border-b border-gray-300 shadow-inner z-10 max-h-[65vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-lg text-blue-900 flex items-center gap-2">
+                    <span>⚙️</span> پنل مدیریت
+                </h2>
+                <span class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">هفته جاری: ۳۰</span>
+            </div>
+
+            <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-5">
+                <h3 class="font-bold text-sm text-blue-900 mb-3 flex items-center gap-2">
+                    <span>✨</span> انتخاب ۳ محصول پیشنهادی
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <select id="rec-select-1" class="p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500"></select>
+                    <select id="rec-select-2" class="p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500"></select>
+                    <select id="rec-select-3" class="p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500"></select>
+                </div>
+            </div>
+
+            <h3 class="font-bold text-sm text-gray-700 mb-3">مقادیر سفارشات هفتگی</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-right min-w-[600px]">
+                    <thead class="bg-gray-50 text-gray-600">
+                        <tr>
+                            <th class="p-2 font-medium">محصول</th>
+                            <th class="p-2 font-medium text-xs">وزن (گرم)</th>
+                            <th class="p-2 font-medium">هفته ۱</th>
+                            <th class="p-2 font-medium">هفته ۲</th>
+                            <th class="p-2 font-medium">هفته ۳</th>
+                            <th class="p-2 font-medium text-blue-800">هفته ۳۰</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Suggestion Section (1.2x size) -->
+        <section class="p-4 mt-2">
+            <h2 class="font-bold text-base mb-3 flex items-center gap-2 text-gray-800">
+                <span>✨</span> پیشنهاد محصولات منتخب:
+            </h2>
+            <div id="recommendations-container" class="grid grid-cols-3 gap-3"></div>
+        </section>
+
+        <!-- Previous Purchases Section -->
+        <section class="px-5 mt-2">
+            <h2 class="font-bold text-lg mb-4 flex items-center gap-2 text-gray-800">
+                <span>📋</span> تاریخچه سفارشات
+            </h2>
+            <div id="orders-list" class="space-y-3"></div>
+            <div id="pagination" class="flex justify-center items-center gap-2 mt-6 dir-ltr"></div>
+        </section>
+
+    </div><!-- /app-content -->
+
+
+    <!-- ============================================= -->
+    <!-- HELP OVERLAY (راهنما) -->
+    <!-- ============================================= -->
+    <div id="help-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-md"></div>
+
+        <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto p-6 z-10 border border-gray-200">
+            <button id="help-close-btn" class="absolute top-3 right-3 w-9 h-9 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-md transition-colors">
+                ✕
+            </button>
+
+            <div class="text-center mt-4 mb-6">
+                <div class="sorbon-logo text-5xl">Sorbon</div>
+                <div class="text-xs text-gray-400 mt-1 tracking-widest">CONFECTIONERY</div>
+            </div>
+
+            <div class="text-sm text-gray-700 leading-7 space-y-4">
+                <h2 class="font-bold text-lg text-blue-900 text-center mb-4">راهنمای داشبورد باشگاه مشتریان</h2>
+                
+                <p>به باشگاه مشتریان <span class="font-bold text-[#5D2E2E]">سوربن</span> خوش آمدید! 🎉</p>
+                
+                <p>در این داشبورد می‌توانید:</p>
+                
+                <ul class="space-y-2 pr-4">
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-800 mt-1">◀</span>
+                        <span>پروفایل فروشگاه خود را در بالای صفحه مشاهده کنید.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-800 mt-1">◀</span>
+                        <span>پیشنهادهای هوشمند محصولات را بر اساس الگوی خرید شما ببینید.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-800 mt-1">◀</span>
+                        <span>درصد تخفیف کسب‌شده خود را بر اساس افزایش تنوع سفارشات پیگیری کنید (حداکثر ۱۰٪).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-800 mt-1">◀</span>
+                        <span>با کلیک روی «دریافت کد تخفیف»، کد اختصاصی خود را دریافت کنید.</span>
+                    </li>
+                </ul>
+
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mt-4">
+                    <p class="text-xs text-blue-900 leading-6">
+                        <span class="font-bold">💡 نکته:</span><br>
+                        نوارهای <span class="font-bold text-blue-800">آبی</span> نشان‌دهنده میزان سفارش فعلی شماست و <span class="font-bold text-rose-500">خط‌چین قرمز</span> نشان‌دهنده سفارش قبلی شما می‌باشد.
+                    </p>
+                </div>
+
+                <p class="text-center text-gray-500 text-xs mt-6">با آرزوی موفقیت برای شما 🌟</p>
+            </div>
+
+            <div class="mt-8 pt-5 border-t border-gray-100 text-center">
+                <div class="sorbon-logo text-3xl">Sorbon</div>
+                <p class="text-xs text-gray-400 mt-1">تیم پشتیبانی سوربن</p>
+                <div class="mt-3 text-2xl">🍫 🍬 🍭 🧁 🍩</div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================= -->
+    <!-- DISCOUNT CODE MODAL -->
+    <!-- ============================================= -->
+    <div id="code-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-md"></div>
+
+        <div class="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 z-10 border border-gray-200 pop-in text-center">
+            <button id="code-close-btn" class="absolute top-3 left-3 w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-full flex items-center justify-center text-lg font-bold transition-colors">
+                ✕
+            </button>
+
+            <div class="text-5xl mb-3">🎉</div>
+            <h2 class="font-bold text-lg text-gray-900 mb-1">تبریک!</h2>
+            <p class="text-xs text-gray-500 mb-4">کد تخفیف اختصاصی شما آماده است</p>
+
+            <!-- Discount Code Box -->
+            <div class="code-shimmer border-2 border-dashed border-teal-400 rounded-xl p-4 mb-4">
+                <div id="discount-code-text" class="text-2xl font-bold text-teal-800 tracking-wider dir-ltr font-mono">
+                    SORBON-XXXX-XX
+                </div>
+                <div id="discount-code-percent" class="text-xs text-teal-600 mt-2 font-bold">
+                    تخفیف ۵٪
+                </div>
+            </div>
+
+            <button id="copy-code-btn" class="w-full py-2.5 rounded-xl font-bold text-sm bg-blue-900 text-white hover:bg-blue-800 transition-colors mb-2">
+                📋 کپی کد
+            </button>
+
+            <p class="text-[10px] text-gray-400 mt-2">این کد در سفارش بعدی شما قابل استفاده است</p>
+        </div>
+    </div>
+
+
+    <script>
+        // ==========================================
+        // Persian Number Helpers
+        // ==========================================
+        const persianDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+        
+        function toPersianNum(num) {
+            return String(num).replace(/\d/g, d => persianDigits[d]);
+        }
+        
+        function toEnglishNum(str) {
+            return String(str).replace(/[۰-۹]/g, d => persianDigits.indexOf(d));
+        }
+
+        // ==========================================
+        // Data: 10 SKUs with unique matching emojis
+        // ==========================================
+        const MAX_QTY = 50;
+        const ITEMS_PER_PAGE = 5;
+        const TARGET_MILESTONE = 10;
+
+        const products = [
+            { name: "شکلات تخته‌ای", emoji: "🍫" },
+            { name: "آبنبات",         emoji: "🍬" },
+            { name: "آبنبات چوبی",   emoji: "🍭" },
+            { name: "کاپ‌کیک",        emoji: "🧁" },
+            { name: "دونات",          emoji: "🍩" },
+            { name: "بیسکویت",        emoji: "🍪" },
+            { name: "کیک",            emoji: "🍰" },
+            { name: "پای",            emoji: "🥧" },
+            { name: "پودینگ",         emoji: "🍮" },
+            { name: "عسل",            emoji: "🍯" }
+        ];
+
+        // Build productsData with controlled increase count
+        const productsData = products.map((p, i) => ({
+            id: i + 1,
+            name: p.name,
+            emoji: p.emoji,
+            weight: Math.floor(Math.random() * 450) + 50,
+            w1: Math.floor(Math.random() * 15) + 5,
+            w2: Math.floor(Math.random() * 15) + 5,
+            w3: Math.floor(Math.random() * 15) + 5,
+            w30: 0
+        }));
+
+        // Pick exactly 4 or 5 SKUs to have higher current order
+        const targetIncreases = Math.random() < 0.5 ? 4 : 5;
+        const shuffledIndices = [...Array(productsData.length).keys()]
+            .sort(() => Math.random() - 0.5);
+        const increaseIndices = new Set(shuffledIndices.slice(0, targetIncreases));
+
+        productsData.forEach((product, i) => {
+            if (increaseIndices.has(i)) {
+                // Strictly greater than w3
+                product.w30 = product.w3 + Math.floor(Math.random() * 12) + 1;
+            } else {
+                // Strictly less than or equal to w3
+                product.w30 = Math.max(1, product.w3 - Math.floor(Math.random() * 8));
+            }
+        });
+
+        // ==========================================
+        // State
+        // ==========================================
+        let currentPage = 1;
+        let recommendedIds = [1, 2, 5]; // Default recommendations
+        let currentDiscountCode = null;
+
+        // ==========================================
+        // Render Functions
+        // ==========================================
+
+        // --- Discount KPI ---
+        function renderDiscountKPI() {
+            const increasedCount = productsData.filter(p => p.w30 > p.w3).length;
+            const percent = Math.min(increasedCount, 10);
+
+            document.getElementById('discount-percent').innerText = toPersianNum(percent) + '٪';
+            document.getElementById('discount-bar').style.width = (percent * 10) + '%';
+
+            const bulletsContainer = document.getElementById('discount-bullets');
+            bulletsContainer.innerHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+                const isChecked = i <= percent;
+                const bullet = document.createElement('div');
+                bullet.className = `absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
+                    isChecked 
+                    ? 'bg-teal-500 text-white border-2 border-teal-500 shadow-md scale-110' 
+                    : 'bg-white text-gray-300 border-2 border-gray-200'
+                }`;
+                bullet.style.left = (i * 10) + '%';
+                bullet.innerText = isChecked ? '✓' : '';
+                bulletsContainer.appendChild(bullet);
+            }
+
+            // Enable/disable claim button
+            const claimBtn = document.getElementById('claim-discount-btn');
+            if (percent > 0) {
+                claimBtn.disabled = false;
+                claimBtn.innerHTML = `🎟️ دریافت کد تخفیف (${toPersianNum(percent)}٪)`;
+            } else {
+                claimBtn.disabled = true;
+                claimBtn.innerHTML = '🎟️ دریافت کد تخفیف';
+            }
+        }
+
+        // --- Recommendations ---
+        function renderRecommendations() {
+            const container = document.getElementById('recommendations-container');
+            container.innerHTML = '';
+
+            recommendedIds.forEach(id => {
+                const product = productsData.find(p => p.id === id);
+                if (!product) return;
+                const html = `
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center transition-transform hover:scale-105">
+                        <span class="text-4xl mb-1.5">${product.emoji}</span>
+                        <span class="text-xs font-medium text-center text-gray-700">${product.name}</span>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // --- Orders List ---
+        function renderOrders() {
+            const sortedProducts = [...productsData].sort((a, b) => b.weight - a.weight);
+            
+            const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const pageProducts = sortedProducts.slice(start, start + ITEMS_PER_PAGE);
+
+            const ordersList = document.getElementById('orders-list');
+            ordersList.innerHTML = '';
+
+            pageProducts.forEach(product => {
+                const prev = product.w3;
+                const current = product.w30;
+                
+                const currentPercent = Math.min((current / MAX_QTY) * 100, 100);
+                const prevPercent = Math.min((prev / MAX_QTY) * 100, 100);
+
+                const isIncreased = current > prev;
+                const checkIcon = isIncreased ? '✅' : '⭕';
+
+                const html = `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3">
+                        <span class="text-2xl w-8 text-center flex-shrink-0">${checkIcon}</span>
+                        
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <span class="text-sm font-bold text-gray-800">${product.name}</span>
+                                <span class="text-xs text-gray-500 dir-ltr bg-gray-50 px-2 py-0.5 rounded font-mono">${toPersianNum(prev)} ← ${toPersianNum(current)}</span>
+                            </div>
+                            <div class="relative w-full bg-gray-100 rounded-full h-3.5" dir="ltr">
+                                <div class="bg-[#1E3A8A] h-3.5 rounded-full transition-all duration-300" style="width: ${currentPercent}%"></div>
+                                <div class="absolute top-[-3px] bottom-[-3px] border-l-2 border-dashed border-rose-500 z-10" 
+                                     style="left: ${prevPercent}%; transform: translateX(-1px);"
+                                     title="سفارش قبلی: ${toPersianNum(prev)}">
+                                </div>
+                                <div class="absolute -top-4 text-[9px] text-rose-500 font-bold whitespace-nowrap" 
+                                     style="left: ${prevPercent}%; transform: translateX(-50%);">
+                                    ${toPersianNum(prev)}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <span class="text-2xl w-10 text-center flex-shrink-0">${product.emoji}</span>
+                    </div>
+                `;
+                ordersList.insertAdjacentHTML('beforeend', html);
+            });
+
+            renderPagination(totalPages);
+        }
+
+        // --- Pagination ---
+        function renderPagination(totalPages) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                currentPage === 1 
+                ? 'bg-gray-100 text-gray-300 cursor-not-allowed' 
+                : 'bg-blue-900 text-white hover:bg-blue-800'
+            }`;
+            prevBtn.innerText = '‹';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderOrders(); } };
+            pagination.appendChild(prevBtn);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `w-9 h-9 rounded-lg text-sm font-bold transition-colors ${
+                    i === currentPage 
+                    ? 'bg-blue-900 text-white' 
+                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                }`;
+                pageBtn.innerText = toPersianNum(i);
+                pageBtn.onclick = () => { currentPage = i; renderOrders(); };
+                pagination.appendChild(pageBtn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                currentPage === totalPages 
+                ? 'bg-gray-100 text-gray-300 cursor-not-allowed' 
+                : 'bg-blue-900 text-white hover:bg-blue-800'
+            }`;
+            nextBtn.innerText = '›';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderOrders(); } };
+            pagination.appendChild(nextBtn);
+        }
+
+        // --- Admin Table ---
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+
+            const sortedForAdmin = [...productsData].sort((a, b) => b.weight - a.weight);
+
+            sortedForAdmin.forEach((product) => {
+                const realIndex = productsData.findIndex(p => p.id === product.id);
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-100 hover:bg-gray-50 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-2 text-xs text-gray-700 whitespace-nowrap">${product.emoji} ${product.name}</td>
+                    <td class="p-2 text-xs text-gray-400 dir-ltr text-center">${toPersianNum(product.weight)}</td>
+                    <td class="p-2"><input type="text" inputmode="numeric" value="${toPersianNum(product.w1)}" data-index="${realIndex}" data-week="w1" class="w-14 p-1 border border-gray-300 rounded text-center dir-ltr focus:outline-none focus:border-blue-500 text-xs"></td>
+                    <td class="p-2"><input type="text" inputmode="numeric" value="${toPersianNum(product.w2)}" data-index="${realIndex}" data-week="w2" class="w-14 p-1 border border-gray-300 rounded text-center dir-ltr focus:outline-none focus:border-blue-500 text-xs"></td>
+                    <td class="p-2"><input type="text" inputmode="numeric" value="${toPersianNum(product.w3)}" data-index="${realIndex}" data-week="w3" class="w-14 p-1 border border-gray-300 rounded text-center dir-ltr focus:outline-none focus:border-blue-500 text-xs"></td>
+                    <td class="p-2"><input type="text" inputmode="numeric" value="${toPersianNum(product.w30)}" data-index="${realIndex}" data-week="w30" class="w-14 p-1 border border-blue-500 rounded text-center dir-ltr focus:outline-none focus:ring-1 focus:ring-blue-500 bg-blue-50/30 text-xs font-bold"></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            tbody.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    const week = e.target.getAttribute('data-week');
+                    const englishStr = toEnglishNum(e.target.value);
+                    const value = parseInt(englishStr) || 0;
+                    
+                    productsData[index][week] = value;
+                    e.target.value = toPersianNum(value);
+                    
+                    renderDiscountKPI();
+                    renderOrders();
+                });
+            });
+        }
+
+        // --- Recommendation Selects ---
+        function renderRecommendationSelects() {
+            const selectIds = ['rec-select-1', 'rec-select-2', 'rec-select-3'];
+            
+            selectIds.forEach((selectId, idx) => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '';
+                
+                const sortedNames = [...productsData].sort((a, b) => a.name.localeCompare(b.name, 'fa'));
+                
+                sortedNames.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id;
+                    option.text = `${product.emoji} ${product.name}`;
+                    if (product.id === recommendedIds[idx]) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+
+                select.addEventListener('change', (e) => {
+                    recommendedIds[idx] = parseInt(e.target.value);
+                    renderRecommendations();
+                });
+            });
+        }
+
+        // ==========================================
+        // Discount Code Generation
+        // ==========================================
+        function generateDiscountCode() {
+            const increasedCount = productsData.filter(p => p.w30 > p.w3).length;
+            const percent = Math.min(increasedCount, 10);
+
+            if (percent === 0) return null;
+
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let randomPart = '';
+            for (let i = 0; i < 4; i++) {
+                randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            // Percent encoded as a 2-char suffix (e.g. 05, 10)
+            const percentPart = String(percent).padStart(2, '0');
+
+            currentDiscountCode = `SORBON-${randomPart}-${percentPart}`;
+            return currentDiscountCode;
+        }
+
+        // ==========================================
+        // Init
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDiscountKPI();
+            renderRecommendations();
+            renderOrders();
+            renderAdminTable();
+            renderRecommendationSelects();
+
+            // --- Burger Menu ---
+            const menuBtn = document.getElementById('menu-btn');
+            const adminPanel = document.getElementById('admin-panel');
+            
+            menuBtn.addEventListener('click', () => {
+                adminPanel.classList.toggle('hidden');
+                if (adminPanel.classList.contains('hidden')) {
+                    menuBtn.innerHTML = '☰';
+                    menuBtn.classList.remove('bg-gray-100');
+                } else {
+                    menuBtn.innerHTML = '✕';
+                    menuBtn.classList.add('bg-gray-100');
+                }
+            });
+
+            // --- Help Overlay ---
+            const helpBtn = document.getElementById('help-btn');
+            const helpOverlay = document.getElementById('help-overlay');
+            const helpCloseBtn = document.getElementById('help-close-btn');
+            const appContent = document.getElementById('app-content');
+
+            function openHelp() {
+                helpOverlay.classList.remove('hidden');
+                appContent.classList.add('blurred');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeHelp() {
+                helpOverlay.classList.add('hidden');
+                appContent.classList.remove('blurred');
+                document.body.style.overflow = '';
+            }
+
+            helpBtn.addEventListener('click', openHelp);
+            helpCloseBtn.addEventListener('click', closeHelp);
+            helpOverlay.querySelector('.absolute.inset-0').addEventListener('click', closeHelp);
+
+            // --- Discount Code Modal ---
+            const claimBtn = document.getElementById('claim-discount-btn');
+            const codeModal = document.getElementById('code-modal');
+            const codeCloseBtn = document.getElementById('code-close-btn');
+            const codeText = document.getElementById('discount-code-text');
+            const codePercent = document.getElementById('discount-code-percent');
+            const copyBtn = document.getElementById('copy-code-btn');
+
+            claimBtn.addEventListener('click', () => {
+                const code = generateDiscountCode();
+                if (!code) return;
+
+                const increasedCount = productsData.filter(p => p.w30 > p.w3).length;
+                const percent = Math.min(increasedCount, 10);
+
+                codeText.innerText = code;
+                codePercent.innerText = `تخفیف ${toPersianNum(percent)}٪`;
+
+                codeModal.classList.remove('hidden');
+                appContent.classList.add('blurred');
+                document.body.style.overflow = 'hidden';
+            });
+
+            function closeCodeModal() {
+                codeModal.classList.add('hidden');
+                appContent.classList.remove('blurred');
+                document.body.style.overflow = '';
+            }
+
+            codeCloseBtn.addEventListener('click', closeCodeModal);
+            codeModal.querySelector('.absolute.inset-0').addEventListener('click', closeCodeModal);
+
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = currentDiscountCode || codeText.innerText;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    copyBtn.innerText = '✅ کپی شد!';
+                    setTimeout(() => {
+                        copyBtn.innerText = '📋 کپی کد';
+                    }, 1500);
+                }).catch(() => {
+                    // Fallback
+                    copyBtn.innerText = '⚠️ کپی نشد';
+                    setTimeout(() => {
+                        copyBtn.innerText = '📋 کپی کد';
+                    }, 1500);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
