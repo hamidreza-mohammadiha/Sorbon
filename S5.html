@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+<title>پلتفرم باشگاه فروشندگان – S5</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--cream:#FDF6EE;--caramel:#C4956A;--caramel-light:#E8D5C0;--peach:#F2A88D;--peach-light:#FDE8E0;
+--chocolate:#7A5C3A;--chocolate-light:#A88B6E;--gold:#F5C542;--gold-light:#FFF0C0;--gray:#D0D0D0;
+--gray-dark:#A0A0A0;--white:#FFFFFF;--mint:#E0F0E0;--pink:#FFE0E0;
+--shadow:0 8px 30px rgba(122,92,58,.12);--radius:16px;--radius-sm:10px;
+--transition:.3s cubic-bezier(.4,0,.2,1);--font:'Vazir','Vazirmatn',sans-serif;--header-h:60px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--cream);color:var(--chocolate);min-height:100vh;display:flex;flex-direction:column;font-size:15px;line-height:1.6}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--cream)}::-webkit-scrollbar-thumb{background:var(--caramel);border-radius:10px}
+.header{background:var(--white);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(122,92,58,.08);position:sticky;top:0;z-index:100;border-bottom:2px solid var(--caramel-light);height:var(--header-h);min-height:var(--header-h)}
+.header-brand{display:flex;align-items:center;gap:10px}
+.header-brand .logo-icon{font-size:22px;color:var(--caramel)}
+.header-brand h1{font-size:17px;font-weight:700;color:var(--chocolate);white-space:nowrap}
+.header-brand h1 span{color:var(--caramel)}
+.burger-btn{background:none;border:none;font-size:24px;color:var(--chocolate);cursor:pointer;padding:4px 10px;border-radius:var(--radius-sm);transition:var(--transition);display:flex;align-items:center;justify-content:center}
+.burger-btn:hover{background:var(--peach-light)}
+.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200;opacity:0;pointer-events:none;transition:var(--transition)}
+.menu-overlay.open{opacity:1;pointer-events:all}
+.menu-panel{position:fixed;top:0;right:-300px;width:280px;max-width:82vw;height:100%;background:var(--white);box-shadow:-8px 0 40px rgba(0,0,0,.1);z-index:300;transition:var(--transition);padding:20px 16px 24px;overflow-y:auto;display:flex;flex-direction:column}
+.menu-panel.open{right:0}
+.menu-close{align-self:flex-start;background:none;border:none;font-size:22px;color:var(--chocolate);cursor:pointer;padding:2px 6px;border-radius:var(--radius-sm);transition:var(--transition)}
+.menu-close:hover{background:var(--peach-light)}
+.menu-brand{font-size:16px;font-weight:700;color:var(--chocolate);padding:6px 0 14px;border-bottom:2px solid var(--caramel-light);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.menu-brand i{color:var(--caramel);font-size:20px}
+.menu-nav{display:flex;flex-direction:column;gap:4px;flex:1}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);color:var(--chocolate);font-weight:500;font-size:14px;border:none;background:none;width:100%;text-align:right}
+.nav-item i{width:22px;font-size:16px;color:var(--caramel)}
+.nav-item:hover{background:var(--peach-light)}
+.nav-item.active{background:var(--caramel);color:var(--white)}
+.nav-item.active i{color:var(--white)}
+.menu-footer{padding-top:12px;border-top:2px solid var(--caramel-light);font-size:12px;color:var(--gray-dark);text-align:center}
+.main{flex:1;padding:16px 14px 30px;max-width:1200px;margin:0 auto;width:100%}
+.page{display:none;animation:fadeUp .35s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.page-title{font-size:20px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.page-title i{color:var(--caramel)}
+.page-subtitle{font-size:13px;color:var(--gray-dark);margin-bottom:14px}
+.landing-hero{text-align:center;padding:8px 0 4px}
+.hero-badge{display:inline-block;background:var(--gold-light);color:var(--chocolate);padding:4px 16px;border-radius:30px;font-size:12px;font-weight:500;margin-bottom:10px}
+.landing-hero h2{font-size:26px;font-weight:900;color:var(--chocolate);line-height:1.3}
+.landing-hero h2 span{color:var(--caramel)}
+.landing-hero .subtitle{font-size:14px;color:var(--chocolate-light);max-width:560px;margin:8px auto 4px;line-height:1.8}
+.budget-progress-wrap{background:var(--white);border-radius:var(--radius);padding:16px 20px;margin:14px 0 18px;box-shadow:var(--shadow);direction:ltr}
+.budget-header{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:6px}
+.budget-label{font-weight:600}
+.budget-value{font-weight:700;color:var(--caramel)}
+.budget-progress{height:10px;background:var(--caramel-light);border-radius:20px;overflow:hidden;position:relative;direction:ltr}
+.budget-progress .fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--caramel),var(--gold));transition:width 1s ease;width:67%;position:relative}
+.budget-progress .fill .label-on-bar{position:absolute;right:-30px;top:50%;transform:translateY(-50%);font-size:9px;font-weight:700;color:var(--chocolate);background:var(--white);padding:0 4px;border-radius:4px;white-space:nowrap}
+.budget-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--gray-dark);margin-top:4px;direction:ltr}
+.budget-foot .end-label{font-weight:600;color:var(--chocolate)}
+.story-section{background:var(--white);border-radius:var(--radius);padding:18px 20px;margin:16px 0;box-shadow:var(--shadow);border-right:4px solid var(--caramel)}
+.story-section h3{font-size:17px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.story-section h3 i{color:var(--caramel)}
+.story-section p{line-height:1.9;font-size:14px}
+.highlight-box{background:var(--peach-light);padding:12px 16px;border-radius:var(--radius-sm);margin-top:10px;border-right:4px solid var(--peach);font-size:13px}
+.rules-section{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.rules-card{background:var(--white);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--caramel)}
+.rules-card h4{font-size:15px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.rules-card ul{list-style:none;padding:0}
+.rules-card ul li{padding:4px 0;font-size:13px;line-height:1.6;border-bottom:1px solid var(--caramel-light);display:flex;align-items:flex-start;gap:6px}
+.rules-card ul li:last-child{border-bottom:none}
+.li-icon{color:var(--caramel);font-weight:700}
+.formula{background:var(--cream);padding:8px 14px;border-radius:var(--radius-sm);margin-top:8px;font-size:13px;font-weight:500;text-align:center;border:1px dashed var(--caramel)}
+.reward-section{background:var(--white);border-radius:var(--radius);padding:16px;margin:14px 0;box-shadow:var(--shadow);overflow-x:auto}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.section-header h3{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
+.section-header h3 i{color:var(--caramel)}
+.reward-table{width:100%;border-collapse:collapse;font-size:13px;min-width:420px}
+.reward-table th{text-align:right;padding:8px 12px;background:var(--cream);font-weight:700;border-bottom:2px solid var(--caramel-light);font-size:12px}
+.reward-table td{padding:8px 12px;border-bottom:1px solid var(--caramel-light);font-size:13px}
+.reward-table tr:last-child td{border-bottom:none}
+.status-badge{display:inline-block;padding:2px 14px;border-radius:20px;font-size:11px;font-weight:500}
+.status-badge.approved{background:var(--gray);color:#666}
+.counter-section{background:linear-gradient(135deg,var(--caramel),var(--chocolate));border-radius:var(--radius);padding:20px;margin:14px 0 8px;text-align:center;color:var(--white);box-shadow:var(--shadow)}
+.counter-icon{font-size:26px;opacity:.8}
+.counter-label{font-size:14px;opacity:.9}
+.counter-number{font-size:42px;font-weight:900;letter-spacing:1px;margin:2px 0;direction:ltr;display:inline-block}
+.counter-sub{font-size:12px;opacity:.8}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.admin-card{background:var(--white);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.admin-card h4{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--caramel-light);padding-bottom:8px}
+.file-actions{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.btn{padding:6px 14px;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--caramel);color:var(--white)}
+.btn-primary:hover{background:var(--chocolate);transform:translateY(-2px)}
+.btn-outline{background:transparent;border:2px solid var(--caramel);color:var(--caramel)}
+.btn-outline:hover{background:var(--caramel);color:var(--white)}
+.btn-success{background:var(--gold);color:var(--chocolate)}
+.btn-success:hover{background:#e0b030;transform:translateY(-2px)}
+.btn-sm{padding:4px 10px;font-size:12px}
+.upload-area{border:2px dashed var(--caramel-light);border-radius:var(--radius-sm);padding:14px;text-align:center;color:var(--gray-dark);font-size:13px;margin:8px 0;transition:var(--transition);cursor:pointer}
+.upload-area:hover{border-color:var(--caramel);background:var(--cream)}
+.week-table-wrap{max-height:220px;overflow-y:auto;margin-top:10px;border:1px solid var(--caramel-light);border-radius:var(--radius-sm)}
+.week-table{width:100%;border-collapse:collapse;font-size:12px}
+.week-table th{background:var(--cream);padding:6px 10px;text-align:right;position:sticky;top:0;z-index:2;font-size:11px}
+.week-table td{padding:4px 10px;border-bottom:1px solid var(--caramel-light);font-size:12px}
+.week-input{width:60px;padding:3px 6px;border:1px solid var(--caramel-light);border-radius:6px;font-family:var(--font);font-size:12px;background:var(--cream)}
+.week-input:focus{border-color:var(--caramel);outline:none;background:var(--white)}
+.bm-dashboard{display:grid;grid-template-columns:1fr;gap:14px}
+.bm-card{background:var(--white);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.bm-card h4{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--caramel-light);padding-bottom:8px}
+.pledge-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--caramel-light);font-size:13px}
+.pledge-item:last-child{border-bottom:none}
+.pledge-label{font-weight:500}
+.pledge-value{font-weight:700;color:var(--caramel);direction:ltr}
+.bm-league-wrap{margin-top:6px}
+.bm-league-title{font-size:13px;font-weight:700;color:var(--caramel);margin:10px 0 4px;display:flex;align-items:center;gap:6px}
+.bm-league-table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+.bm-league-table th{text-align:right;padding:4px 8px;background:var(--cream);font-weight:700;border-bottom:2px solid var(--caramel-light);font-size:11px;white-space:nowrap}
+.bm-league-table td{padding:4px 8px;border-bottom:1px solid var(--caramel-light);font-size:12px}
+.bm-league-table tr:last-child td{border-bottom:none}
+.bm-league-table .highlight-row{background:var(--gold-light)}
+.bm-league-table tr.clickable{cursor:pointer;transition:background .2s}
+.bm-league-table tr.clickable:hover{background:var(--peach-light)}
+.drill-panel{background:var(--cream);border-radius:var(--radius-sm);padding:14px 16px;margin-top:12px;border-right:4px solid var(--caramel);display:none}
+.drill-panel.open{display:block;animation:fadeUp .3s ease}
+.drill-panel .drill-title{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.drill-close{background:none;border:none;color:var(--gray-dark);cursor:pointer;font-size:16px}
+.member-table{width:100%;border-collapse:collapse;font-size:12px;min-width:480px}
+.member-table th{text-align:right;padding:4px 8px;background:var(--white);font-weight:700;border-bottom:2px solid var(--caramel-light);font-size:11px;white-space:nowrap}
+.member-table td{padding:4px 8px;border-bottom:1px solid var(--caramel-light);font-size:12px;background:var(--white)}
+.member-table tr:last-child td{border-bottom:none}
+.rsm-dashboard{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rsm-card{background:var(--white);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.rsm-card h4{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--caramel-light);padding-bottom:8px}
+.team-profile{display:flex;align-items:center;gap:12px;padding:6px 0}
+.avatar{width:48px;height:48px;border-radius:50%;background:var(--caramel-light);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--caramel);flex-shrink:0}
+.team-name{font-weight:700;font-size:16px}
+.team-desc{font-size:12px;color:var(--gray-dark)}
+.team-members-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;min-width:320px}
+.team-members-table th{text-align:right;padding:4px 8px;background:var(--cream);font-weight:700;border-bottom:2px solid var(--caramel-light);font-size:11px}
+.team-members-table td{padding:4px 8px;border-bottom:1px solid var(--caramel-light);font-size:12px}
+.team-members-table tr:last-child td{border-bottom:none}
+.guaranteed-reward{background:var(--gold-light);padding:10px 14px;border-radius:var(--radius-sm);margin-top:8px;display:flex;justify-content:space-between;align-items:center;border-right:4px solid var(--gold);font-size:13px;flex-wrap:wrap;gap:6px}
+.seller-dashboard{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.seller-card{background:var(--white);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.seller-card h4{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--caramel-light);padding-bottom:8px}
+.sfi-hint{background:var(--peach-light);padding:10px 14px;border-radius:var(--radius-sm);border-right:4px solid var(--peach);margin-bottom:8px}
+.hint-label{font-weight:700;font-size:13px}
+.hint-text{font-size:13px;color:var(--chocolate-light);margin-top:2px}
+.progress-bar-wrap{margin:8px 0}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px}
+.progress-bar{height:8px;background:var(--caramel-light);border-radius:20px;overflow:hidden}
+.progress-bar .fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--caramel),var(--gold));transition:width .8s ease}
+.intra-team-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;min-width:520px}
+.intra-team-table th{text-align:right;padding:4px 8px;background:var(--cream);font-weight:700;border-bottom:2px solid var(--caramel-light);font-size:11px;white-space:nowrap}
+.intra-team-table td{padding:4px 8px;border-bottom:1px solid var(--caramel-light);font-size:12px}
+.intra-team-table tr:last-child td{border-bottom:none}
+.intra-team-table .highlight-row{background:var(--gold-light)}
+.league-section{background:var(--white);border-radius:var(--radius);padding:16px 18px;margin:14px 0;box-shadow:var(--shadow)}
+.league-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.league-header h3{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
+.league-tabs{display:flex;gap:6px}
+.league-tab{padding:5px 16px;border-radius:20px;border:2px solid var(--caramel-light);background:transparent;font-family:var(--font);font-size:13px;font-weight:600;color:var(--chocolate);cursor:pointer;transition:var(--transition)}
+.league-tab.active{background:var(--caramel);color:var(--white);border-color:var(--caramel)}
+.league-tab:hover:not(.active){background:var(--peach-light)}
+.league-table-wrap{overflow-x:auto}
+.league-table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+.league-table th{text-align:right;padding:8px 12px;background:var(--cream);font-weight:700;border-bottom:2px solid var(--caramel-light);font-size:12px;white-space:nowrap}
+.league-table td{padding:7px 12px;border-bottom:1px solid var(--caramel-light);font-size:13px}
+.league-table tr:last-child td{border-bottom:none}
+.league-table .rank-col{font-weight:700;text-align:center;width:40px}
+.league-table .team-col{font-weight:600}
+.league-table .rsm-col{color:var(--gray-dark);font-size:12px}
+.league-table .score-col{font-weight:700;color:var(--caramel);text-align:center}
+.sim-controls{display:flex;align-items:center;justify-content:center;gap:16px;margin:14px 0 6px;flex-wrap:wrap;direction:ltr}
+.sim-btn{padding:6px 20px;border:2px solid var(--caramel);border-radius:30px;background:var(--white);font-family:var(--font);font-size:14px;font-weight:600;color:var(--chocolate);cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:8px}
+.sim-btn:hover{background:var(--caramel);color:var(--white)}
+.sim-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.sim-month-label{font-size:15px;font-weight:700;color:var(--chocolate);min-width:110px;text-align:center;direction:ltr}
+.sim-progress{font-size:12px;color:var(--gray-dark);direction:ltr}
+.aop-condition{background:var(--peach-light);padding:8px 14px;border-radius:var(--radius-sm);border-right:4px solid var(--peach);font-size:13px;margin:8px 0;display:flex;align-items:center;gap:8px}
+.aop-condition i{color:var(--caramel)}
+.admin-note{font-size:12px;color:var(--gray-dark);margin-top:6px;padding:8px 12px;background:var(--cream);border-radius:var(--radius-sm);border-right:3px solid var(--caramel)}
+.section-divider{border:none;border-top:2px dashed var(--caramel-light);margin:16px 0}
+.badge-alpha{display:inline-block;background:var(--gold-light);color:var(--chocolate);padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;margin-right:6px}
+.config-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.config-table th{text-align:right;padding:5px 8px;background:var(--cream);font-weight:700;border-bottom:2px solid var(--caramel-light);font-size:11px}
+.config-table td{padding:5px 8px;border-bottom:1px solid var(--caramel-light);font-size:12px}
+.config-table tr:last-child td{border-bottom:none}
+.config-table input{width:100%;max-width:130px;padding:3px 6px;border:1px solid var(--caramel-light);border-radius:6px;font-family:var(--font);font-size:12px;background:var(--cream);direction:ltr;text-align:left}
+.config-table input:focus{border-color:var(--caramel);outline:none;background:var(--white)}
+@media(max-width:820px){.admin-grid,.rsm-dashboard,.seller-dashboard{grid-template-columns:1fr}.rules-section{grid-template-columns:1fr}}
+@media(max-width:600px){
+:root{--header-h:52px}
+body{font-size:13px}
+.header{padding:6px 12px}
+.header-brand h1{font-size:14px}
+.header-brand .logo-icon{font-size:18px}
+.burger-btn{font-size:20px;padding:2px 8px}
+.main{padding:12px 10px 24px}
+.landing-hero h2{font-size:20px}
+.landing-hero .subtitle{font-size:13px}
+.page-title{font-size:17px}
+.page-subtitle{font-size:12px}
+.story-section{padding:14px}
+.story-section h3{font-size:15px}
+.story-section p{font-size:13px}
+.rules-card{padding:12px 14px}
+.rules-card h4{font-size:14px}
+.rules-card ul li{font-size:12px}
+.formula{font-size:12px}
+.reward-section{padding:12px}
+.section-header h3{font-size:15px}
+.reward-table{font-size:12px;min-width:340px}
+.reward-table th,.reward-table td{padding:6px 8px;font-size:12px}
+.counter-number{font-size:32px}
+.counter-label{font-size:12px}
+.admin-card{padding:12px 14px}
+.admin-card h4{font-size:14px}
+.btn{font-size:12px;padding:5px 12px}
+.bm-card,.rsm-card,.seller-card{padding:12px 14px}
+.bm-card h4,.rsm-card h4,.seller-card h4{font-size:14px}
+.league-section{padding:12px 14px}
+.league-header h3{font-size:15px}
+.league-tab{font-size:12px;padding:4px 12px}
+.league-table{font-size:12px;min-width:380px}
+.league-table th,.league-table td{padding:5px 8px;font-size:12px}
+.sim-btn{font-size:13px;padding:4px 14px}
+.sim-month-label{font-size:13px;min-width:80px}
+.menu-panel{width:260px;right:-280px;padding:16px 12px 20px}
+.nav-item{font-size:13px;padding:9px 12px}
+.budget-progress-wrap{padding:12px 14px}
+.budget-header{font-size:12px}
+.guaranteed-reward{font-size:12px;padding:8px 12px}
+.sfi-hint{padding:8px 12px}
+.hint-label,.hint-text{font-size:12px}
+.avatar{width:40px;height:40px;font-size:18px}
+.team-name{font-size:14px}
+.week-table,.week-table th,.week-table td{font-size:11px;padding:4px 6px}
+.week-input{width:48px;font-size:11px;padding:2px 4px}
+.intra-team-table,.team-members-table,.bm-league-table{min-width:380px;font-size:11px}
+.intra-team-table th,.intra-team-table td,.team-members-table th,.team-members-table td,.bm-league-table th,.bm-league-table td{padding:3px 6px;font-size:11px}
+.member-table{min-width:340px;font-size:11px}
+.member-table th,.member-table td{padding:3px 6px;font-size:11px}
+.budget-progress .fill .label-on-bar{font-size:7px;right:-24px}
+.config-table input{max-width:100px;font-size:11px}
+}
+.text-center{text-align:center}
+.flex-center{display:flex;align-items:center;justify-content:center}
+.text-muted{color:var(--gray-dark);font-size:12px}
+</style>
+</head>
+<body>
+
+<header class="header">
+<div class="header-brand">
+<i class="fas fa-crown logo-icon"></i>
+<h1>باشگاه <span>فروشندگان</span></h1>
+</div>
+<button class="burger-btn" id="burgerToggle" aria-label="منو"><i class="fas fa-bars"></i></button>
+</header>
+
+<div class="menu-overlay" id="menuOverlay"></div>
+<nav class="menu-panel" id="menuPanel">
+<button class="menu-close" id="menuClose" aria-label="بستن منو"><i class="fas fa-times"></i></button>
+<div class="menu-brand"><i class="fas fa-crown"></i> باشگاه فروشندگان</div>
+<div class="menu-nav">
+<button class="nav-item active" data-page="landing"><i class="fas fa-home"></i> خانه</button>
+<button class="nav-item" data-page="admin"><i class="fas fa-user-cog"></i> ادمین</button>
+<button class="nav-item" data-page="bm"><i class="fas fa-chart-line"></i> مدیر کسب و کار</button>
+<button class="nav-item" data-page="rsm"><i class="fas fa-user-tie"></i> مدیر فروش</button>
+<button class="nav-item" data-page="seller"><i class="fas fa-user"></i> عضو شعبه</button>
+</div>
+<div class="menu-footer"><i class="fas fa-trophy" style="color:var(--gold);"></i> نسخه ۵.۰ – PRD</div>
+</nav>
+
+<main class="main">
+
+<!-- LANDING -->
+<section class="page active" id="page-landing">
+<div class="landing-hero">
+<div class="hero-badge"><i class="fas fa-star" style="color:var(--gold);"></i> فصل ۱۴۰۶ – مدل PRD</div>
+<h2>به <span>پلتفرم باشگاه فروشندگان</span> خوش آمدید</h2>
+<p class="subtitle">بستری برای رهبری، انگیزه‌بخشی و پاداش‌دهی به تیم‌های فروش از طریق گیمیفیکیشن هوشمند</p>
+</div>
+
+<div class="budget-progress-wrap">
+<div class="budget-header">
+<span class="budget-label"><i class="fas fa-coins" style="color:var(--gold);"></i> بودجه کل فصل</span>
+<span class="budget-value" id="budgetDisplay">$0 of $0</span>
+</div>
+<div class="budget-progress">
+<div class="fill" id="budgetFill" style="width:67%;"><span class="label-on-bar" id="barLabel">67%</span></div>
+</div>
+<div class="budget-foot"><span>$0</span><span class="end-label" id="budgetMax">$0</span></div>
+</div>
+
+<div class="story-section">
+<h3><i class="fas fa-scroll"></i> داستان و روایت بازی</h3>
+<p>۱۴ شعبه (تیم) به رهبری مدیران فروش در یک لیگ سالانه با هم برای دریافت جوایز نقدی و غیرنقدی رقابت می‌کنند. هر شعبه یک تیم محسوب می‌شود. ۷ تیم در لیگ A و ۷ تیم در لیگ B حضور دارند. سه تیم برتر لیگ B به لیگ A صعود و سه تیم انتهایی لیگ A به لیگ B سقوط می‌کنند.</p>
+<div class="highlight-box">
+<p><strong>⚡ ساختار پاداش (سه افق):</strong></p>
+<p>• <strong>ماهانه:</strong> در هر ماه یک SKU به‌عنوان محصول هدف انتخاب می‌شود و بهترین فروشنده هر تیم جایزه می‌گیرد.</p>
+<p>• <strong>فصلی:</strong> در پایان هر فصل (۳ ماه)، تیم‌ها بر اساس رتبه در لیگ پاداش نقدی می‌گیرند. برای رتبه یکسان، پاداش لیگ B = پاداش لیگ A ÷ α (با ۱ &lt; α &lt; ۲).</p>
+<p>• <strong>سالانه:</strong> کاربران در طول سال بر اساس عملکرد «اعتبار» (Credit) کسب می‌کنند. مجموع اعتبارها مبنای شانس در قرعه‌کشی جوایز سالانه است.</p>
+</div>
+<div class="aop-condition"><i class="fas fa-check-circle"></i><span><strong>شرط مهم:</strong> تمام جوایز منوط به تحقق حداقل <strong>۸۸٪</strong> از AOP اختصاصی هر شرکت‌کننده است.</span></div>
+</div>
+
+<div class="rules-section">
+<div class="rules-card">
+<h4>⭐ مدل ارزیابی فروشندگان</h4>
+<ul>
+<li><span class="li-icon">•</span> <strong>Score</strong> = (Coverage% + Dedicated AOP Portion Realization% + AOP Realization Growth%) ÷ 2</li>
+<li><span class="li-icon">•</span> <strong>Points</strong> = تعداد واحد فروخته‌شده از محصول هدف (SKU)</li>
+<li><span class="li-icon">•</span> <strong>Credits</strong> = Score × Points</li>
+</ul>
+<div class="formula">Credits = Score × Points</div>
+</div>
+<div class="rules-card">
+<h4>🏆 مدل ارزیابی مدیران فروش</h4>
+<ul>
+<li><span class="li-icon">•</span> عملکرد مدیر فروش = میانگین عملکرد اعضای تیم تحت مدیریت او</li>
+<li><span class="li-icon">•</span> الگوی پاداش مشابه فروشندگان با ضریب β</li>
+<li><span class="li-icon">•</span> <strong>Sales Manager Reward = β × Seller Reward</strong> (با ۱ &lt; β &lt; ۲)</li>
+</ul>
+<div class="formula">β × Seller Reward</div>
+</div>
+</div>
+
+<div class="reward-section">
+<div class="section-header">
+<h3><i class="fas fa-gift"></i> جدول جوایز فصلی (پارامتریک)</h3>
+<span class="text-muted"><span class="badge-alpha" id="alphaBadge">α = 1.5</span><span class="badge-alpha" id="betaBadge">β = 1.3</span></span>
+</div>
+<div style="overflow-x:auto">
+<table class="reward-table">
+<thead>
+<tr>
+<th>رتبه</th>
+<th>ضریب لیگ A</th>
+<th>پاداش لیگ A</th>
+<th>پاداش لیگ B (÷α)</th>
+</tr>
+</thead>
+<tbody id="rewardTableBody"></tbody>
+</table>
+</div>
+</div>
+
+<div class="counter-section">
+<div class="counter-icon"><i class="fas fa-coins"></i></div>
+<div class="counter-label">مجموع برآورد جوایز سالانه (تمام افق‌ها)</div>
+<div class="counter-number" id="counterNumber">$0</div>
+<div class="counter-sub" id="counterSub">بر اساس پارامترهای فعلی مدل</div>
+</div>
+
+<div class="league-section" id="leagueSection">
+<div class="league-header">
+<h3><i class="fas fa-trophy" style="color:var(--gold);"></i> رتبه‌بندی تیم‌ها</h3>
+<div class="league-tabs" id="leagueTabs">
+<button class="league-tab active" data-league="A">🏆 لیگ A</button>
+<button class="league-tab" data-league="B">⚽ لیگ B</button>
+</div>
+</div>
+<div class="league-table-wrap">
+<table class="league-table">
+<thead>
+<tr>
+<th>رتبه</th><th>نام شعبه</th><th>مدیر فروش</th>
+<th style="text-align:center;">پوشش</th>
+<th style="text-align:center;">تحقق AOP</th>
+<th style="text-align:center;">امتیاز نهایی</th>
+</tr>
+</thead>
+<tbody id="leagueTableBody"></tbody>
+</table>
+</div>
+<div class="sim-controls">
+<button class="sim-btn" id="simPrev"><i class="fas fa-chevron-left"></i> Previous</button>
+<span class="sim-month-label" id="simMonthLabel">January</span>
+<button class="sim-btn" id="simNext">Next <i class="fas fa-chevron-right"></i></button>
+<span class="sim-progress" id="simProgress">1 / 12</span>
+</div>
+<div class="text-center text-muted" style="margin-top:4px;"><i class="fas fa-calendar-alt"></i> Season 2027 – Monthly Cumulative Results</div>
+</div>
+</section>
+
+<!-- ADMIN -->
+<section class="page" id="page-admin">
+<h2 class="page-title"><i class="fas fa-user-cog"></i> پنل ادمین</h2>
+<p class="page-subtitle">ETL داده‌های AOP، مدیریت نتایج هفتگی و پارامترهای مدل</p>
+<div class="admin-grid">
+
+<div class="admin-card">
+<h4><i class="fas fa-plug"></i> ETL داده‌های AOP – اتصال API</h4>
+<p class="text-muted" style="margin-bottom:8px;">اتصال مستقیم به API منابع داده برای دریافت AOP.</p>
+<div class="file-actions">
+<button class="btn btn-primary" id="apiConnectBtn"><i class="fas fa-link"></i> اتصال به API</button>
+<button class="btn btn-outline" id="apiTestBtn"><i class="fas fa-vial"></i> تست اتصال</button>
+</div>
+<div id="apiStatus" class="text-muted" style="margin-top:4px;"></div>
+</div>
+
+<div class="admin-card">
+<h4><i class="fas fa-file-upload"></i> ETL داده‌های AOP – بارگذاری دستی</h4>
+<p class="text-muted" style="margin-bottom:8px;">بارگذاری فایل AOP (CSV/XLSX) شامل تارگت هر فروشنده.</p>
+<div class="file-actions">
+<button class="btn btn-primary" id="uploadAopBtn"><i class="fas fa-upload"></i> آپلود AOP</button>
+<input type="file" id="aopFileInput" accept=".csv,.xlsx,.xls" style="display:none;">
+</div>
+<div id="aopStatus" class="text-muted" style="margin-top:4px;"></div>
+</div>
+
+<div class="admin-card" style="grid-column:1/-1;">
+<h4><i class="fas fa-table"></i> جدول ورودی هفتگی (۵۲ هفته)</h4>
+<p class="text-muted" style="margin-bottom:8px;">آخرین وضعیت را دانلود، داده‌های هفته‌های گذشته را وارد و مجدداً آپلود کنید.</p>
+<div class="file-actions" style="margin-bottom:10px;">
+<button class="btn btn-success" id="downloadWeekStatus"><i class="fas fa-download"></i> دانلود وضعیت</button>
+<button class="btn btn-outline" id="uploadWeekBtn"><i class="fas fa-upload"></i> آپلود جدول کامل</button>
+<input type="file" id="weekFileInput" accept=".csv,.xlsx,.xls" style="display:none;">
+</div>
+<div class="week-table-wrap">
+<table class="week-table">
+<thead>
+<tr>
+<th>هفته</th>
+<th>تعداد فروش</th>
+<th>تحقق AOP %</th>
+<th>پوشش %</th>
+<th>رشد AOP %</th>
+</tr>
+</thead>
+<tbody id="weekTableBody"></tbody>
+</table>
+</div>
+</div>
+
+<div class="admin-card" style="grid-column:1/-1;">
+<h4><i class="fas fa-sliders-h"></i> پارامترهای مدل گیمیفیکیشن</h4>
+<p class="text-muted" style="margin-bottom:8px;">مقادیر پارامتریک را مستقیماً ویرایش کنید. تغییرات بلافاصله در تمام محاسبات اعمال می‌شود.</p>
+<div style="overflow-x:auto">
+<table class="config-table">
+<thead>
+<tr><th>پارامتر</th><th>توضیح</th><th>مقدار</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>α (alpha)</td>
+<td>مخرج پاداش لیگ B (1 &lt; α &lt; 2)</td>
+<td><input type="number" id="cfgAlpha" value="1.5" step="0.05" min="1.01" max="1.99"></td>
+</tr>
+<tr>
+<td>β (beta)</td>
+<td>ضریب پاداش مدیر فروش (1 &lt; β &lt; 2)</td>
+<td><input type="number" id="cfgBeta" value="1.3" step="0.05" min="1.01" max="1.99"></td>
+</tr>
+<tr>
+<td>Y</td>
+<td>پاداش پایه لیگ A – رتبه اول</td>
+<td><input type="number" id="cfgY" value="300000000000" step="1000000000" min="0"></td>
+</tr>
+<tr>
+<td>Monthly Prize</td>
+<td>جایزه ماهانه هر فروشنده برتر</td>
+<td><input type="number" id="cfgMonthly" value="5000000000" step="100000000"></td>
+</tr>
+<tr>
+<td>AOP Threshold</td>
+<td>حداقل تحقق AOP برای واجد شرایط بودن (٪)</td>
+<td><input type="number" id="cfgAop" value="88" step="1" min="0" max="100"></td>
+</tr>
+<tr>
+<td>Score Divisor</td>
+<td>مخرج فرمول Score (PRD: 2)</td>
+<td><input type="number" id="cfgDivisor" value="2" step="1" min="1" max="5"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="file-actions" style="margin-top:12px;">
+<button class="btn btn-success" id="applyConfig"><i class="fas fa-check"></i> اعمال و به‌روزرسانی</button>
+<button class="btn btn-outline" id="resetConfig"><i class="fas fa-undo"></i> بازنشانی</button>
+</div>
+</div>
+
+<div class="admin-card" style="grid-column:1/-1;">
+<h4><i class="fas fa-file-alt"></i> مستندات مدل گیمیفیکیشن</h4>
+<p class="text-muted" style="margin-bottom:8px;">دانلود فایل متنی کامل شامل پارامترها، فرمول‌ها و برآورد بودجه سالانه.</p>
+<button class="btn btn-primary" id="downloadTxtDoc"><i class="fas fa-file-download"></i> دانلود Gamification Model (.txt)</button>
+<div class="admin-note"><i class="fas fa-info-circle" style="color:var(--caramel);"></i> فایل را ویرایش کرده و برای نسخه‌های بعدی (S6+) ارسال کنید.</div>
+</div>
+
+</div>
+</section>
+
+<!-- BUSINESS MANAGER -->
+<section class="page" id="page-bm">
+<h2 class="page-title"><i class="fas fa-chart-line"></i> داشبورد مدیر کسب و کار</h2>
+<p class="page-subtitle">نتایج کلی لیگ‌ها و دسترسی Drill-down به هر مدیر فروش</p>
+<div class="bm-dashboard">
+
+<div class="bm-card">
+<h4><i class="fas fa-trophy" style="color:var(--gold);"></i> نتایج کلی لیگ‌ها</h4>
+<div style="overflow-x:auto">
+<table class="bm-league-table" id="bmLeagueA">
+<thead>
+<tr><th>رتبه</th><th>شعبه</th><th>مدیر فروش</th><th style="text-align:center;">پوشش</th><th style="text-align:center;">AOP</th><th style="text-align:center;">رشد</th><th style="text-align:center;">امتیاز</th><th style="text-align:center;">پاداش فصلی</th></tr>
+</thead>
+<tbody id="bmLeagueABody"></tbody>
+</table>
+</div>
+<hr class="section-divider">
+<div style="overflow-x:auto">
+<table class="bm-league-table" id="bmLeagueB">
+<thead>
+<tr><th>رتبه</th><th>شعبه</th><th>مدیر فروش</th><th style="text-align:center;">پوشش</th><th style="text-align:center;">AOP</th><th style="text-align:center;">رشد</th><th style="text-align:center;">امتیاز</th><th style="text-align:center;">پاداش فصلی</th></tr>
+</thead>
+<tbody id="bmLeagueBBody"></tbody>
+</table>
+</div>
+<div class="drill-panel" id="bmDrill">
+<div class="drill-title">
+<span id="bmDrillTitle">جزئیات شعبه</span>
+<button class="drill-close" id="bmDrillClose"><i class="fas fa-times"></i></button>
+</div>
+<div style="overflow-x:auto"><table class="member-table" id="bmDrillTable"></table></div>
+</div>
+</div>
+
+<div class="bm-card">
+<h4><i class="fas fa-hand-holding-heart"></i> جوایز تعهدشده (پارامتریک)</h4>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+<div>
+<div style="font-weight:600;color:var(--caramel);font-size:13px;margin-bottom:4px;">ماهانه</div>
+<div id="bmMonthly"></div>
+</div>
+<div>
+<div style="font-weight:600;color:var(--caramel);font-size:13px;margin-bottom:4px;">فصلی</div>
+<div id="bmSeasonal"></div>
+</div>
+<div>
+<div style="font-weight:600;color:var(--caramel);font-size:13px;margin-bottom:4px;">سالانه (قرعه‌کشی)</div>
+<div id="bmAnnual"></div>
+</div>
+</div>
+<div class="aop-condition" style="margin-top:12px;"><i class="fas fa-check-circle"></i><span>تمام جوایز منوط به تحقق ≥ <span id="aopThresholdDisplay">88</span>٪ AOP اختصاصی</span></div>
+</div>
+
+</div>
+</section>
+
+<!-- SALES MANAGER -->
+<section class="page" id="page-rsm">
+<h2 class="page-title"><i class="fas fa-user-tie"></i> داشبورد مدیر فروش</h2>
+<p class="page-subtitle">نتایج لیگ در محدوده شعبه تحت مدیریت و Drill-down به اعضا</p>
+<div class="rsm-dashboard">
+
+<div class="rsm-card">
+<h4><i class="fas fa-id-card"></i> نمایه شعبه تحت مدیریت</h4>
+<div class="team-profile">
+<div class="avatar"><i class="fas fa-store"></i></div>
+<div>
+<div class="team-name" id="smBranchName">شعبه اطلس</div>
+<div class="team-desc" id="smBranchDesc">لیگ A – مدیر: احمد رضایی</div>
+</div>
+</div>
+<div style="margin-top:8px;font-size:13px;" id="smBranchStats"></div>
+<div class="aop-condition" style="margin-top:8px;"><i class="fas fa-check-circle"></i><span id="smAopStatus">AOP ≥ 88% ✓</span></div>
+</div>
+
+<div class="rsm-card">
+<h4><i class="fas fa-users"></i> اعضای شعبه</h4>
+<div style="overflow-x:auto">
+<table class="team-members-table" id="smMembersTable">
+<thead>
+<tr><th>#</th><th>نام</th><th style="text-align:center;">Score</th><th style="text-align:center;">Points</th><th style="text-align:center;">Credits</th><th style="text-align:center;">AOP %</th></tr>
+</thead>
+<tbody id="smMembersBody"></tbody>
+</table>
+</div>
+</div>
+
+<div class="rsm-card" style="grid-column:1/-1;">
+<h4><i class="fas fa-medal"></i> پاداش مدیر فروش</h4>
+<div class="guaranteed-reward">
+<span>🏅 پاداش ماهانه (بهترین فروشنده شعبه × β)</span>
+<span style="font-weight:700;direction:ltr;" id="smMonthlyReward">—</span>
+</div>
+<div class="guaranteed-reward" style="margin-top:6px;border-right-color:var(--caramel);">
+<span>🎯 پاداش فصلی (بر اساس رتبه شعبه × β)</span>
+<span style="font-weight:700;direction:ltr;" id="smSeasonalReward">—</span>
+</div>
+<div class="guaranteed-reward" style="margin-top:6px;border-right-color:var(--gold);">
+<span>🌟 شانس قرعه‌کشی سالانه (مجموع Credits شعبه)</span>
+<span style="font-weight:700;direction:ltr;" id="smAnnualCredits">—</span>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- BRANCH MEMBER -->
+<section class="page" id="page-seller">
+<h2 class="page-title"><i class="fas fa-user"></i> داشبورد عضو شعبه</h2>
+<p class="page-subtitle">وضعیت لیگ، عملکرد شعبه و سوابق فردی هم‌شعبه‌ای‌ها</p>
+<div class="seller-dashboard">
+
+<div class="seller-card">
+<h4><i class="fas fa-lightbulb"></i> وضعیت لیگ و SKU هدف</h4>
+<div class="sfi-hint">
+<div class="hint-label">🎯 محصول هدف این ماه (SKU)</div>
+<div class="hint-text" id="sellerSku">شکلات سکه‌ای دارک – هدف: ۲۰۰ واحد</div>
+</div>
+<div class="sfi-hint" style="border-right-color:var(--caramel);">
+<div class="hint-label">📊 وضعیت شما</div>
+<div class="hint-text" id="sellerStatus">—</div>
+</div>
+<div class="sfi-hint" style="border-right-color:var(--gold);">
+<div class="hint-label">⭐ Credits شما</div>
+<div class="hint-text" id="sellerCredits">—</div>
+</div>
+<div class="aop-condition"><i class="fas fa-check-circle"></i><span id="sellerAopStatus">AOP شما: —</span></div>
+</div>
+
+<div class="seller-card">
+<h4><i class="fas fa-chart-pie"></i> عملکرد شخصی</h4>
+<div class="progress-bar-wrap">
+<div class="progress-label"><span>تحقق AOP</span><span id="pAop">—</span></div>
+<div class="progress-bar"><div class="fill" id="pAopFill"></div></div>
+</div>
+<div class="progress-bar-wrap">
+<div class="progress-label"><span>پوشش</span><span id="pCov">—</span></div>
+<div class="progress-bar"><div class="fill" id="pCovFill"></div></div>
+</div>
+<div class="progress-bar-wrap">
+<div class="progress-label"><span>رشد AOP</span><span id="pGrowth">—</span></div>
+<div class="progress-bar"><div class="fill" id="pGrowthFill" style="background:linear-gradient(90deg,var(--peach),var(--caramel))"></div></div>
+</div>
+</div>
+
+<div class="seller-card" style="grid-column:1/-1;">
+<h4><i class="fas fa-ranking-star"></i> سوابق و عملکرد فردی هم‌شعبه‌ای‌ها</h4>
+<div style="overflow-x:auto">
+<table class="intra-team-table">
+<thead>
+<tr>
+<th>رتبه</th><th>نام</th>
+<th style="text-align:center;">تعداد SKU</th>
+<th style="text-align:center;">Coverage %</th>
+<th style="text-align:center;">Dedicated AOP %</th>
+<th style="text-align:center;">AOP Growth %</th>
+<th style="text-align:center;">Score</th>
+<th style="text-align:center;">Points</th>
+<th style="text-align:center;">Credits</th>
+</tr>
+</thead>
+<tbody id="intraTeamBody"></tbody>
+</table>
+</div>
+<div class="aop-condition" style="margin-top:8px;"><i class="fas fa-info-circle"></i><span>فقط اعضای با AOP ≥ <span class="aopThreshInline">88</span>٪ واجد شرایط جوایز هستند.</span></div>
+</div>
+
+</div>
+</section>
+
+</main>
+
+<script>
+/* ============================================================
+   CONFIG – تمام پارامترهای مدل در یک جا
+   ============================================================ */
+const DEFAULT_CONFIG = {
+alpha: 1.5,              // League B divisor (1 < α < 2)
+beta: 1.3,               // Sales Manager reward multiplier (1 < β < 2)
+Y: 300000000000,         // Base reward – League A 1st place
+monthlyPrize: 5000000000, // Monthly SKU prize per winner
+aopThreshold: 88,        // Minimum AOP % to qualify
+scoreDivisor: 2,         // Score formula divisor (per PRD)
+lottery: [
+{ name: 'سفر ۷ روزه خارجی + مرخصی', value: 50000000000, count: 3 },
+{ name: 'جایزه نقدی بزرگ', value: 20000000000, count: 5 },
+{ name: 'جایزه نقدی کوچک', value: 5000000000, count: 10 }
+]
+};
+let CONFIG = { ...DEFAULT_CONFIG, lottery: DEFAULT_CONFIG.lottery.map(l => ({ ...l })) };
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function fmt(val) {
+if (val === null || val === undefined || isNaN(val)) return '—';
+const n = Number(val);
+const abs = Math.abs(n);
+if (abs >= 1e12) return (n / 1e12).toFixed(2).replace(/\.00$/, '') + 'T';
+if (abs >= 1e9) return (n / 1e9).toFixed(2).replace(/\.00$/, '') + 'B';
+if (abs >= 1e6) return (n / 1e6).toFixed(2).replace(/\.00$/, '') + 'M';
+if (abs >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+return n.toLocaleString('en-US');
+}
+function fmtCurrency(val) { return '$' + fmt(val); }
+function fmtPct(val) { return val.toFixed(1) + '%'; }
+function persianNum(n) { return Number(n).toLocaleString('fa-IR'); }
+
+/* ============================================================
+   LEAGUE REWARD CALCULATION
+   ============================================================ */
+const RANK_COEFFICIENTS = [1.0, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2];
+
+function leagueAReward(rank) {
+return CONFIG.Y * RANK_COEFFICIENTS[rank - 1];
+}
+function leagueBReward(rank) {
+return leagueAReward(rank) / CONFIG.alpha;
+}
+function leagueReward(league, rank) {
+return league === 'A' ? leagueAReward(rank) : leagueBReward(rank);
+}
+
+/* ============================================================
+   TOTAL BUDGET ESTIMATE
+   ============================================================ */
+function estimateTotalBudget() {
+const sumCoeff = RANK_COEFFICIENTS.reduce((a, b) => a + b, 0);
+const perSeasonA = CONFIG.Y * sumCoeff;
+const perSeasonB = perSeasonA / CONFIG.alpha;
+const perSeason = perSeasonA + perSeasonB;
+const seasonal = perSeason * 4; // 4 seasons
+const monthly = CONFIG.monthlyPrize * 14 * 12; // 14 teams × 12 months
+const annual = CONFIG.lottery.reduce((a, l) => a + l.value * l.count, 0);
+return { seasonal, monthly, annual, total: seasonal + monthly + annual, perSeasonA, perSeasonB };
+}
+
+/* ============================================================
+   DATA MODEL
+   ============================================================ */
+const BRANCHES = [
+// League A
+{ id:1, name:'شعبه اطلس', sm:'احمد رضایی', league:'A', coverage:78, aop:92, growth:12.4 },
+{ id:2, name:'شعبه هرمس', sm:'سارا کریمی', league:'A', coverage:82, aop:95, growth:15.1 },
+{ id:3, name:'شعبه زئوس', sm:'مهدی عباسی', league:'A', coverage:70, aop:85, growth:8.7 },
+{ id:4, name:'شعبه آپولو', sm:'لیلا محمدی', league:'A', coverage:74, aop:88, growth:10.2 },
+{ id:5, name:'شعبه آرتمیس', sm:'علی نوری', league:'A', coverage:66, aop:80, growth:6.5 },
+{ id:6, name:'شعبه پوزئیدون', sm:'زهرا حسینی', league:'A', coverage:62, aop:76, growth:5.0 },
+{ id:7, name:'شعبه دیمتر', sm:'رضا صادقی', league:'A', coverage:58, aop:72, growth:3.8 },
+// League B
+{ id:8, name:'شعبه آرس', sm:'محمد تقی‌پور', league:'B', coverage:68, aop:82, growth:9.0 },
+{ id:9, name:'شعبه آتنا', sm:'نرگس احمدی', league:'B', coverage:64, aop:78, growth:7.2 },
+{ id:10, name:'شعبه هفائستوس', sm:'کریم موسوی', league:'B', coverage:60, aop:74, growth:5.8 },
+{ id:11, name:'شعبه دیونیسوس', sm:'شبنم رضایی', league:'B', coverage:56, aop:70, growth:4.5 },
+{ id:12, name:'شعبه آفرودیت', sm:'حسین کریمی', league:'B', coverage:52, aop:66, growth:3.2 },
+{ id:13, name:'شعبه هادس', sm:'مینا نوروزی', league:'B', coverage:48, aop:62, growth:2.0 },
+{ id:14, name:'شعبه پرسئوس', sm:'سعید غفاری', league:'B', coverage:44, aop:58, growth:1.0 },
+];
+
+const MEMBER_NAMES = ['امیر حسینی','نیما شریفی','فاطمه زارع','محسن ملکی','ترنم عباسی','کیان رضوی','پریسا نوری','یاسین احمدی','مهدی کاظمی','سحر رحیمی'];
+
+function genMembers(branchId) {
+const seed = branchId * 7;
+return MEMBER_NAMES.slice(0, 8).map((name, i) => {
+const baseAop = 55 + ((seed + i * 13) % 45);
+const coverage = 55 + ((seed + i * 17) % 42);
+const growth = 2 + ((seed + i * 11) % 15);
+const sku = 100 + ((seed + i * 23) % 120);
+const score = (coverage + baseAop + growth) / CONFIG.scoreDivisor;
+return {
+id: branchId * 100 + i,
+name, sku,
+coverage, aop: baseAop, growth,
+score: +score.toFixed(2),
+points: sku,
+credits: Math.round(score * sku)
+};
+});
+}
+
+function calcFinalScore(branch) {
+return Math.round((branch.growth / 10 + 1) * (branch.coverage / 100) * (branch.aop / 100) * 4 * 10000);
+}
+
+/* ============================================================
+   NAV / MENU
+   ============================================================ */
+const burgerBtn = document.getElementById('burgerToggle');
+const menuPanel = document.getElementById('menuPanel');
+const menuOverlay = document.getElementById('menuOverlay');
+const menuClose = document.getElementById('menuClose');
+function openMenu() { menuPanel.classList.add('open'); menuOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeMenu() { menuPanel.classList.remove('open'); menuOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+burgerBtn.addEventListener('click', openMenu);
+menuClose.addEventListener('click', closeMenu);
+menuOverlay.addEventListener('click', closeMenu);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+const navItems = document.querySelectorAll('.nav-item');
+const pages = {
+landing: document.getElementById('page-landing'),
+admin: document.getElementById('page-admin'),
+bm: document.getElementById('page-bm'),
+rsm: document.getElementById('page-rsm'),
+seller: document.getElementById('page-seller')
+};
+navItems.forEach(item => {
+item.addEventListener('click', function () {
+const pid = this.dataset.page;
+if (!pages[pid]) return;
+navItems.forEach(n => n.classList.remove('active'));
+this.classList.add('active');
+Object.values(pages).forEach(p => p.classList.remove('active'));
+pages[pid].classList.add('active');
+closeMenu();
+window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+});
+
+/* ============================================================
+   LANDING: Progress bar & Counter
+   ============================================================ */
+function renderBudgetProgress() {
+const est = estimateTotalBudget();
+const display = document.getElementById('budgetDisplay');
+const max = document.getElementById('budgetMax');
+display.textContent = fmtCurrency(est.total * 0.67) + ' of ' + fmtCurrency(est.total);
+max.textContent = fmtCurrency(est.total);
+}
+
+function animateCounter(target) {
+const el = document.getElementById('counterNumber');
+const sub = document.getElementById('counterSub');
+const duration = 2200;
+const start = performance.now();
+function step(t) {
+const p = Math.min((t - start) / duration, 1);
+const eased = 1 - Math.pow(1 - p, 3);
+el.textContent = fmtCurrency(eased * target);
+if (p < 1) requestAnimationFrame(step);
+else el.textContent = fmtCurrency(target);
+}
+requestAnimationFrame(step);
+const est = estimateTotalBudget();
+sub.textContent = `فصلی ${fmtCurrency(est.seasonal)} + ماهانه ${fmtCurrency(est.monthly)} + سالانه ${fmtCurrency(est.annual)}`;
+}
+
+/* ============================================================
+   LANDING: Reward Table
+   ============================================================ */
+function renderRewardTable() {
+const tbody = document.getElementById('rewardTableBody');
+tbody.innerHTML = '';
+RANK_COEFFICIENTS.forEach((c, i) => {
+const rank = i + 1;
+const a = leagueAReward(rank);
+const b = leagueBReward(rank);
+const tr = document.createElement('tr');
+tr.innerHTML = `
+<td>${rank}</td>
+<td style="text-align:center;">${c.toFixed(1)} × Y</td>
+<td style="text-align:center;font-weight:700;color:var(--caramel);direction:ltr;">${fmtCurrency(a)}</td>
+<td style="text-align:center;font-weight:700;color:var(--chocolate);direction:ltr;">${fmtCurrency(b)}</td>
+`;
+tbody.appendChild(tr);
+});
+document.getElementById('alphaBadge').textContent = 'α = ' + CONFIG.alpha;
+document.getElementById('betaBadge').textContent = 'β = ' + CONFIG.beta;
+}
+
+/* ============================================================
+   LANDING: League Leaderboard + Simulation
+   ============================================================ */
+let currentMonth = 0;
+const TOTAL_MONTHS = 12;
+let currentLeague = 'A';
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function seededVariation(seed, i) {
+const x = Math.sin(seed * 12.9898 + i * 78.233) * 43758.5453;
+return x - Math.floor(x);
+}
+
+function getCumulative(league, monthIdx) {
+const teams = BRANCHES.filter(b => b.league === league);
+const enriched = teams.map((t, idx) => {
+let cum = 0;
+for (let m = 0; m <= monthIdx; m++) {
+const v = seededVariation(t.id + m, idx);
+cum += 800 + v * 400 + (m / 12) * 60 * ((idx % 2 === 0) ? 1 : -0.4);
+}
+const coverage = Math.min(99, Math.round(t.coverage + (monthIdx / 12) * 8 + seededVariation(t.id, monthIdx) * 4));
+const aop = Math.min(99, Math.round(t.aop + (monthIdx / 12) * 6 + seededVariation(t.id + 1, monthIdx) * 4));
+const score = Math.round(cum);
+return { ...t, cumScore: score, coverage, aop };
+});
+enriched.sort((a, b) => b.cumScore - a.cumScore);
+return enriched;
+}
+
+function renderLeagueTable() {
+const data = getCumulative(currentLeague, currentMonth);
+const tbody = document.getElementById('leagueTableBody');
+tbody.innerHTML = '';
+data.forEach((d, idx) => {
+const rank = idx + 1;
+const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+const tr = document.createElement('tr');
+tr.innerHTML = `
+<td class="rank-col">${rank} ${medal}</td>
+<td class="team-col">${d.name}</td>
+<td class="rsm-col">${d.sm}</td>
+<td style="text-align:center;">${d.coverage}%</td>
+<td style="text-align:center;">${d.aop}%</td>
+<td class="score-col" style="direction:ltr;">${d.cumScore.toLocaleString('en-US')}</td>
+`;
+if (rank === 1) tr.style.background = 'var(--gold-light)';
+else if (rank === 2) tr.style.background = 'var(--peach-light)';
+else if (rank === 3) tr.style.background = 'var(--cream)';
+tbody.appendChild(tr);
+});
+document.getElementById('simMonthLabel').textContent = MONTHS[currentMonth];
+document.getElementById('simProgress').textContent = `${currentMonth + 1} / ${TOTAL_MONTHS}`;
+document.getElementById('simPrev').disabled = currentMonth === 0;
+document.getElementById('simNext').disabled = currentMonth === TOTAL_MONTHS - 1;
+}
+
+document.querySelectorAll('.league-tab').forEach(tab => {
+tab.addEventListener('click', function () {
+document.querySelectorAll('.league-tab').forEach(t => t.classList.remove('active'));
+this.classList.add('active');
+currentLeague = this.dataset.league;
+renderLeagueTable();
+});
+});
+document.getElementById('simPrev').addEventListener('click', () => { if (currentMonth > 0) { currentMonth--; renderLeagueTable(); } });
+document.getElementById('simNext').addEventListener('click', () => { if (currentMonth < TOTAL_MONTHS - 1) { currentMonth++; renderLeagueTable(); } });
+
+/* ============================================================
+   BM: League Tables + Drill-down
+   ============================================================ */
+function renderBMLeagues() {
+['A','B'].forEach(league => {
+const tbody = document.getElementById(league === 'A' ? 'bmLeagueABody' : 'bmLeagueBBody');
+const teams = BRANCHES.filter(b => b.league === league)
+.map(b => ({ ...b, finalScore: calcFinalScore(b) }))
+.sort((a, b) => b.finalScore - a.finalScore);
+tbody.innerHTML = '';
+teams.forEach((t, idx) => {
+const rank = idx + 1;
+const reward = leagueReward(league, rank);
+const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+const tr = document.createElement('tr');
+tr.className = 'clickable' + (rank <= 3 ? ' highlight-row' : '');
+tr.dataset.branchId = t.id;
+tr.innerHTML = `
+<td>${rank} ${medal}</td>
+<td style="font-weight:600;">${t.name}</td>
+<td>${t.sm}</td>
+<td style="text-align:center;">${t.coverage}%</td>
+<td style="text-align:center;">${t.aop}%</td>
+<td style="text-align:center;">${t.growth}%</td>
+<td style="text-align:center;font-weight:700;color:var(--caramel);direction:ltr;">${t.finalScore.toLocaleString('en-US')}</td>
+<td style="text-align:center;font-weight:700;color:var(--chocolate);direction:ltr;">${fmtCurrency(reward)}</td>
+`;
+tr.addEventListener('click', () => openBMDrill(t.id));
+tbody.appendChild(tr);
+});
+});
+}
+
+function openBMDrill(branchId) {
+const branch = BRANCHES.find(b => b.id === branchId);
+if (!branch) return;
+const members = genMembers(branchId);
+const rank = BRANCHES.filter(b => b.league === branch.league)
+.map(b => ({ ...b, finalScore: calcFinalScore(b) }))
+.sort((a, b) => b.finalScore - a.finalScore)
+.findIndex(b => b.id === branchId) + 1;
+document.getElementById('bmDrillTitle').innerHTML =
+`<span><i class="fas fa-store" style="color:var(--caramel);"></i> ${branch.name} – ${branch.sm} <span class="badge-alpha">لیگ ${branch.league} – رتبه ${rank}</span></span>`;
+const table = document.getElementById('bmDrillTable');
+table.innerHTML = `
+<thead><tr>
+<th>#</th><th>نام فروشنده</th>
+<th style="text-align:center;">SKU فروش</th>
+<th style="text-align:center;">Coverage</th>
+<th style="text-align:center;">AOP</th>
+<th style="text-align:center;">رشد</th>
+<th style="text-align:center;">Score</th>
+<th style="text-align:center;">Points</th>
+<th style="text-align:center;">Credits</th>
+</tr></thead>
+<tbody>${members.map((m, i) => `
+<tr>
+<td>${i + 1}</td>
+<td>${m.name}</td>
+<td style="text-align:center;">${m.sku}</td>
+<td style="text-align:center;">${m.coverage}%</td>
+<td style="text-align:center;">${m.aop}%</td>
+<td style="text-align:center;">${m.growth}%</td>
+<td style="text-align:center;font-weight:700;color:var(--caramel);">${m.score}</td>
+<td style="text-align:center;">${m.points}</td>
+<td style="text-align:center;font-weight:700;">${m.credits.toLocaleString('en-US')}</td>
+</tr>`).join('')}</tbody>`;
+document.getElementById('bmDrill').classList.add('open');
+document.getElementById('bmDrill').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+document.getElementById('bmDrillClose').addEventListener('click', () => {
+document.getElementById('bmDrill').classList.remove('open');
+});
+
+/* ============================================================
+   BM: Pledged Rewards
+   ============================================================ */
+function renderBMPledges() {
+document.getElementById('bmMonthly').innerHTML = `
+<div class="pledge-item"><span class="pledge-label">بهترین فروشنده هر شعبه</span><span class="pledge-value">${fmtCurrency(CONFIG.monthlyPrize)}</span></div>
+<div class="pledge-item"><span class="pledge-label">تعداد جوایز ماهانه</span><span class="pledge-value">14 × 12</span></div>
+<div class="pledge-item"><span class="pledge-label">مجموع ماهانه</span><span class="pledge-value">${fmtCurrency(CONFIG.monthlyPrize * 14 * 12)}</span></div>
+`;
+const sumCoeff = RANK_COEFFICIENTS.reduce((a, b) => a + b, 0);
+document.getElementById('bmSeasonal').innerHTML = `
+<div class="pledge-item"><span class="pledge-label">لیگ A (هر فصل)</span><span class="pledge-value">${fmtCurrency(CONFIG.Y * sumCoeff)}</span></div>
+<div class="pledge-item"><span class="pledge-label">لیگ B (هر فصل ÷ α)</span><span class="pledge-value">${fmtCurrency(CONFIG.Y * sumCoeff / CONFIG.alpha)}</span></div>
+<div class="pledge-item"><span class="pledge-label">مجموع فصلی سالانه</span><span class="pledge-value">${fmtCurrency(4 * (CONFIG.Y * sumCoeff + CONFIG.Y * sumCoeff / CONFIG.alpha))}</span></div>
+`;
+document.getElementById('bmAnnual').innerHTML = CONFIG.lottery.map(l => `
+<div class="pledge-item"><span class="pledge-label">${l.name} × ${l.count}</span><span class="pledge-value">${fmtCurrency(l.value)}</span></div>
+`).join('') + `
+<div class="pledge-item"><span class="pledge-label">مجموع قرعه‌کشی</span><span class="pledge-value">${fmtCurrency(CONFIG.lottery.reduce((a, l) => a + l.value * l.count, 0))}</span></div>
+`;
+}
+
+/* ============================================================
+   SALES MANAGER DASHBOARD
+   ============================================================ */
+function renderSM() {
+const branch = BRANCHES[0]; // demo: شعبه اطلس
+const members = genMembers(branch.id).sort((a, b) => b.credits - a.credits);
+document.getElementById('smBranchName').textContent = branch.name;
+document.getElementById('smBranchDesc').textContent = `لیگ ${branch.league} – مدیر: ${branch.sm}`;
+const rank = BRANCHES.filter(b => b.league === branch.league)
+.map(b => ({ ...b, finalScore: calcFinalScore(b) }))
+.sort((a, b) => b.finalScore - a.finalScore)
+.findIndex(b => b.id === branch.id) + 1;
+const totalCredits = members.reduce((a, m) => a + m.credits, 0);
+document.getElementById('smBranchStats').innerHTML = `
+<div>📍 رتبه شعبه: <strong>#${rank} از 7</strong></div>
+<div>🏆 امتیاز تیم: <strong>${calcFinalScore(branch).toLocaleString('en-US')}</strong></div>
+<div>📊 پوشش: <strong>${branch.coverage}%</strong></div>
+<div>🎯 AOP: <strong>${branch.aop}%</strong></div>
+`;
+const aopOk = branch.aop >= CONFIG.aopThreshold;
+document.getElementById('smAopStatus').textContent = aopOk ? `AOP = ${branch.aop}% ≥ ${CONFIG.aopThreshold}% ✓` : `AOP = ${branch.aop}% < ${CONFIG.aopThreshold}% ✗`;
+document.getElementById('smAopStatus').style.color = aopOk ? '' : 'var(--gray-dark)';
+
+const tbody = document.getElementById('smMembersBody');
+tbody.innerHTML = '';
+members.forEach((m, i) => {
+const tr = document.createElement('tr');
+if (i === 0) tr.style.background = 'var(--gold-light)';
+const aopOk = m.aop >= CONFIG.aopThreshold;
+tr.innerHTML = `
+<td>${i + 1}</td>
+<td>${m.name} ${!aopOk ? '<span class="text-muted">(×)</span>' : ''}</td>
+<td style="text-align:center;">${m.score}</td>
+<td style="text-align:center;">${m.points}</td>
+<td style="text-align:center;font-weight:700;color:var(--caramel);">${m.credits.toLocaleString('en-US')}</td>
+<td style="text-align:center;">${m.aop}%</td>
+`;
+tbody.appendChild(tr);
+});
+
+// Rewards
+const sellerMonthlyReward = CONFIG.monthlyPrize; // assume best seller
+const smMonthly = sellerMonthlyReward * CONFIG.beta;
+const smSeasonal = leagueReward(branch.league, rank) * CONFIG.beta;
+document.getElementById('smMonthlyReward').textContent = fmtCurrency(smMonthly);
+document.getElementById('smSeasonalReward').textContent = fmtCurrency(smSeasonal);
+document.getElementById('smAnnualCredits').textContent = totalCredits.toLocaleString('en-US') + ' credits';
+}
+
+/* ============================================================
+   BRANCH MEMBER DASHBOARD
+   ============================================================ */
+function renderSeller() {
+const branch = BRANCHES[0];
+const members = genMembers(branch.id);
+const me = members[2]; // demo: سومین نفر
+document.getElementById('sellerSku').textContent = `شکلات سکه‌ای دارک – هدف: ۲۰۰ واحد`;
+document.getElementById('sellerStatus').textContent = `شما ${me.sku} واحد فروخته‌اید – ${((me.sku / 200) * 100).toFixed(0)}٪ از هدف ماهانه`;
+document.getElementById('sellerCredits').textContent = `Credits شما: ${me.credits.toLocaleString('en-US')} (Score: ${me.score})`;
+const aopOk = me.aop >= CONFIG.aopThreshold;
+document.getElementById('sellerAopStatus').textContent = aopOk ? `AOP شما: ${me.aop}% (≥ ${CONFIG.aopThreshold}% ✓) – واجد شرایط` : `AOP شما: ${me.aop}% (< ${CONFIG.aopThreshold}%) – واجد شرایط نیست`;
+
+document.getElementById('pAop').textContent = me.aop + '%';
+document.getElementById('pAopFill').style.width = me.aop + '%';
+document.getElementById('pCov').textContent = me.coverage + '%';
+document.getElementById('pCovFill').style.width = me.coverage + '%';
+document.getElementById('pGrowth').textContent = me.growth + '%';
+document.getElementById('pGrowthFill').style.width = Math.min(100, me.growth * 4) + '%';
+
+const sorted = members.slice().sort((a, b) => b.credits - a.credits);
+const tbody = document.getElementById('intraTeamBody');
+tbody.innerHTML = '';
+sorted.forEach((m, i) => {
+const rank = i + 1;
+const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+const isMe = m.name === me.name;
+const tr = document.createElement('tr');
+if (isMe) tr.className = 'highlight-row';
+tr.innerHTML = `
+<td>${rank} ${medal} ${isMe ? '<i class="fas fa-user-circle" style="color:var(--caramel);"></i>' : ''}</td>
+<td>${m.name} ${m.aop < CONFIG.aopThreshold ? '<span class="text-muted">(×)</span>' : ''}</td>
+<td style="text-align:center;">${m.sku}</td>
+<td style="text-align:center;">${m.coverage}%</td>
+<td style="text-align:center;">${m.aop}%</td>
+<td style="text-align:center;">${m.growth}%</td>
+<td style="text-align:center;font-weight:700;color:var(--caramel);">${m.score}</td>
+<td style="text-align:center;">${m.points}</td>
+<td style="text-align:center;font-weight:700;">${m.credits.toLocaleString('en-US')}</td>
+`;
+tbody.appendChild(tr);
+});
+document.querySelectorAll('.aopThreshInline').forEach(el => el.textContent = CONFIG.aopThreshold);
+document.getElementById('aopThresholdDisplay').textContent = CONFIG.aopThreshold;
+}
+
+/* ============================================================
+   ADMIN: Weekly Table
+   ============================================================ */
+function renderWeekTable() {
+const tbody = document.getElementById('weekTableBody');
+tbody.innerHTML = '';
+for (let w = 1; w <= 52; w++) {
+const seed = w * 7;
+const sales = 50 + (seed % 200);
+const aop = 65 + (seed % 35);
+const coverage = 55 + (seed % 40);
+const growth = -5 + (seed % 25);
+const tr = document.createElement('tr');
+tr.innerHTML = `
+<td style="font-weight:600;">هفته ${w}</td>
+<td><input class="week-input" type="number" value="${sales}" data-week="${w}" data-field="sales"></td>
+<td><input class="week-input" type="number" step="0.1" value="${aop.toFixed(1)}" data-week="${w}" data-field="aop"></td>
+<td><input class="week-input" type="number" step="0.1" value="${coverage.toFixed(1)}" data-week="${w}" data-field="coverage"></td>
+<td><input class="week-input" type="number" step="0.1" value="${growth.toFixed(1)}" data-week="${w}" data-field="growth"></td>
+`;
+tbody.appendChild(tr);
+}
+}
+
+/* ============================================================
+   ADMIN: Events
+   ============================================================ */
+document.getElementById('apiConnectBtn').addEventListener('click', () => {
+document.getElementById('apiStatus').textContent = '⏳ در حال اتصال...';
+setTimeout(() => {
+document.getElementById('apiStatus').textContent = '✅ اتصال به API برقرار شد (شبیه‌سازی)';
+}, 900);
+});
+document.getElementById('apiTestBtn').addEventListener('click', () => {
+document.getElementById('apiStatus').textContent = '✅ تست موفق – ۱۴ تیم، ۱۴۰ فروشنده دریافت شد';
+});
+document.getElementById('uploadAopBtn').addEventListener('click', () => document.getElementById('aopFileInput').click());
+document.getElementById('aopFileInput').addEventListener('change', function (e) {
+const f = e.target.files[0]; if (!f) return;
+document.getElementById('aopStatus').textContent = `✅ AOP آپلود شد: ${f.name} (${(f.size/1024).toFixed(1)} KB)`;
+this.value = '';
+});
+document.getElementById('downloadWeekStatus').addEventListener('click', () => {
+let csv = 'هفته,تعداد فروش,تحقق AOP %,پوشش %,رشد AOP %\n';
+document.querySelectorAll('#weekTableBody tr').forEach(tr => {
+const cells = tr.querySelectorAll('input');
+csv += `${tr.querySelector('td').textContent.replace('هفته ','')},${cells[0].value},${cells[1].value},${cells[2].value},${cells[3].value}\n`;
+});
+const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url; a.download = 'weekly_status.csv'; a.click();
+URL.revokeObjectURL(url);
+});
+document.getElementById('uploadWeekBtn').addEventListener('click', () => document.getElementById('weekFileInput').click());
+document.getElementById('weekFileInput').addEventListener('change', function (e) {
+const f = e.target.files[0]; if (!f) return;
+alert('✅ جدول هفتگی آپلود شد: ' + f.name);
+this.value = '';
+});
+
+/* ============================================================
+   ADMIN: Config apply / reset
+   ============================================================ */
+document.getElementById('applyConfig').addEventListener('click', () => {
+const a = parseFloat(document.getElementById('cfgAlpha').value);
+const b = parseFloat(document.getElementById('cfgBeta').value);
+const y = parseFloat(document.getElementById('cfgY').value);
+const m = parseFloat(document.getElementById('cfgMonthly').value);
+const t = parseFloat(document.getElementById('cfgAop').value);
+const d = parseInt(document.getElementById('cfgDivisor').value);
+if (a > 1 && a < 2) CONFIG.alpha = a;
+if (b > 1 && b < 2) CONFIG.beta = b;
+if (y > 0) CONFIG.Y = y;
+if (m >= 0) CONFIG.monthlyPrize = m;
+if (t >= 0 && t <= 100) CONFIG.aopThreshold = t;
+if (d >= 1) CONFIG.scoreDivisor = d;
+applyConfigToAll();
+alert('✅ پارامترها اعمال شد');
+});
+document.getElementById('resetConfig').addEventListener('click', () => {
+CONFIG = { ...DEFAULT_CONFIG, lottery: DEFAULT_CONFIG.lottery.map(l => ({ ...l })) };
+document.getElementById('cfgAlpha').value = DEFAULT_CONFIG.alpha;
+document.getElementById('cfgBeta').value = DEFAULT_CONFIG.beta;
+document.getElementById('cfgY').value = DEFAULT_CONFIG.Y;
+document.getElementById('cfgMonthly').value = DEFAULT_CONFIG.monthlyPrize;
+document.getElementById('cfgAop').value = DEFAULT_CONFIG.aopThreshold;
+document.getElementById('cfgDivisor').value = DEFAULT_CONFIG.scoreDivisor;
+applyConfigToAll();
+});
+
+function applyConfigToAll() {
+renderRewardTable();
+renderBudgetProgress();
+const est = estimateTotalBudget();
+animateCounter(est.total);
+renderBMLeagues();
+renderBMPledges();
+renderSM();
+renderSeller();
+}
+
+/* ============================================================
+   DOWNLOAD TXT
+   ============================================================ */
+document.getElementById('downloadTxtDoc').addEventListener('click', () => {
+const est = estimateTotalBudget();
+const sumCoeff = RANK_COEFFICIENTS.reduce((a, b) => a + b, 0);
+const txt = `============================================================
+SELLERS CLUB PLATFORM – GAMIFICATION MODEL
+============================================================
+
+VERSION: 5.0 (S5 – based on PRD)
+COMPETITION: 2027 Season (14 Branches, 2 Leagues)
+
+============================================================
+1. ROLES
+============================================================
+- Admin         : ETL (API + manual), manage weekly data, set parameters
+- Business Manager: View all leagues, drill down to Sales Managers
+- Sales Manager : View leagues in managed branch(es), drill down to members
+- Branch Member : View league status, own branch, same-branch members
+
+============================================================
+2. LEAGUE STRUCTURE
+============================================================
+- Each branch = one team. 14 teams total.
+- League A: 7 teams
+- League B: 7 teams
+- Top 3 of B promote to A. Bottom 3 of A relegate to B.
+
+============================================================
+3. PARAMETERS (Current Values)
+============================================================
+α (alpha)      = ${CONFIG.alpha}   (League B divisor, 1 < α < 2)
+β (beta)       = ${CONFIG.beta}   (Sales Manager multiplier, 1 < β < 2)
+Y (base reward)= ${CONFIG.Y.toLocaleString('en-US')}   (League A 1st place)
+Monthly Prize  = ${CONFIG.monthlyPrize.toLocaleString('en-US')}
+AOP Threshold  = ${CONFIG.aopThreshold}%
+Score Divisor  = ${CONFIG.scoreDivisor}
+
+============================================================
+4. EVALUATION FORMULAS
+============================================================
+Seller:
+  Score   = (Coverage% + Dedicated AOP Portion Realization% + AOP Realization Growth%) / ${CONFIG.scoreDivisor}
+  Points  = Units sold of target SKU
+  Credits = Score × Points
+
+Sales Manager:
+  Performance   = Average of team members
+  SM Reward     = β × Seller Reward
+
+============================================================
+5. REWARDS
+============================================================
+
+(A) Monthly Reward
+    - Best seller of target SKU per team
+    - Prize: ${CONFIG.monthlyPrize.toLocaleString('en-US')} per winner
+    - 14 teams × 12 months = ${(CONFIG.monthlyPrize * 14 * 12).toLocaleString('en-US')} annually
+
+(B) Seasonal Reward (4 seasons per year)
+    League A (base):
+      1st: 1.0 × Y = ${(CONFIG.Y * 1.0).toLocaleString('en-US')}
+      2nd: 0.8 × Y = ${(CONFIG.Y * 0.8).toLocaleString('en-US')}
+      3rd: 0.6 × Y = ${(CONFIG.Y * 0.6).toLocaleString('en-US')}
+      4th: 0.5 × Y = ${(CONFIG.Y * 0.5).toLocaleString('en-US')}
+      5th: 0.4 × Y = ${(CONFIG.Y * 0.4).toLocaleString('en-US')}
+      6th: 0.3 × Y = ${(CONFIG.Y * 0.3).toLocaleString('en-US')}
+      7th: 0.2 × Y = ${(CONFIG.Y * 0.2).toLocaleString('en-US')}
+    League B: Same rank reward ÷ α = ${CONFIG.alpha}
+    Per season total (A+B): ${(est.perSeasonA + est.perSeasonB).toLocaleString('en-US')}
+    Annual seasonal total: ${est.seasonal.toLocaleString('en-US')}
+
+(C) Annual Reward – Credits Lottery
+    - Users earn Credits = Score × Points throughout the year
+    - Total credits = lottery chances
+    - Prizes:
+${CONFIG.lottery.map(l => `        ${l.name} × ${l.count} @ ${l.value.toLocaleString('en-US')}`).join('\n')}
+    - Total annual lottery: ${est.annual.toLocaleString('en-US')}
+
+============================================================
+6. TOTAL ANNUAL BUDGET ESTIMATE
+============================================================
+  Seasonal : ${est.seasonal.toLocaleString('en-US')}
+  Monthly  : ${est.monthly.toLocaleString('en-US')}
+  Annual   : ${est.annual.toLocaleString('en-US')}
+  ---------------------------------------------
+  TOTAL    : ${est.total.toLocaleString('en-US')}
+
+============================================================
+7. HYPER-PARAMETERS (Explanation)
+============================================================
+- α (alpha)  : League B reward = League A reward ÷ α.
+               Range: 1 < α < 2. Higher α → less League B reward.
+- β (beta)   : Sales Manager reward = β × Seller reward.
+               Range: 1 < β < 2. Higher β → higher SM reward.
+- Y          : Base reward for League A 1st place. All other
+               rewards are derived from Y via coefficients.
+- AOP Threshold: Minimum AOP % required for reward eligibility.
+- Score Divisor: Denominator in seller Score formula (PRD: 2).
+
+============================================================
+8. DATA INPUT (Admin Panel)
+============================================================
+- ETL via API or manual CSV/XLSX upload for AOP targets
+- Weekly results: 52-week table
+- Parameter editor with live update
+
+============================================================
+9. CONTACT & FEEDBACK
+============================================================
+For S6+ iterations, please edit this document and send back.
+
+============================================================`;
+const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url; a.download = 'gamification_model_S5.txt'; a.click();
+URL.revokeObjectURL(url);
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init() {
+renderBudgetProgress();
+renderRewardTable();
+const est = estimateTotalBudget();
+animateCounter(est.total);
+renderLeagueTable();
+renderBMLeagues();
+renderBMPledges();
+renderSM();
+renderSeller();
+renderWeekTable();
+}
+init();
+
+</script>
+</body>
+</html>
