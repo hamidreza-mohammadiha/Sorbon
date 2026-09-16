@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD — سامانه لیگ فروش سُربُن (Sorbon)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132038;
+    --muted:#5c6b85;
+    --line:#dbe2ee;
+    --line-soft:#eaeff7;
+    --brand:#0f5bd7;
+    --brand-dark:#0a3f96;
+    --brand-soft:#eff4ff;
+    --gold:#b8860b;
+    --gold-soft:#fdf6e3;
+    --green:#0f8a5f;
+    --green-soft:#eaf7f1;
+    --bg:#f4f6fa;
+  }
+
+  *{box-sizing:border-box;}
+
+  html{ -webkit-text-size-adjust:100%; }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Vazirmatn","IRANSans","Segoe UI",Tahoma,sans-serif;
+    font-size:11.2pt;
+    line-height:1.95;
+    font-weight:400;
+  }
+
+  .page{
+    max-width:1000px;
+    margin:0 auto;
+    background:#fff;
+    padding:38px 46px 56px;
+    box-shadow:0 6px 34px rgba(19,32,56,.09);
+  }
+
+  /* ---------- Print button ---------- */
+  .print-bar{
+    max-width:1000px;
+    margin:18px auto 0;
+    display:flex;
+    justify-content:flex-start;
+    padding:0 6px;
+  }
+  .print-btn{
+    font-family:inherit;
+    font-size:10.5pt;
+    font-weight:600;
+    color:#fff;
+    background:var(--brand);
+    border:0;
+    border-radius:9px;
+    padding:10px 22px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(15,91,215,.28);
+  }
+  .print-btn:hover{ background:var(--brand-dark); }
+
+  /* ---------- Cover ---------- */
+  .cover{
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    margin-bottom:30px;
+  }
+  .cover-top{
+    background:linear-gradient(120deg,var(--brand-dark),var(--brand));
+    color:#fff;
+    padding:26px 30px 22px;
+  }
+  .eyebrow{
+    display:inline-block;
+    font-size:8.6pt;
+    letter-spacing:.5px;
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.28);
+    border-radius:99px;
+    padding:3px 12px;
+    margin-bottom:12px;
+  }
+  .cover h1{
+    margin:0 0 6px;
+    font-size:21pt;
+    font-weight:700;
+    line-height:1.5;
+  }
+  .cover .sub{
+    margin:0;
+    font-size:10.5pt;
+    opacity:.92;
+    font-weight:300;
+  }
+  .cover-body{ padding:0; }
+  .cover-body table{ width:100%; border-collapse:collapse; }
+  .cover-body th,
+  .cover-body td{
+    padding:9px 16px;
+    font-size:10pt;
+    border-bottom:1px solid var(--line-soft);
+    text-align:right;
+    vertical-align:top;
+  }
+  .cover-body tr:last-child th,
+  .cover-body tr:last-child td{ border-bottom:0; }
+  .cover-body th{
+    width:165px;
+    color:var(--muted);
+    font-weight:500;
+    background:#fafbfe;
+    white-space:nowrap;
+  }
+  .cover-body td{ font-weight:500; }
+  a{ color:var(--brand); text-decoration:none; word-break:break-all; }
+  a:hover{ text-decoration:underline; }
+
+  /* ---------- Headings ---------- */
+  h2.chapter{
+    font-size:15pt;
+    font-weight:700;
+    margin:38px 0 16px;
+    padding:10px 16px;
+    color:var(--brand-dark);
+    background:var(--brand-soft);
+    border-right:5px solid var(--brand);
+    border-radius:0 10px 10px 0;
+    break-after:avoid;
+    page-break-after:avoid;
+  }
+  h3{
+    font-size:12.4pt;
+    font-weight:600;
+    margin:26px 0 10px;
+    color:var(--ink);
+    break-after:avoid;
+    page-break-after:avoid;
+  }
+  h3::before{
+    content:"";
+    display:inline-block;
+    width:9px;height:9px;
+    background:var(--brand);
+    border-radius:2px;
+    margin-inline-end:9px;
+    vertical-align:middle;
+    transform:translateY(-1px);
+  }
+  h4{
+    font-size:11pt;
+    font-weight:600;
+    margin:18px 0 8px;
+    color:var(--brand-dark);
+    break-after:avoid;
+    page-break-after:avoid;
+  }
+  p{ margin:0 0 11px; text-align:justify; }
+  ul,ol{ margin:0 0 12px; padding-inline-start:22px; }
+  li{ margin-bottom:5px; }
+
+  /* ---------- TOC ---------- */
+  .toc{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 22px 12px;
+    margin-bottom:8px;
+    background:#fcfdff;
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+  .toc h4{ margin-top:0; }
+  .toc ol{ margin:0; padding-inline-start:20px; font-size:10.2pt; }
+  .toc li{ margin-bottom:3px; }
+
+  /* ---------- Cards / boxes ---------- */
+  .card{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 18px 10px;
+    margin:0 0 14px;
+    background:#fff;
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+  .card-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:8px;
+    flex-wrap:wrap;
+  }
+  .tag{
+    font-size:8.4pt;
+    font-weight:600;
+    color:#fff;
+    background:var(--brand);
+    border-radius:6px;
+    padding:2px 9px;
+    white-space:nowrap;
+  }
+  .tag.gold{ background:var(--gold); }
+  .tag.green{ background:var(--green); }
+  .tag.gray{ background:#7b8aa3; }
+  .card-title{ font-weight:600; font-size:11pt; }
+
+  .story{
+    border:1px solid var(--line);
+    border-inline-start:4px solid var(--brand);
+    border-radius:10px;
+    padding:13px 17px 9px;
+    margin-bottom:13px;
+    background:#fdfdff;
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+  .story .sid{
+    font-weight:700;
+    color:var(--brand);
+    font-size:10pt;
+    margin-inline-end:6px;
+  }
+  .story .text{ margin:0 0 8px; }
+  .story .text b{ font-weight:600; }
+  .crit{
+    margin:0;
+    padding-inline-start:19px;
+    font-size:10.2pt;
+    color:#26364f;
+  }
+  .crit li{ margin-bottom:3px; }
+
+  .note{
+    background:var(--gold-soft);
+    border:1px solid #f0e0b4;
+    border-radius:10px;
+    padding:12px 17px;
+    margin:14px 0;
+    font-size:10.3pt;
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+  .note strong{ color:var(--gold); }
+
+  .rule{
+    background:var(--green-soft);
+    border:1px solid #c9e8db;
+    border-radius:10px;
+    padding:12px 17px;
+    margin:14px 0;
+    font-size:10.3pt;
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+  .rule strong{ color:var(--green); }
+
+  /* ---------- Tables ---------- */
+  table.data{
+    width:100%;
+    border-collapse:collapse;
+    margin:12px 0 16px;
+    font-size:10pt;
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+  table.data caption{
+    caption-side:top;
+    text-align:right;
+    font-size:9.6pt;
+    color:var(--muted);
+    padding-bottom:6px;
+  }
+  table.data th{
+    background:#eef3fc;
+    color:var(--brand-dark);
+    font-weight:600;
+    padding:8px 11px;
+    border:1px solid var(--line);
+    text-align:center;
+    white-space:nowrap;
+  }
+  table.data td{
+    padding:7px 11px;
+    border:1px solid var(--line);
+    text-align:center;
+  }
+  table.data td.r{ text-align:right; }
+  table.data tbody tr:nth-child(even){ background:#fafcff; }
+  .yes{ color:var(--green); font-weight:700; }
+  .no{ color:#b9c2d0; }
+  .pos{ font-weight:600; }
+
+  /* ---------- Formula ---------- */
+  .formula{
+    direction:ltr;
+    text-align:center;
+    font-family:"Cambria Math","DejaVu Serif",Georgia,serif;
+    font-size:12pt;
+    background:#f7f9fd;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    margin:12px 0;
+    line-height:2.1;
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+  .formula .lbl{
+    display:block;
+    font-family:"Vazirmatn",Tahoma,sans-serif;
+    font-size:9pt;
+    color:var(--muted);
+    direction:rtl;
+    margin-bottom:6px;
+    letter-spacing:.2px;
+  }
+  code{
+    font-family:"Consolas","Menlo",monospace;
+    direction:ltr;
+    unicode-bidi:embed;
+    background:#eef3fc;
+    border-radius:5px;
+    padding:1px 6px;
+    font-size:9.6pt;
+    color:var(--brand-dark);
+  }
+
+  /* ---------- Footer ---------- */
+  .doc-footer{
+    margin-top:44px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+    font-size:9pt;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+
+  /* ---------- Print ---------- */
+  @page{ size:A4; margin:15mm 14mm 16mm; }
+
+  @media print{
+    body{
+      background:#fff;
+      font-size:10.4pt;
+      line-height:1.85;
+    }
+    .page{
+      max-width:none;
+      margin:0;
+      padding:0;
+      box-shadow:none;
+      border-radius:0;
+    }
+    .print-bar{ display:none !important; }
+    .cover{
+      border-radius:10px;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+    .cover-top{
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+    h2.chapter{
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+      margin-top:22px;
+      break-before:auto;
+    }
+    .chapter-break{ break-before:page; page-break-before:always; }
+    a{ color:var(--ink); text-decoration:none; }
+    .note,.rule,.story,.card,table.data,.formula,.toc{
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+    tr,li,p{ break-inside:avoid; page-break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <button class="print-btn" onclick="window.print()">چاپ / ذخیره به‌صورت PDF</button>
+</div>
+
+<div class="page">
+
+  <!-- ================= COVER ================= -->
+  <header class="cover">
+    <div class="cover-top">
+      <span class="eyebrow">PRODUCT REQUIREMENT DOCUMENT</span>
+      <h1>سند نیازمندی‌های محصول — سامانه لیگ فروش سُربُن</h1>
+      <p class="sub">پلتفرم گیمیفیکیشن فروش، رتبه‌بندی شعبه‌ها و مدیریت پاداش‌های ماهانه، فصلی و سالانه</p>
+    </div>
+    <div class="cover-body">
+      <table>
+        <tr>
+          <th>نام محصول</th>
+          <td>Sorbon — Sales League Platform</td>
+        </tr>
+        <tr>
+          <th>نسخه سند</th>
+          <td>۱.۰ (پیش‌نویس)</td>
+        </tr>
+        <tr>
+          <th>تاریخ</th>
+          <td>۱۴۰۴/__/__</td>
+        </tr>
+        <tr>
+          <th>وضعیت</th>
+          <td>در حال بازبینی ذی‌نفعان</td>
+        </tr>
+        <tr>
+          <th>پروتوتایپ مرجع</th>
+          <td>
+            <a href="https://hamidreza-mohammadiha.github.io/Sorbon/S3" target="_blank" rel="noopener">
+              https://hamidreza-mohammadiha.github.io/Sorbon/S3
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <th>مخاطبان سند</th>
+          <td>تیم محصول، تیم فنی، تیم داده، مدیریت فروش، منابع انسانی و مالی</td>
+        </tr>
+      </table>
+    </div>
+  </header>
+
+  <!-- ================= TOC ================= -->
+  <nav class="toc">
+    <h4>فهرست مطالب</h4>
+    <ol>
+      <li><a href="#overview">خلاصه اجرایی، اهداف و دامنه</a></li>
+      <li><a href="#ch1">فصل اول: روایت‌های کاربری (User Stories)</a></li>
+      <li><a href="#ch2">فصل دوم: مدل گیمیفیکیشن (Gamification Model)</a></li>
+      <li><a href="#nfr">نیازمندی‌های غیرکارکردی</a></li>
+      <li><a href="#open">فرضیات، وابستگی‌ها و سوالات باز</a></li>
+    </ol>
+  </nav>
+
+  <!-- ================= OVERVIEW ================= -->
+  <h2 class="chapter" id="overview">۱. خلاصه اجرایی، اهداف و دامنه</h2>
+
+  <p>
+    «سُربُن» یک سامانه گیمیفیکیشن فروش است که شبکه توزیع سازمان را به شکل یک <b>لیگ ورزشی</b> مدل‌سازی می‌کند:
+    هر <b>شعبه</b> یک <b>تیم</b> است، هر <b>فروشنده</b> یک بازیکن، و عملکرد فروش بر پایه سه سنجه
+    <b>Score</b>، <b>Points</b> و <b>Credits</b> در سه بازه <b>ماهانه، فصلی و سالانه</b> سنجیده و پاداش داده می‌شود.
+    هدف، ایجاد شفافیت، رقابت سالم، انگیزه مستمر و پیوند مستقیم پاداش با تحقق برنامه عملیاتی سالانه (AOP) است.
+  </p>
+
+  <h4>اهداف کسب‌وکار</h4>
+  <ul>
+    <li>افزایش نرخ تحقق AOP و پوشش مشتریان (Coverage) در سطح شعبه و فروشنده.</li>
+    <li>شفاف‌سازی کامل رتبه‌بندی و مسیر پاداش برای تمام سطوح سازمان.</li>
+    <li>ایجاد مکانیزم صعود/سقوط لیگ برای حفظ پویایی و انگیزه تیم‌های ضعیف‌تر.</li>
+    <li>کاهش بار گزارش‌گیری دستی با اتوماسیون ETL و داشبوردهای Drill-down.</li>
+    <li>تمرکز فروش روی SKUهای هدف از طریق پاداش ماهانه مبتنی بر وزن فروش SKU.</li>
+  </ul>
+
+  <h4>دامنه (In Scope)</h4>
+  <ul>
+    <li>احراز هویت با شماره موبایل و OTP و چهار نقش کاربری.</li>
+    <li>فرآیند ETL ورود داده (اتصال به API یا بارگذاری دستی فایل) برای AOP و نتایج هفتگی.</li>
+    <li>موتور محاسبه امتیاز، رتبه‌بندی لیگ‌ها، پاداش‌ها و گزارش‌های Drill-down.</li>
+    <li>داشبوردهای چهار نقش کاربری مطابق پروتوتایپ مرجع.</li>
+  </ul>
+
+  <h4>خارج از دامنه (Out of Scope — فاز اول)</h4>
+  <ul>
+    <li>پرداخت واقعی وجه و اتصال به سیستم مالی/حقوق و دستمزد (خروجی به‌صورت فایل و API تحویل داده می‌شود).</li>
+    <li>اپلیکیشن موبایل نیتیو (فاز اول وب‌اپ Responsive است).</li>
+    <li>مدیریت انبار، سفارش‌گیری و فرآیندهای عملیاتی فروش.</li>
+  </ul>
+
+  <!-- ================= CHAPTER 1 ================= -->
+  <h2 class="chapter chapter-break" id="ch1">فصل اول: روایت‌های کاربری (User Stories)</h2>
+
+  <p>
+    این فصل رفتار سیستم از دید چهار نقش کاربری را تعریف می‌کند. تمام روایت‌ها بر پایه پروتوتایپ
+    <a href="https://hamidreza-mohammadiha.github.io/Sorbon/S3" target="_blank" rel="noopener">S3</a> نوشته شده‌اند.
+  </p>
+
+  <h3>۱-۱. احراز هویت و ورود به سامانه</h3>
+
+  <div class="story">
+    <div class="card-head">
+      <span class="tag">US-01</span>
+      <span class="card-title">ورود با شماره موبایل و رمز یک‌بارمصرف (OTP)</span>
+    </div>
+    <p class="text">
+      <b>به عنوان</b> یک کاربر سامانه (هر چهار نقش)،
+      <b>می‌خواهم</b> با وارد کردن شماره موبایل و کد OTP دریافت‌شده وارد شوم،
+      <b>تا</b> بدون نیاز به رمز عبور پیچیده و با اطمینان از هویت، به داشبورد خود دسترسی پیدا کنم.
+    </p>
+    <ul class="crit">
+      <li>ورودی تنها «شماره موبایل» است؛ اعتبارسنجی فرمت شماره ایرانی (۱۱ رقم، شروع با ۰۹).</li>
+      <li>ارسال کد ۵ یا ۶ رقمی با اعتبار محدود (پیشنهاد: ۲ دقیقه) و امکان ارسال مجدد پس از شمارش معکوس.</li>
+      <li>محدودیت نرخ ارسال (Rate Limit) و قفل موقت پس از تلاش‌های ناموفق متوالی برای جلوگیری از سوءاستفاده.</li>
+      <li>در صورت نامعتبر بودن شماره یا غیرفعال بودن کاربر، پیام خطای شفاف نمایش داده شود.</li>
+      <li>پس از ورود موفق، کاربر بر اساس نقش خود به داشبورد پیش‌فرض همان نقش هدایت شود.</li>
+      <li>نشست کاربر با توکن امن نگه‌داری شده و خروج (Logout) در همه صفحات در دسترس باشد.</li>
+    </ul>
+  </div>
+
+  <h3>۱-۲. نقش‌های کاربری و ماتریس دسترسی</h3>
+
+  <table class="data">
+    <caption>ماتریس دسترسی نقش‌ها به قابلیت‌های اصلی</caption>
+    <thead>
+      <tr>
+        <th>قابلیت</th>
+        <th>Admin<br><span style="font-weight:400;font-size:9pt">ادمین</span></th>
+        <th>Business Manager<br><span style="font-weight:400;font-size:9pt">مدیر کسب‌وکار</span></th>
+        <th>Sales Manager<br><span style="font-weight:400;font-size:9pt">مدیر فروش</span></th>
+        <th>Branch Member<br><span style="font-weight:400;font-size:9pt">عضو شعبه</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="r">اجرای فرآیند ETL (اتصال API / بارگذاری دستی)</td>
+        <td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td>
+      </tr>
+      <tr>
+        <td class="r">مدیریت کاربران و تخصیص نقش</td>
+        <td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td>
+      </tr>
+      <tr>
+        <td class="r">تنظیم پارامترهای گیمیفیکیشن (α، β، γ، وزن SKU)</td>
+        <td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td>
+      </tr>
+      <tr>
+        <td class="r">مشاهده نتایج کل لیگ‌ها (A و B)</td>
+        <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+      </tr>
+      <tr>
+        <td class="r">Drill-down به داشبورد مدیران فروش</td>
+        <td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td>
+      </tr>
+      <tr>
+        <td class="r">مشاهده رکورد فردی اعضای شعبه</td>
+        <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+      </tr>
+      <tr>
+        <td class="r">دامنه مشاهده رکورد فردی</td>
+        <td>همه شعبه‌ها</td>
+        <td>همه شعبه‌ها</td>
+        <td>شعبه‌های تحت مدیریت</td>
+        <td>فقط شعبه خود</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>۱-۳. روایت‌های کاربری — ادمین (Admin)</h3>
+
+  <div class="story">
+    <div class="card-head">
+      <span class="tag gray">US-02</span>
+      <span class="card-title">بارگذاری داده از طریق اتصال به API</span>
+    </div>
+    <p class="text">
+      <b>به عنوان</b> ادمین،
+      <b>می‌خواهم</b> منابع داده‌ای سازمان را از طریق اتصال به API پیکربندی و اجرا کنم،
+      <b>تا</b> داده‌های AOP و نتایج هفتگی به‌صورت خودکار و دوره‌ای وارد سامانه شوند.
+    </p>
+    <ul class="crit">
+      <li>تعریف یک «منبع داده» شامل آدرس Endpoint، روش احراز هویت (API Key / OAuth) و نگاشت فیلدها.</li>
+      <li>امکان تعیین زمان‌بندی اجرای خودکار (مثلاً هفتگی) و امکان اجرای دستی (Run Now).</li>
+      <li>نمایش وضعیت آخرین اجرا: موفق / ناموفق، زمان، تعداد رکورد ورودی و پیام خطا.</li>
+      <li>عدم موفقیت در یک اجرا نباید داده‌های معتبر قبلی را از بین ببرد (Idempotency).</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="card-head">
+      <span class="tag gray">US-03</span>
+      <span class="card-title">بارگذاری دستی فایل داده</span>
+    </div>
+    <p class="text">
+      <b>به عنوان</b> ادمین،
+      <b>می‌خواهم</b> فایل داده (Excel/CSV) مربوط به AOP یا نتایج هفتگی را به‌صورت دستی بارگذاری کنم،
+      <b>تا</b> در صورت نبود اتصال API یا نیاز به اصلاح، داده‌ها را وارد یا به‌روزرسانی کنم.
+    </p>
+    <ul class="crit">
+      <li>انتخاب نوع داده (AOP / نتایج هفتگی) پیش از بارگذاری.</li>
+      <li>اعتبارسنجی ساختار فایل (ستون‌های اجباری، نوع داده، بازه تاریخ) و نمایش پیش‌نمایش پیش از تأیید نهایی.</li>
+      <li>گزارش خطای سطر‌به‌سطر برای رکوردهای نامعتبر و امکان دانلود فایل خطاها.</li>
+      <li>ثبت لاگ کامل عملیات (کاربر، زمان، فایل، تعداد رکورد موفق/ناموفق) برای رهگیری.</li>
+      <li>پس از تأیید، موتور محاسبه امتیاز به‌صورت خودکار بازمحاسبه (Recompute) شود.</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="card-head">
+      <span class="tag gray">US-04</span>
+      <span class="card-title">مدیریت پارامترها و کاربران</span>
+    </div>
+    <p class="text">
+      <b>به عنوان</b> ادمین،
+      <b>می‌خواهم</b> پارامترهای مدل گیمیفیکیشن و کاربران سامانه را مدیریت کنم،
+      <b>تا</b> قواعد بازی با سیاست‌های سازمان هم‌راستا بماند.
+    </p>
+    <ul class="crit">
+      <li>تعریف و ویرایش ضرایب <code>α</code>، <code>β</code>، <code>γ</code>، وزن SKUهای هدف و بازه‌های فصلی.</li>
+      <li>تغییر پارامترها باید نسخه‌بندی شده و فقط از دوره بعدی اعمال شود (عدم تغییر گذشته).</li>
+      <li>ایجاد/ویرایش/غیرفعال‌سازی کاربر و تخصیص نقش و دامنه دسترسی (شعبه/شعبه‌های تحت مدیریت).</li>
+    </ul>
+  </div>
+
+  <h3>۱-۴. روایت‌های کاربری — مدیر کسب‌وکار (Business Manager)</h3>
+
+  <div class="story">
+    <div class="card-head">
+      <span class="tag">US-05</span>
+      <span class="card-title">دید کلان و Drill-down کامل سازمان</span>
+    </div>
+    <p class="text">
+      <b>به عنوان</b> مدیر کسب‌وکار،
+      <b>می‌خواهم</b> نتایج کل لیگ‌ها را ببینم و از سطح کلان به داشبورد مدیران فروش و سپس رکورد فردی اعضای شعبه نفوذ کنم،
+      <b>تا</b> تصویر کاملی از عملکرد کل شبکه فروش داشته باشم.
+    </p>
+    <ul class="crit">
+      <li>صفحه نخست: جدول رتبه‌بندی هر دو لیگ A و B با امتیاز، رتبه و روند تغییر رتبه.</li>
+      <li>امکان فیلتر بر اساس فصل، ماه، لیگ، منطقه و مدیر فروش.</li>
+      <li>کلیک روی هر تیم/شعبه → داشبورد مدیر فروش مربوطه → لیست اعضا → پروفایل فردی فروشنده.</li>
+      <li>مسیر ناوبری (Breadcrumb) و امکان بازگشت به هر سطح از سلسله‌مراتب.</li>
+      <li>مشاهده معیارهای کلیدی: Coverage%، درصد تحقق AOP، رشد تحقق AOP، امتیاز، Points و Credits.</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="card-head">
+      <span class="tag">US-06</span>
+      <span class="card-title">تحلیل مقایسه‌ای و گزارش خروجی</span>
+    </div>
+    <p class="text">
+      <b>به عنوان</b> مدیر کسب‌وکار،
+      <b>می‌خواهم</b> عملکرد شعبه‌ها و مدیران فروش را با یکدیگر مقایسه کنم و گزارش بگیرم،
+      <b>تا</b> برای جلسات بازبینی عملکرد تصمیم‌گیری کنم.
+    </p>
+    <ul class="crit">
+      <li>نمایش شاخص‌های عملکردی به‌صورت نمودار و جدول در بازه‌های ماهانه/فصلی/سالانه.</li>
+      <li>امکان خروجی گرفتن از جداول و نمودارها (حداقل PDF و Excel).</li>
+      <li>نمایش پیش‌بینی رتبه پایان فصل بر اساس روند فعلی (Nice-to-have).</li>
+    </ul>
+  </div>
+
+  <h3>۱-۵. روایت‌های کاربری — مدیر فروش (Sales Manager)</h3>
+
+  <div class="story">
+    <div class="card-head">
+      <span class="tag">US-07</span>
+      <span class="card-title">داشبورد عملکرد شعبه‌های تحت مدیریت</span>
+    </div>
+    <p class="text">
+      <b>به عنوان</b> مدیر فروش،
+      <b>می‌خواهم</b> نتایج لیگ را فقط در محدوده شعبه‌های تحت مدیریت خود ببینم و به رکورد فردی اعضا نفوذ کنم،
+      <b>تا</b> تیم خود را دقیق پایش و هدایت کنم.
+    </p>
+    <ul class="crit">
+      <li>نمایش لیست شعبه‌های تحت مدیریت با رتبه، امتیاز و وضعیت صعود/سقوط.</li>
+      <li>Drill-down به لیست اعضای هر شعبه و سپس پروفایل فردی هر فروشنده.</li>
+      <li>مشاهده امتیاز میانگین تیم و تأثیر آن بر رتبه لیگ.</li>
+      <li>عدم دسترسی به داده‌های شعبه‌های خارج از دامنه مدیریت (کنترل دسترسی در سطح رکورد).</li>
+      <li>نمایش فاصله امتیازی تا رتبه بعدی و تا منطقه صعود (برای شعبه‌های لیگ B) یا منطقه سقوط (برای لیگ A).</li>
+    </ul>
+  </div>
+
+  <h3>۱-۶. روایت‌های کاربری — اعضای شعبه (Branch Members)</h3>
+
+  <div class="story">
+    <div class="card-head">
+      <span class="tag">US-08</span>
+      <span class="card-title">مشاهده نتایج لیگ و رکورد فردی شعبه</span>
+    </div>
+    <p class="text">
+      <b>به عنوان</b> عضو شعبه (فروشنده)،
+      <b>می‌خواهم</b> نتایج کلی لیگ‌ها و رکورد فردی خودم و هم‌تیمی‌هایم را ببینم،
+      <b>تا</b> از جایگاه خود و مسیر رسیدن به پاداش مطلع باشم.
+    </p>
+    <ul class="crit">
+      <li>نمایش نتایج کلی هر دو لیگ A و B (بدون امکان نفوذ به داده‌های سایر شعبه‌ها).</li>
+      <li>نمایش رکورد فردی همه اعضای شعبه خود، شامل Score، Points، Credits و رتبه درون‌شعبه.</li>
+      <li>نمایش پروفایل شخصی: روند ماهانه امتیاز، پاداش‌های کسب‌شده و وضعیت در رقابت ماهانه SKU.</li>
+      <li>نمایش شفاف فرمول‌ها و ضرایب به زبان ساده تا کاربر بداند چگونه امتیاز می‌گیرد.</li>
+      <li>رابط کاربری موبایل‌محور (چون اکثر فروشندگان با موبایل مراجعه می‌کنند).</li>
+    </ul>
+  </div>
+
+  <!-- ================= CHAPTER 2 ================= -->
+  <h2 class="chapter chapter-break" id="ch2">فصل دوم: مدل گیمیفیکیشن (Gamification Model)</h2>
+
+  <p>
+    مدل گیمیفیکیشن بر پایه یک استعاره ورزشی بنا شده است: <b>شعبه = تیم</b>، <b>فروشنده = بازیکن</b>،
+    و عملکرد در قالب <b>لیگ</b> سنجیده می‌شود. این مدل سه سنجه پایه و سه لایه پاداش دارد.
+  </p>
+
+  <h3>۲-۱. ساختار لیگ و تیم‌ها</h3>
+
+  <table class="data">
+    <caption>ساختار پایه لیگ‌ها</caption>
+    <thead>
+      <tr>
+        <th>مفهوم</th>
+        <th>تعریف</th>
+        <th>مقدار / قاعده</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="r">تیم (Team)</td>
+        <td class="r">هر شعبه یک تیم مستقل است</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="r">تعداد کل تیم‌ها</td>
+        <td class="r">۱۴ شعبه</td>
+        <td>۷ تیم در لیگ A و ۷ تیم در لیگ B</td>
+      </tr>
+      <tr>
+        <td class="r">لیگ A</td>
+        <td class="r">لیگ برتر؛ تیم‌های با عملکرد بالاتر</td>
+        <td>ضریب پاداش بالاتر (γ)</td>
+      </tr>
+      <tr>
+        <td class="r">لیگ B</td>
+        <td class="r">لیگ پایین‌تر؛ تیم‌های در حال رشد</td>
+        <td>ضریب پاداش <code>γ / α</code></td>
+      </tr>
+      <tr>
+        <td class="r">ضریب α</td>
+        <td class="r">ضریب تعدیل بین دو لیگ</td>
+        <td><code>1 &lt; α &lt; 2</code></td>
+      </tr>
+      <tr>
+        <td class="r">ضریب β</td>
+        <td class="r">ضریب پاداش مدیران فروش نسبت به فروشندگان</td>
+        <td><code>1 &lt; β &lt; 2</code></td>
+      </tr>
+      <tr>
+        <td class="r">ضریب γ</td>
+        <td class="r">ضریب مقیاس پاداش پایه لیگ</td>
+        <td>پارامتر قابل تنظیم توسط ادمین</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>۲-۲. سنجه‌ها و فرمول‌های ارزیابی</h3>
+
+  <p>هر فروشنده در هر بازه ارزیابی، سه سنجه زیر را کسب می‌کند:</p>
+
+  <div class="formula">
+    <span class="lbl">فرمول ۱ — امتیاز (Score) : مبنای پاداش فصلی</span>
+    Score = ( Coverage% + Dedicated AOP portion realization% + AOP realization growth% ) / 2
+  </div>
+
+  <div class="formula">
+    <span class="lbl">فرمول ۲ — Points : مبنای جوایز ماهانه</span>
+    Points = Number of monthly SKU sold
+  </div>
+
+  <div class="formula">
+    <span class="lbl">فرمول ۳ — Credits : مبنای قرعه‌کشی سالانه</span>
+    Credits = Score × Points
+  </div>
+
+  <table class="data">
+    <caption>نگاشت سنجه‌ها به لایه‌های پاداش</caption>
+    <thead>
+      <tr>
+        <th>سنجه</th>
+        <th>تعریف</th>
+        <th>کاربرد در پاداش</th>
+        <th>دوره زمانی</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="pos">Score</td>
+        <td class="r">ترکیب پوشش، تحقق سهم AOP و رشد تحقق AOP</td>
+        <td class="r">رتبه‌بندی و پاداش‌های فصلی لیگ</td>
+        <td>فصلی (۳ ماهه)</td>
+      </tr>
+      <tr>
+        <td class="pos">Points</td>
+        <td class="r">تعداد SKU فروخته‌شده در ماه</td>
+        <td class="r">جایزه بهترین فروشنده ماه هر تیم</td>
+        <td>ماهانه</td>
+      </tr>
+      <tr>
+        <td class="pos">Credits</td>
+        <td class="r">حاصل‌ضرب Score در Points</td>
+        <td class="r">شانس در قرعه‌کشی/جایزه سالانه</td>
+        <td>سالانه</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>نکته بازبینی:</strong> در فرمول ۱، صورت کسر شامل سه مؤلفه است اما مخرج <code>2</code> در نظر گرفته شده است.
+    پیشنهاد می‌شود پیش از پیاده‌سازی نهایی، مخرج کسر (۲ یا ۳) و وزن هر مؤلفه توسط تیم کسب‌وکار تأیید و مستند شود.
+    همچنین لازم است مشخص شود <code>Coverage%</code> و درصدهای تحقق، در مقیاس ۰ تا ۱۰۰ یا ۰ تا ۱ وارد فرمول می‌شوند.
+  </div>
+
+  <h3>۲-۳. لایه‌های پاداش</h3>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="tag gold">لایه ۱</span>
+      <span class="card-title">پاداش سالانه — قرعه‌کشی / Raffle</span>
+    </div>
+    <ul>
+      <li>مبنا: <b>Credits</b> جمع‌آوری‌شده توسط هر فرد در طول سال.</li>
+      <li>هر Credit یک شانس (شانس ورود به قرعه‌کشی) برای فرد ایجاد می‌کند.</li>
+      <li>قرعه‌کشی در پایان سال و میان تمامی افراد واجد شرایط انجام می‌شود.</li>
+      <li>شفافیت کامل لیست جوایز، تعداد شانس هر فرد و نتیجه قرعه‌کشی الزامی است.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="tag">لایه ۲</span>
+      <span class="card-title">پاداش فصلی — لیگ و پاداش نقدی</span>
+    </div>
+    <ul>
+      <li>دوره: هر فصل معادل ۳ ماه.</li>
+      <li>مبنا: <b>Score</b> و رتبه تیم در جدول لیگ.</li>
+      <li>پاداش نقدی به <b>تمام تیم‌های هر لیگ</b> تعلق می‌گیرد؛ مبلغ بر اساس رتبه و ضریب لیگ تعیین می‌شود.</li>
+      <li>رتبه یکسان در لیگ B به اندازه <code>1/α</code> رتبه همان موقعیت در لیگ A ارزش دارد (α بین ۱ و ۲).</li>
+      <li>در پایان هر فصل، ۳ تیم برتر لیگ B به لیگ A صعود و ۳ تیم آخر لیگ A به لیگ B سقوط می‌کنند.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="tag green">لایه ۳</span>
+      <span class="card-title">پاداش ماهانه — بهترین فروشنده هر تیم</span>
+    </div>
+    <ul>
+      <li>دوره: ماهانه.</li>
+      <li>مبنا: <b>Points</b> یعنی تعداد SKU فروخته‌شده از SKUهای هدف.</li>
+      <li>برنده: بهترین فروشنده در هر تیم (شعبه) — یعنی ۱۴ برنده در هر ماه.</li>
+      <li>ارزش جایزه بر اساس <b>وزن فروش هدف SKU انتخاب‌شده</b> تعیین می‌شود؛ SKU هدف هر ماه توسط ادمین انتخاب و وزن‌دهی می‌شود.</li>
+      <li>در صورت تساوی Points، معیارهای تکمیلی (مثلاً Score بالاتر) تعیین‌کننده است.</li>
+    </ul>
+  </div>
+
+  <h3>۲-۴. پارامترهای پاداش لیگ‌ها</h3>
+
+  <table class="data">
+    <caption>ضریب پاداش بر اساس رتبه در هر لیگ (γ = ضریب پایه، α = ضریب تعدیل لیگ)</caption>
+    <thead>
+      <tr>
+        <th>رتبه پایانی</th>
+        <th>ضریب پاداش لیگ A</th>
+        <th>ضریب پاداش لیگ B</th>
+        <th>نسبت B به A</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="pos">۱</td><td>1.0 γ</td><td>1.0 γ / α</td><td>1 / α</td></tr>
+      <tr><td class="pos">۲</td><td>0.8 γ</td><td>0.8 γ / α</td><td>1 / α</td></tr>
+      <tr><td class="pos">۳</td><td>0.6 γ</td><td>0.6 γ / α</td><td>1 / α</td></tr>
+      <tr><td class="pos">۴</td><td>0.5 γ</td><td>0.5 γ / α</td><td>1 / α</td></tr>
+      <tr><td class="pos">۵</td><td>0.4 γ</td><td>0.4 γ / α</td><td>1 / α</td></tr>
+      <tr><td class="pos">۶</td><td>0.3 γ</td><td>0.3 γ / α</td><td>1 / α</td></tr>
+      <tr><td class="pos">۷</td><td>0.2 γ</td><td>0.2 γ / α</td><td>1 / α</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule">
+    <strong>قاعده صعود و سقوط:</strong>
+    ۳ تیم برتر لیگ B در پایان فصل به لیگ A صعود می‌کنند و ۳ تیم آخر لیگ A به لیگ B سقوط می‌کنند.
+    در نتیجه ترکیب هر لیگ برای فصل بعد به‌روزرسانی می‌شود و ضریب پاداش تیم‌ها بر اساس لیگ جدیدشان محاسبه خواهد شد.
+  </div>
+
+  <h3>۲-۵. پاداش مدیران فروش</h3>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="tag">قاعده</span>
+      <span class="card-title">رکورد مدیر فروش = میانگین عملکرد تیم تحت مدیریت</span>
+    </div>
+    <ul>
+      <li>سنجه‌های مدیر فروش (Score، Points و Credits) به‌صورت <b>میانگین</b> همان سنجه‌ها در میان اعضای تحت مدیریت او محاسبه می‌شود.</li>
+      <li>الگوی پاداش مدیر فروش، همان الگوی فروشندگان است اما با ضریب <code>β</code> که در بازه <code>1 &lt; β &lt; 2</code> قرار دارد.</li>
+      <li>یعنی پاداش مدیر فروش = پاداش متناظر در الگوی فروشنده × β.</li>
+    </ul>
+  </div>
+
+  <div class="formula">
+    <span class="lbl">فرمول ۴ — سنجه‌های مدیر فروش</span>
+    Score<sub>SM</sub> = AVG( Score<sub>members</sub> ) &nbsp;&nbsp;|&nbsp;&nbsp;
+    Points<sub>SM</sub> = AVG( Points<sub>members</sub> ) &nbsp;&nbsp;|&nbsp;&nbsp;
+    Credits<sub>SM</sub> = AVG( Credits<sub>members</sub> )
+  </div>
+
+  <div class="formula">
+    <span class="lbl">فرمول ۵ — پاداش مدیر فروش</span>
+    Reward<sub>SM</sub> = β × Reward<sub>seller pattern</sub> &nbsp;&nbsp;&nbsp;( 1 &lt; β &lt; 2 )
+  </div>
+
+  <h3>۲-۶. چرخه محاسبه و بازمحاسبه</h3>
+  <ol>
+    <li><b>ورود داده:</b> اجرای ETL هفتگی برای AOP و نتایج فروش (API یا بارگذاری دستی).</li>
+    <li><b>محاسبه سنجه‌ها:</b> محاسبه Coverage%، درصد تحقق سهم AOP و رشد تحقق AOP برای هر فروشنده.</li>
+    <li><b>تولید Score / Points / Credits:</b> بر اساس فرمول‌های ۱ تا ۳.</li>
+    <li><b>تجمیع:</b> میانگین‌گیری برای مدیران فروش و مجموع/میانگین برای تیم‌ها.</li>
+    <li><b>رتبه‌بندی:</b> مرتب‌سازی تیم‌ها در لیگ A و B و تعیین برندگان ماهانه.</li>
+    <li><b>تخصیص پاداش:</b> اعمال ضرایب γ، α و β و تولید گزارش‌های پاداش.</li>
+    <li><b>بازبینی و قفل دوره:</b> پس از تأیید ادمین، دوره «قفل» می‌شود و تغییرات فقط با ثبت لاگ و مجوز ویژه امکان‌پذیر است.</li>
+  </ol>
+
+  <!-- ================= NFR ================= -->
+  <h2 class="chapter" id="nfr">۳. نیازمندی‌های غیرکارکردی</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>دسته</th>
+        <th>نیازمندی</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="pos">امنیت</td>
+        <td class="r">احراز هویت مبتنی بر OTP، محدودیت نرخ ارسال، انقضای کد، کنترل دسترسی مبتنی بر نقش و دامنه (RBAC + Row-Level Access).</td>
+      </tr>
+      <tr>
+        <td class="pos">یکپارچگی داده</td>
+        <td class="r">جلوگیری از ورود داده تکراری، ثبت لاگ کامل ETL، امکان بازگردانی (Rollback) بارگذاری ناموفق.</td>
+      </tr>
+      <tr>
+        <td class="pos">کارایی</td>
+        <td class="r">بارگذاری داشبوردهای لیگ در کمتر از ۳ ثانیه برای داده یک فصل کامل.</td>
+      </tr>
+      <tr>
+        <td class="pos">قابلیت ردیابی</td>
+        <td class="r">ثبت Audit Log برای تغییر پارامترها، ورود داده، قفل دوره و تغییر نقش‌ها.</td>
+      </tr>
+      <tr>
+        <td class="pos">رابط کاربری</td>
+        <td class="r">فارسی و راست‌به‌چپ، واکنش‌گرا (Mobile-First)، نمایش اعداد فارسی و تاریخ شمسی.</td>
+      </tr>
+      <tr>
+        <td class="pos">قابلیت چاپ</td>
+        <td class="r">تمام صفحات گزارش باید خروجی چاپی و PDF خوانا تولید کنند.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ================= OPEN ================= -->
+  <h2 class="chapter" id="open">۴. فرضیات، وابستگی‌ها و سوالات باز</h2>
+
+  <h4>فرضیات</h4>
+  <ul>
+    <li>تعداد ۱۴ شعبه و توزیع ۷+۷ بین دو لیگ در شروع کار ثابت است.</li>
+    <li>داده AOP در سطح فروشنده، شعبه و SKU قابل تفکیک است.</li>
+    <li>نتایج فروش به‌صورت هفتگی در دسترس قرار می‌گیرد.</li>
+  </ul>
+
+  <h4>وابستگی‌ها</h4>
+  <ul>
+    <li>دسترسی به API سیستم فروش/توزیع یا فایل‌های استاندارد گزارش فروش.</li>
+    <li>تأیید سیاست پاداش توسط واحد مالی و منابع انسانی.</li>
+    <li>سرویس‌دهنده پیامک برای ارسال OTP.</li>
+  </ul>
+
+  <h4>سوالات باز</h4>
+  <ol>
+    <li>مخرج فرمول Score نهایی چند است (۲ یا ۳) و وزن هر یک از سه مؤلفه چقدر است؟</li>
+    <li>مقادیر اولیه و بازه دقیق α، β و γ توسط چه واحد و با چه مبنایی تعیین می‌شود؟</li>
+    <li>در صورت تغییر تعداد شعبه‌ها، قاعده توزیع بین لیگ‌ها چگونه بازتعریف می‌شود؟</li>
+    <li>معیار تفکیک در حالت تساوی رتبه تیم‌ها چیست (Score، Points، تفاضل رشد AOP)؟</li>
+    <li>آیا اعضای جدید در میانه فصل، سابقه عملکرد قبلی خود را حمل می‌کنند؟</li>
+    <li>رفتار سیستم در دوره‌های ناقص داده (مثلاً ماه بدون داده کامل) چگونه است؟</li>
+    <li>پاداش مدیران فروش بر پایه میانگین ساده اعضا است یا میانگین وزن‌دار بر اساس سهم فروش هر عضو؟</li>
+  </ol>
+
+  <div class="doc-footer">
+    <span>Sorbon — PRD v1.0 (پیش‌نویس)</span>
+    <span>پروتوتایپ مرجع: S3</span>
+    <span>این سند محرمانه است و صرفاً برای استفاده داخلی سازمان تدوین شده است.</span>
+  </div>
+
+</div>
+
+</body>
+</html>
