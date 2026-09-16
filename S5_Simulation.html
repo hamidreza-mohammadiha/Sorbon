@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sorbon Sales Club — Reward Budget Simulation</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#111827; --soft:#eef0f3; --ok:#166534; --warn:#9a3412;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+  h1{font-size:30px;line-height:1.15;margin:0 0 8px}
+  .sub{color:var(--muted);font-size:14px;max-width:850px;line-height:1.55}
+  .badge{padding:8px 11px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:12px;white-space:nowrap}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .settings{grid-column:span 12}
+  .kpis{grid-column:span 12;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .kpi{padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff}
+  .kpi .v{font-size:26px;font-weight:750;letter-spacing:-.02em}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:4px}
+  .chart-card{grid-column:span 6}
+  .wide{grid-column:span 12}
+  .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:12px;margin-top:10px}
+  label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}
+  input,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:inherit}
+  input[readonly]{background:#f9fafb;color:#4b5563}
+  button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:650;cursor:pointer}
+  button.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .runbar{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-top:14px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5}
+  .tiny{font-size:11px;color:var(--muted)}
+  canvas{width:100%;height:320px;display:block}
+  .chart-title{font-size:15px;font-weight:700;margin-bottom:2px}
+  .chart-sub{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .table-wrap{overflow:auto}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  th{font-size:11px;color:var(--muted);font-weight:650;background:#fafafa;position:sticky;top:0}
+  tr.active{background:#f3f4f6}
+  .scenario-buttons{display:flex;gap:7px;flex-wrap:wrap}
+  .scenario-buttons button{background:#fff;color:var(--ink);border:1px solid var(--line);padding:8px 10px}
+  .scenario-buttons button.active{background:var(--ink);color:#fff}
+  .rulebox{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+  .rule{background:#fafafa;border:1px solid var(--line);border-radius:12px;padding:11px}
+  .rule b{display:block;font-size:13px;margin-bottom:3px}
+  .rule span{font-size:11px;color:var(--muted);line-height:1.35}
+  .foot{margin-top:16px;font-size:11px;color:var(--muted);line-height:1.55}
+  @media(max-width:900px){
+    .inputs{grid-template-columns:repeat(2,1fr)}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .chart-card{grid-column:span 12}
+    .rulebox{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:560px){
+    .top{display:block}.badge{display:inline-block;margin-top:10px}
+    .inputs,.kpis,.rulebox{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Sales Club Reward Budget Simulation</h1>
+      <div class="sub">
+        Monte Carlo experiment for the 14-team Sorbon Sales Club. Each scenario fixes the <b>annual total Realized AOP</b>,
+        then randomly distributes that performance across months, teams, and members to estimate the cash needed at month-end,
+        season-end, and year-end.
+      </div>
+    </div>
+    <div class="badge">Settling point: 102% AOP</div>
+  </div>
+
+  <div class="grid">
+    <section class="card settings">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="chart-title">Fixed experiment settings</div>
+          <div class="chart-sub">All monetary values use your MT notation.</div>
+        </div>
+        <button id="runBtn">Run simulation</button>
+      </div>
+
+      <div class="inputs">
+        <div><label>Eligibility threshold</label><input id="threshold" type="number" value="88" step="0.1"></div>
+        <div><label>α — League A premium</label><input id="alpha" type="number" value="1.5" step="0.1"></div>
+        <div><label>β — Manager multiplier</label><input id="beta" type="number" value="1.5" step="0.1"></div>
+        <div><label>Monthly seller reward (MT)</label><input id="monthlyReward" type="number" value="50"></div>
+        <div><label>Seasonal γ (MT)</label><input id="gamma" type="number" value="400"></div>
+        <div><label>Monte Carlo runs / scenario</label><input id="runs" type="number" value="2500" min="200" max="20000" step="100"></div>
+
+        <div><label>League A annual top prize (MT)</label><input id="annualA" type="number" value="1000"></div>
+        <div><label>League B annual top prize (MT)</label><input id="annualB" type="number" value="500"></div>
+        <div><label>Monthly randomness σ</label><input id="sigma" type="number" value="0.18" min="0.01" max="0.8" step="0.01"></div>
+        <div><label>Teams</label><input value="14 = 7 A + 7 B" readonly></div>
+        <div><label>Members / team</label><input value="Uniform {2, 3, 4, 5}" readonly></div>
+        <div><label>Final draw pool (MT)</label><input value="5,500" readonly></div>
+      </div>
+
+      <div class="rulebox">
+        <div class="rule"><b>Monthly</b><span>Each eligible team pays 50 MT to its best seller + β×50 MT to the manager.</span></div>
+        <div class="rule"><b>Seasonal</b><span>Teams are ranked inside each league. League A uses γ×rank factor; League B divides that reward by α.</span></div>
+        <div class="rule"><b>Annual</b><span>If total annual AOP ≥ 88%, fund League A champion 1,000 MT, League B champion 500 MT, and the 5,500 MT draw pool.</span></div>
+        <div class="rule"><b>Randomization</b><span>Monthly/member outcomes vary randomly, but each run is rescaled so its annual total exactly matches the selected scenario.</span></div>
+      </div>
+
+      <div class="runbar">
+        <div>
+          <div class="tiny">Scenarios</div>
+          <div id="scenarioButtons" class="scenario-buttons"></div>
+        </div>
+        <div class="note" style="max-width:460px">
+          The 88% gate is modeled explicitly because the requested scenarios bracket it at 87.9% and 88.1%.
+          Change the threshold above if your final business rule differs.
+        </div>
+      </div>
+    </section>
+
+    <section class="kpis">
+      <div class="kpi"><div id="kpiMean" class="v">—</div><div class="l">Mean annual cash need</div></div>
+      <div class="kpi"><div id="kpiP95" class="v">—</div><div class="l">P95 annual cash reserve</div></div>
+      <div class="kpi"><div id="kpiMonth" class="v">—</div><div class="l">Average month-end payout</div></div>
+      <div class="kpi"><div id="kpiYearEnd" class="v">—</div><div class="l">Year-end fixed payout</div></div>
+    </section>
+
+    <section class="card wide">
+      <div class="chart-title">Annual budget needed by AOP scenario</div>
+      <div class="chart-sub">Mean expected payout versus P95 reserve requirement.</div>
+      <canvas id="budgetChart"></canvas>
+    </section>
+
+    <section class="card chart-card">
+      <div class="chart-title">Example monthly Realized AOP path</div>
+      <div class="chart-sub">One random run for the selected annual scenario; annual average is preserved exactly.</div>
+      <canvas id="aopChart"></canvas>
+    </section>
+
+    <section class="card chart-card">
+      <div class="chart-title">Cash due through the year</div>
+      <div class="chart-sub">Expected month-end cash need, including seasonal and year-end additions when due.</div>
+      <canvas id="timelineChart"></canvas>
+    </section>
+
+    <section class="card wide">
+      <div class="chart-title">Scenario summary</div>
+      <div class="chart-sub">Click a row to inspect its month-by-month cash schedule.</div>
+      <div class="table-wrap">
+        <table id="summaryTable">
+          <thead>
+            <tr>
+              <th>AOP scenario</th>
+              <th>Avg monthly payout</th>
+              <th>Avg season payout</th>
+              <th>Year-end payout</th>
+              <th>Mean annual total</th>
+              <th>P95 annual reserve</th>
+              <th>Monthly eligible teams</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card wide">
+      <div class="chart-title">Selected scenario — funding calendar</div>
+      <div class="chart-sub">Expected payment required at the end of each month. Quarter-end rows include seasonal rewards; December includes the annual prizes and draw.</div>
+      <div class="table-wrap">
+        <table id="calendarTable">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Mean monthly reward</th>
+              <th>Seasonal reward due</th>
+              <th>Annual reward due</th>
+              <th>Total cash due</th>
+              <th>Cumulative cash funded</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="foot">
+        Model note: manager reward is applied to the monthly seller prize because β is defined as “Sales Manager Reward = β × Seller Reward.”
+        Seasonal league rewards are treated as team rewards and are therefore not multiplied again by β.
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const SCENARIOS = [87.9, 88.1, 95, 100, 102, 111, 200];
+const COEFF = [1.0, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2];
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let results = {};
+let selectedScenario = 102;
+
+function fmt(x, d=0){
+  return Number(x).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}) + " MT";
+}
+function mulberry32(a){ return function(){ let t=a+=0x6D2B79F5; t=Math.imul(t^t>>>15,t|1); t^=t+Math.imul(t^t>>>7,t|61); return ((t^t>>>14)>>>0)/4294967296; } }
+function normal(rng){
+  let u=0,v=0; while(u===0)u=rng(); while(v===0)v=rng();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function percentile(arr,p){
+  const a=[...arr].sort((x,y)=>x-y); const i=(a.length-1)*p; const lo=Math.floor(i), hi=Math.ceil(i);
+  return a[lo] + (a[hi]-a[lo])*(i-lo);
+}
+function mean(arr){ return arr.reduce((a,b)=>a+b,0)/arr.length; }
+function params(){
+  return {
+    threshold:+document.getElementById("threshold").value,
+    alpha:+document.getElementById("alpha").value,
+    beta:+document.getElementById("beta").value,
+    monthlyReward:+document.getElementById("monthlyReward").value,
+    gamma:+document.getElementById("gamma").value,
+    annualA:+document.getElementById("annualA").value,
+    annualB:+document.getElementById("annualB").value,
+    sigma:+document.getElementById("sigma").value,
+    runs:Math.max(200,Math.min(20000,+document.getElementById("runs").value||2500))
+  };
+}
+function drawPool(){ return 100+200+300+400+500+600+700+800+900+1000; }
+
+function simulateOne(target, p, seed){
+  const rng=mulberry32(seed>>>0);
+  const sizes=Array.from({length:14},()=>2+Math.floor(rng()*4));
+  const raw=Array.from({length:14},(_,t)=>
+    Array.from({length:12},()=>Array.from({length:sizes[t]},()=>Math.exp(p.sigma*normal(rng))))
+  );
+  let sum=0,n=0;
+  for(let t=0;t<14;t++) for(let m=0;m<12;m++) for(const v of raw[t][m]){sum+=v;n++;}
+  const scale=target/(sum/n);
+
+  const tm=Array.from({length:14},()=>Array(12).fill(0));
+  const companyMonth=Array(12).fill(0);
+  for(let m=0;m<12;m++){
+    let s=0,c=0;
+    for(let t=0;t<14;t++){
+      const vals=raw[t][m].map(v=>v*scale);
+      tm[t][m]=mean(vals);
+      s+=vals.reduce((a,b)=>a+b,0); c+=vals.length;
+    }
+    companyMonth[m]=s/c;
+  }
+
+  const monthly=Array(12).fill(0);
+  const eligibleCount=Array(12).fill(0);
+  const teamMonthlyPrize=p.monthlyReward + p.beta*p.monthlyReward;
+  for(let m=0;m<12;m++){
+    for(let t=0;t<14;t++){
+      if(tm[t][m] >= p.threshold){
+        monthly[m]+=teamMonthlyPrize;
+        eligibleCount[m]++;
+      }
+    }
+  }
+
+  const seasonal=Array(4).fill(0);
+  for(let q=0;q<4;q++){
+    for(let league=0;league<2;league++){
+      const start=league===0?0:7;
+      const teams=[];
+      for(let j=0;j<7;j++){
+        const t=start+j;
+        const perf=(tm[t][q*3]+tm[t][q*3+1]+tm[t][q*3+2])/3;
+        teams.push({t,perf});
+      }
+      teams.sort((a,b)=>b.perf-a.perf);
+      teams.forEach((obj,rank)=>{
+        if(obj.perf>=p.threshold){
+          let reward=p.gamma*COEFF[rank];
+          if(league===1) reward/=p.alpha;
+          seasonal[q]+=reward;
+        }
+      });
+    }
+  }
+
+  const annualGate = target >= p.threshold;
+  const yearEnd = annualGate ? p.annualA + p.annualB + drawPool() : 0;
+  const total = monthly.reduce((a,b)=>a+b,0)+seasonal.reduce((a,b)=>a+b,0)+yearEnd;
+  return {sizes,tm,companyMonth,monthly,seasonal,yearEnd,total,eligibleCount};
+}
+
+function runScenario(target,p,index){
+  const totals=[], monthlySums=Array(12).fill(0), seasonalSums=Array(4).fill(0), eligibleSums=Array(12).fill(0);
+  let example=null;
+  for(let i=0;i<p.runs;i++){
+    const one=simulateOne(target,p, 1000003 + index*100000 + i*17);
+    if(i===0) example=one;
+    totals.push(one.total);
+    for(let m=0;m<12;m++){ monthlySums[m]+=one.monthly[m]; eligibleSums[m]+=one.eligibleCount[m]; }
+    for(let q=0;q<4;q++) seasonalSums[q]+=one.seasonal[q];
+  }
+  const monthMean=monthlySums.map(x=>x/p.runs);
+  const seasonMean=seasonalSums.map(x=>x/p.runs);
+  const eligMean=eligibleSums.map(x=>x/p.runs);
+  return {
+    target,
+    meanTotal:mean(totals),
+    p95:percentile(totals,.95),
+    avgMonth:mean(monthMean),
+    avgSeason:mean(seasonMean),
+    yearEnd:example.yearEnd,
+    monthly:monthMean,
+    seasonal:seasonMean,
+    avgEligible:mean(eligMean),
+    example
+  };
+}
+
+function runAll(){
+  const p=params();
+  results={};
+  SCENARIOS.forEach((s,i)=>results[s]=runScenario(s,p,i));
+  render();
+}
+
+function setupScenarioButtons(){
+  const box=document.getElementById("scenarioButtons");
+  box.innerHTML="";
+  SCENARIOS.forEach(s=>{
+    const b=document.createElement("button");
+    b.textContent=s+"%";
+    b.dataset.s=s;
+    b.onclick=()=>{selectedScenario=s; render();};
+    box.appendChild(b);
+  });
+}
+
+function render(){
+  if(!results[selectedScenario]) return;
+  document.querySelectorAll("#scenarioButtons button").forEach(b=>b.classList.toggle("active",+b.dataset.s===selectedScenario));
+  const r=results[selectedScenario];
+  document.getElementById("kpiMean").textContent=fmt(r.meanTotal);
+  document.getElementById("kpiP95").textContent=fmt(r.p95);
+  document.getElementById("kpiMonth").textContent=fmt(r.avgMonth);
+  document.getElementById("kpiYearEnd").textContent=fmt(r.yearEnd);
+
+  renderSummary();
+  renderCalendar(r);
+  drawBudgetChart();
+  drawAOPChart(r);
+  drawTimelineChart(r);
+}
+
+function renderSummary(){
+  const tb=document.querySelector("#summaryTable tbody"); tb.innerHTML="";
+  SCENARIOS.forEach(s=>{
+    const r=results[s], tr=document.createElement("tr");
+    tr.classList.toggle("active",s===selectedScenario);
+    tr.innerHTML=`<td><b>${s}%</b></td><td>${fmt(r.avgMonth,1)}</td><td>${fmt(r.avgSeason,1)}</td><td>${fmt(r.yearEnd)}</td><td><b>${fmt(r.meanTotal,1)}</b></td><td>${fmt(r.p95,1)}</td><td>${r.avgEligible.toFixed(1)} / 14</td>`;
+    tr.onclick=()=>{selectedScenario=s;render();};
+    tb.appendChild(tr);
+  });
+}
+
+function renderCalendar(r){
+  const tb=document.querySelector("#calendarTable tbody"); tb.innerHTML="";
+  let cum=0;
+  for(let m=0;m<12;m++){
+    const season=(m%3===2)?r.seasonal[Math.floor(m/3)]:0;
+    const annual=m===11?r.yearEnd:0;
+    const due=r.monthly[m]+season+annual; cum+=due;
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${MONTHS[m]}</td><td>${fmt(r.monthly[m],1)}</td><td>${fmt(season,1)}</td><td>${fmt(annual,1)}</td><td><b>${fmt(due,1)}</b></td><td>${fmt(cum,1)}</td>`;
+    tb.appendChild(tr);
+  }
+}
+
+function prepCanvas(id){
+  const c=document.getElementById(id), rect=c.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  c.width=Math.round(rect.width*dpr); c.height=Math.round(320*dpr);
+  const ctx=c.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); return {c,ctx,w:rect.width,h:320};
+}
+function axes(ctx,w,h,pad,yMax,yTicks=5){
+  ctx.clearRect(0,0,w,h);
+  ctx.font="11px system-ui"; ctx.fillStyle="#6b7280"; ctx.strokeStyle="#e5e7eb"; ctx.lineWidth=1;
+  for(let i=0;i<=yTicks;i++){
+    const y=pad.t+(h-pad.t-pad.b)*i/yTicks, val=yMax*(1-i/yTicks);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+    ctx.fillText(Math.round(val).toLocaleString(),6,y+4);
+  }
+}
+function drawBudgetChart(){
+  const {ctx,w,h}=prepCanvas("budgetChart"), pad={l:54,r:18,t:18,b:42};
+  const vals=SCENARIOS.map(s=>results[s]); const yMax=Math.max(...vals.map(r=>r.p95))*1.12;
+  axes(ctx,w,h,pad,yMax);
+  const plotW=w-pad.l-pad.r, groupW=plotW/SCENARIOS.length, bw=Math.min(28,groupW*.27);
+  vals.forEach((r,i)=>{
+    const x=pad.l+i*groupW+groupW/2, y1=pad.t+(h-pad.t-pad.b)*(1-r.meanTotal/yMax), y2=pad.t+(h-pad.t-pad.b)*(1-r.p95/yMax);
+    ctx.fillStyle="#111827"; ctx.fillRect(x-bw-2,y1,bw,h-pad.b-y1);
+    ctx.fillStyle="#9ca3af"; ctx.fillRect(x+2,y2,bw,h-pad.b-y2);
+    ctx.fillStyle="#374151"; ctx.textAlign="center"; ctx.fillText(r.target+"%",x,h-16);
+  });
+  ctx.textAlign="left";ctx.fillStyle="#111827";ctx.fillRect(w-160,10,10,10);ctx.fillStyle="#6b7280";ctx.fillText("Mean",w-145,19);
+  ctx.fillStyle="#9ca3af";ctx.fillRect(w-90,10,10,10);ctx.fillStyle="#6b7280";ctx.fillText("P95",w-75,19);
+}
+
+function drawAOPChart(r){
+  const {ctx,w,h}=prepCanvas("aopChart"), pad={l:50,r:16,t:18,b:42};
+  const p=params(), data=r.example.companyMonth;
+  const min=Math.min(...data,p.threshold)*.94, max=Math.max(...data,p.threshold)*1.06;
+  ctx.clearRect(0,0,w,h); ctx.font="11px system-ui"; ctx.strokeStyle="#e5e7eb";ctx.fillStyle="#6b7280";
+  for(let i=0;i<=4;i++){
+    const y=pad.t+(h-pad.t-pad.b)*i/4, val=max-(max-min)*i/4;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(val.toFixed(0)+"%",5,y+4);
+  }
+  const yThr=pad.t+(h-pad.t-pad.b)*(max-p.threshold)/(max-min);
+  ctx.setLineDash([5,5]);ctx.strokeStyle="#9ca3af";ctx.beginPath();ctx.moveTo(pad.l,yThr);ctx.lineTo(w-pad.r,yThr);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle="#6b7280";ctx.fillText("88% gate",pad.l+5,yThr-6);
+  const plotW=w-pad.l-pad.r;
+  ctx.strokeStyle="#111827";ctx.lineWidth=2;ctx.beginPath();
+  data.forEach((v,i)=>{
+    const x=pad.l+plotW*i/11, y=pad.t+(h-pad.t-pad.b)*(max-v)/(max-min);
+    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    ctx.fillStyle="#111827";
+  });ctx.stroke();
+  data.forEach((v,i)=>{
+    const x=pad.l+plotW*i/11, y=pad.t+(h-pad.t-pad.b)*(max-v)/(max-min);
+    ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#6b7280";ctx.textAlign="center";ctx.fillText(MONTHS[i],x,h-16);ctx.fillStyle="#111827";
+  });
+  ctx.textAlign="left";
+}
+
+function drawTimelineChart(r){
+  const {ctx,w,h}=prepCanvas("timelineChart"), pad={l:54,r:16,t:18,b:42};
+  const due=r.monthly.map((v,m)=>v+(m%3===2?r.seasonal[Math.floor(m/3)]:0)+(m===11?r.yearEnd:0));
+  const yMax=Math.max(...due)*1.12;
+  axes(ctx,w,h,pad,yMax);
+  const plotW=w-pad.l-pad.r, step=plotW/12, bw=Math.min(28,step*.62);
+  due.forEach((v,i)=>{
+    const x=pad.l+i*step+step/2, y=pad.t+(h-pad.t-pad.b)*(1-v/yMax);
+    ctx.fillStyle="#111827";ctx.fillRect(x-bw/2,y,bw,h-pad.b-y);
+    ctx.fillStyle="#6b7280";ctx.textAlign="center";ctx.fillText(MONTHS[i],x,h-16);
+  });
+  ctx.textAlign="left";
+}
+
+document.getElementById("runBtn").addEventListener("click",runAll);
+window.addEventListener("resize",()=>{if(results[selectedScenario]){drawBudgetChart();drawAOPChart(results[selectedScenario]);drawTimelineChart(results[selectedScenario]);}});
+setupScenarioButtons();
+runAll();
+</script>
+</body>
+</html>
