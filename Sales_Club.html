@@ -1,0 +1,2810 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>پلتفرم باشگاه فروشندگان – S4</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --cream: #FDF6EE;
+            --caramel: #C4956A;
+            --caramel-light: #E8D5C0;
+            --peach: #F2A88D;
+            --peach-light: #FDE8E0;
+            --chocolate: #7A5C3A;
+            --chocolate-light: #A88B6E;
+            --gold: #F5C542;
+            --gold-light: #FFF0C0;
+            --gray: #D0D0D0;
+            --gray-dark: #A0A0A0;
+            --white: #FFFFFF;
+            --mint: #A8D8C0;
+            --mint-light: #E4F5EC;
+            --shadow: 0 8px 30px rgba(122, 92, 58, 0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Vazir', 'Vazirmatn', sans-serif;
+            --header-h: 60px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font);
+            background: var(--cream);
+            color: var(--chocolate);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--cream); }
+        ::-webkit-scrollbar-thumb { background: var(--caramel); border-radius: 10px; }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--white);
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(122, 92, 58, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--caramel-light);
+            height: var(--header-h);
+            min-height: var(--header-h);
+        }
+
+        .header-brand { display: flex; align-items: center; gap: 10px; }
+        .header-brand .logo-icon { font-size: 22px; color: var(--caramel); }
+        .header-brand h1 { font-size: 17px; font-weight: 700; color: var(--chocolate); letter-spacing: -0.3px; white-space: nowrap; }
+        .header-brand h1 span { color: var(--caramel); }
+
+        .burger-btn {
+            background: none; border: none; font-size: 24px; color: var(--chocolate);
+            cursor: pointer; padding: 4px 10px; border-radius: var(--radius-sm);
+            transition: var(--transition); display: flex; align-items: center; justify-content: center;
+        }
+        .burger-btn:hover { background: var(--peach-light); }
+
+        /* ===== BURGER MENU ===== */
+        .menu-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.30);
+            z-index: 200; opacity: 0; pointer-events: none; transition: var(--transition);
+        }
+        .menu-overlay.open { opacity: 1; pointer-events: all; }
+
+        .menu-panel {
+            position: fixed; top: 0; right: -300px; width: 280px; max-width: 82vw; height: 100%;
+            background: var(--white); box-shadow: -8px 0 40px rgba(0, 0, 0, 0.10);
+            z-index: 300; transition: var(--transition); padding: 20px 16px 24px;
+            overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .menu-panel.open { right: 0; }
+
+        .menu-close {
+            align-self: flex-start; background: none; border: none; font-size: 22px;
+            color: var(--chocolate); cursor: pointer; padding: 2px 6px;
+            border-radius: var(--radius-sm); transition: var(--transition);
+        }
+        .menu-close:hover { background: var(--peach-light); }
+
+        .menu-panel .menu-brand {
+            font-size: 16px; font-weight: 700; color: var(--chocolate);
+            padding: 6px 0 14px; border-bottom: 2px solid var(--caramel-light);
+            margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+        }
+        .menu-panel .menu-brand i { color: var(--caramel); font-size: 20px; }
+
+        .menu-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+
+        .menu-nav .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+            border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition);
+            color: var(--chocolate); font-weight: 500; font-size: 14px;
+            border: none; background: none; width: 100%; text-align: right;
+        }
+        .menu-nav .nav-item i { width: 22px; font-size: 16px; color: var(--caramel); }
+        .menu-nav .nav-item:hover { background: var(--peach-light); }
+        .menu-nav .nav-item.active { background: var(--caramel); color: var(--white); }
+        .menu-nav .nav-item.active i { color: var(--white); }
+
+        .menu-nav .nav-badge {
+            margin-right: auto; font-size: 10px; background: var(--gold);
+            color: var(--chocolate); padding: 1px 7px; border-radius: 10px; font-weight: 700;
+        }
+        .menu-nav .nav-item.active .nav-badge { background: var(--white); }
+
+        .menu-footer {
+            padding-top: 12px; border-top: 2px solid var(--caramel-light);
+            font-size: 12px; color: var(--gray-dark); text-align: center;
+        }
+
+        /* ===== MAIN ===== */
+        .main {
+            flex: 1; padding: 16px 14px 30px; max-width: 1200px;
+            margin: 0 auto; width: 100%;
+        }
+
+        /* ===== PAGES ===== */
+        .page { display: none; animation: fadeUp 0.35s ease; }
+        .page.active { display: block; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            font-size: 20px; font-weight: 700; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .page-title i { color: var(--caramel); }
+        .page-subtitle { font-size: 13px; color: var(--gray-dark); margin-bottom: 14px; }
+
+        /* ===== LANDING ===== */
+        .landing-hero { text-align: center; padding: 8px 0 4px; }
+        .landing-hero .hero-badge {
+            display: inline-block; background: var(--gold-light); color: var(--chocolate);
+            padding: 4px 16px; border-radius: 30px; font-size: 12px; font-weight: 500; margin-bottom: 10px;
+        }
+        .landing-hero h2 { font-size: 26px; font-weight: 900; color: var(--chocolate); line-height: 1.3; }
+        .landing-hero h2 span { color: var(--caramel); }
+        .landing-hero .subtitle {
+            font-size: 14px; color: var(--chocolate-light); max-width: 560px;
+            margin: 8px auto 4px; line-height: 1.8; font-weight: 400;
+        }
+
+        /* ===== PROGRESS BAR (LTR) ===== */
+        .budget-progress-wrap {
+            background: var(--white); border-radius: var(--radius); padding: 16px 20px;
+            margin: 14px 0 18px; box-shadow: var(--shadow); direction: ltr;
+        }
+        .budget-progress-wrap .budget-header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; margin-bottom: 6px;
+        }
+        .budget-progress-wrap .budget-header .budget-label { font-weight: 600; }
+        .budget-progress-wrap .budget-header .budget-value { font-weight: 700; color: var(--caramel); direction: ltr; }
+
+        .budget-progress {
+            height: 10px; background: var(--caramel-light); border-radius: 20px;
+            overflow: hidden; position: relative; direction: ltr;
+        }
+        .budget-progress .fill {
+            height: 100%; border-radius: 20px;
+            background: linear-gradient(90deg, var(--caramel), var(--gold));
+            transition: width 1s ease; width: 0%; position: relative;
+        }
+        .budget-progress .fill .label-on-bar {
+            position: absolute; right: -30px; top: 50%; transform: translateY(-50%);
+            font-size: 9px; font-weight: 700; color: var(--chocolate); background: var(--white);
+            padding: 0 4px; border-radius: 4px; white-space: nowrap; direction: ltr;
+        }
+        .budget-progress-wrap .budget-foot {
+            display: flex; justify-content: space-between; font-size: 11px;
+            color: var(--gray-dark); margin-top: 4px; direction: ltr;
+        }
+        .budget-progress-wrap .budget-foot .end-label { font-weight: 600; color: var(--chocolate); }
+
+        /* ===== STORY ===== */
+        .story-section {
+            background: var(--white); border-radius: var(--radius); padding: 18px 20px;
+            margin: 16px 0; box-shadow: var(--shadow); border-right: 4px solid var(--caramel);
+        }
+        .story-section h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .story-section h3 i { color: var(--caramel); }
+        .story-section p { line-height: 1.9; font-size: 14px; color: var(--chocolate); }
+        .story-section .highlight-box {
+            background: var(--peach-light); padding: 12px 16px; border-radius: var(--radius-sm);
+            margin-top: 10px; border-right: 4px solid var(--peach); font-size: 13px;
+        }
+
+        /* ===== RULES ===== */
+        .rules-section { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+        .rules-card {
+            background: var(--white); border-radius: var(--radius); padding: 16px 18px;
+            box-shadow: var(--shadow); border-top: 4px solid var(--caramel);
+        }
+        .rules-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .rules-card ul { list-style: none; padding: 0; }
+        .rules-card ul li {
+            padding: 4px 0; font-size: 13px; line-height: 1.6;
+            border-bottom: 1px solid var(--caramel-light);
+            display: flex; align-items: flex-start; gap: 6px;
+        }
+        .rules-card ul li:last-child { border-bottom: none; }
+        .rules-card ul li .li-icon { color: var(--caramel); font-weight: 700; }
+        .rules-card .formula {
+            background: var(--cream); padding: 8px 14px; border-radius: var(--radius-sm);
+            margin-top: 8px; font-size: 13px; font-weight: 500; color: var(--chocolate);
+            text-align: center; border: 1px dashed var(--caramel);
+        }
+
+        /* ===== REWARD TABLE ===== */
+        .reward-section {
+            background: var(--white); border-radius: var(--radius); padding: 16px 16px;
+            margin: 14px 0; box-shadow: var(--shadow); overflow-x: auto;
+        }
+        .reward-section .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+        }
+        .reward-section .section-header h3 { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .reward-section .section-header h3 i { color: var(--caramel); }
+
+        .reward-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 420px; }
+        .reward-table th {
+            text-align: right; padding: 8px 12px; background: var(--cream); color: var(--chocolate);
+            font-weight: 700; border-bottom: 2px solid var(--caramel-light); font-size: 12px;
+        }
+        .reward-table td { padding: 8px 12px; border-bottom: 1px solid var(--caramel-light); vertical-align: middle; font-size: 13px; }
+        .reward-table tr:last-child td { border-bottom: none; }
+        .reward-table .status-badge {
+            display: inline-block; padding: 2px 14px; border-radius: 20px; font-size: 11px; font-weight: 500;
+        }
+        .reward-table .status-badge.approved { background: var(--gray); color: #666; }
+        .reward-table .row-approved { background: transparent; }
+        .reward-table .prize-name.approved { color: var(--gray-dark); }
+        .reward-table .prize-icon.approved { color: var(--gray); }
+
+        /* ===== COUNTER ===== */
+        .counter-section {
+            background: linear-gradient(135deg, var(--caramel), var(--chocolate));
+            border-radius: var(--radius); padding: 20px 20px; margin: 14px 0 8px;
+            text-align: center; color: var(--white); box-shadow: var(--shadow);
+        }
+        .counter-section .counter-icon { font-size: 26px; opacity: 0.8; }
+        .counter-section .counter-label { font-size: 14px; opacity: 0.9; font-weight: 400; }
+        .counter-section .counter-number {
+            font-size: 42px; font-weight: 900; letter-spacing: 1px; margin: 2px 0;
+            font-family: var(--font); direction: ltr; display: inline-block;
+        }
+        .counter-section .counter-sub { font-size: 12px; opacity: 0.8; }
+
+        /* ===== ADMIN ===== */
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        .admin-card {
+            background: var(--white); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow);
+        }
+        .admin-card h4 {
+            font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+            border-bottom: 2px solid var(--caramel-light); padding-bottom: 8px;
+        }
+        .admin-card .file-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+
+        .admin-card .btn {
+            padding: 6px 14px; border: none; border-radius: var(--radius-sm); font-family: var(--font);
+            font-size: 13px; font-weight: 500; cursor: pointer; transition: var(--transition);
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary { background: var(--caramel); color: var(--white); }
+        .btn-primary:hover { background: var(--chocolate); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--caramel); color: var(--caramel); }
+        .btn-outline:hover { background: var(--caramel); color: var(--white); }
+        .btn-success { background: var(--gold); color: var(--chocolate); }
+        .btn-success:hover { background: #e0b030; transform: translateY(-2px); }
+        .btn-danger { background: transparent; border: 2px solid var(--peach); color: var(--peach); }
+        .btn-danger:hover { background: var(--peach); color: var(--white); }
+
+        .admin-card .upload-area {
+            border: 2px dashed var(--caramel-light); border-radius: var(--radius-sm); padding: 14px;
+            text-align: center; color: var(--gray-dark); font-size: 13px; margin: 8px 0;
+            transition: var(--transition); cursor: pointer;
+        }
+        .admin-card .upload-area:hover { border-color: var(--caramel); background: var(--cream); }
+        .admin-card .upload-area i { font-size: 24px; color: var(--caramel); display: block; margin-bottom: 4px; }
+
+        .week-table-wrap {
+            max-height: 200px; overflow-y: auto; margin-top: 10px;
+            border: 1px solid var(--caramel-light); border-radius: var(--radius-sm);
+        }
+        .week-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .week-table th {
+            background: var(--cream); padding: 6px 10px; text-align: right;
+            position: sticky; top: 0; z-index: 2; font-size: 11px;
+        }
+        .week-table td { padding: 4px 10px; border-bottom: 1px solid var(--caramel-light); font-size: 12px; }
+        .week-table .week-input {
+            width: 60px; padding: 3px 6px; border: 1px solid var(--caramel-light);
+            border-radius: 6px; font-family: var(--font); font-size: 12px;
+            background: var(--cream); transition: var(--transition);
+        }
+        .week-table .week-input:focus { border-color: var(--caramel); outline: none; background: var(--white); }
+
+        /* ===== PARAMETERS PAGE (S4) ===== */
+        .params-intro {
+            background: linear-gradient(135deg, var(--gold-light), var(--peach-light));
+            border-radius: var(--radius); padding: 14px 18px; margin-bottom: 14px;
+            border-right: 4px solid var(--gold); font-size: 13px; line-height: 1.8;
+        }
+        .params-intro strong { color: var(--chocolate); }
+
+        .params-actions {
+            display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+            background: var(--white); padding: 12px 16px; border-radius: var(--radius);
+            box-shadow: var(--shadow); align-items: center;
+        }
+        .params-actions .status-text { font-size: 12px; color: var(--caramel); font-weight: 600; }
+
+        .params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        .param-card {
+            background: var(--white); border-radius: var(--radius); padding: 16px 18px;
+            box-shadow: var(--shadow); border-top: 4px solid var(--caramel);
+        }
+        .param-card h4 {
+            font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+            border-bottom: 2px solid var(--caramel-light); padding-bottom: 8px;
+        }
+        .param-card h4 i { color: var(--caramel); }
+
+        .param-grid-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .param-field { display: flex; flex-direction: column; gap: 3px; }
+        .param-field label { font-size: 11px; color: var(--chocolate-light); font-weight: 500; }
+        .param-field input {
+            padding: 7px 10px; border: 1.5px solid var(--caramel-light); border-radius: var(--radius-sm);
+            font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--chocolate);
+            background: var(--cream); transition: var(--transition); direction: ltr; text-align: left;
+        }
+        .param-field input:focus {
+            border-color: var(--caramel); outline: none; background: var(--white);
+            box-shadow: 0 0 0 3px rgba(196, 149, 106, 0.15);
+        }
+
+        /* ===== CAMPAIGNS (S4) ===== */
+        .campaign-intro {
+            background: linear-gradient(135deg, var(--mint-light), var(--peach-light));
+            border-radius: var(--radius); padding: 14px 18px; margin-bottom: 14px;
+            border-right: 4px solid var(--mint); font-size: 13px; line-height: 1.8;
+        }
+
+        .campaign-controls {
+            display: flex; align-items: center; justify-content: center; gap: 14px;
+            background: var(--white); border-radius: var(--radius); padding: 12px 16px;
+            box-shadow: var(--shadow); margin-bottom: 16px; flex-wrap: wrap;
+        }
+        .campaign-controls .camp-month-label {
+            font-size: 15px; font-weight: 700; color: var(--chocolate);
+            min-width: 110px; text-align: center; direction: ltr;
+        }
+        .campaign-controls .camp-btn {
+            padding: 6px 18px; border: 2px solid var(--caramel); border-radius: 30px;
+            background: var(--white); font-family: var(--font); font-size: 13px; font-weight: 600;
+            color: var(--chocolate); cursor: pointer; transition: var(--transition);
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .campaign-controls .camp-btn:hover { background: var(--caramel); color: var(--white); }
+        .campaign-controls .camp-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .campaign-controls .camp-progress { font-size: 12px; color: var(--gray-dark); direction: ltr; }
+
+        .campaign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        .campaign-card {
+            background: var(--white); border-radius: var(--radius); padding: 16px 18px;
+            box-shadow: var(--shadow); border-top: 4px solid var(--caramel);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .campaign-card.emphasis { border-top-color: var(--gold); }
+        .campaign-card.balance { border-top-color: var(--mint); }
+        .campaign-card.coverage { border-top-color: var(--peach); }
+
+        .campaign-head { display: flex; align-items: center; gap: 10px; }
+        .campaign-icon {
+            width: 40px; height: 40px; border-radius: 12px; background: var(--cream);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: var(--caramel); flex-shrink: 0;
+        }
+        .campaign-card.emphasis .campaign-icon { background: var(--gold-light); color: var(--chocolate); }
+        .campaign-card.balance .campaign-icon { background: var(--mint-light); color: #4a8a68; }
+        .campaign-card.coverage .campaign-icon { background: var(--peach-light); color: var(--peach); }
+
+        .campaign-head-text { flex: 1; min-width: 0; }
+        .campaign-title { font-size: 15px; font-weight: 700; color: var(--chocolate); }
+        .campaign-freq { font-size: 11px; color: var(--gray-dark); }
+
+        .campaign-amount {
+            font-size: 15px; font-weight: 800; color: var(--caramel);
+            background: var(--cream); padding: 3px 12px; border-radius: 20px;
+            white-space: nowrap; direction: ltr;
+        }
+
+        .campaign-desc { font-size: 12.5px; line-height: 1.7; color: var(--chocolate-light); }
+
+        .campaign-metric {
+            font-size: 11.5px; background: var(--cream); padding: 5px 10px;
+            border-radius: var(--radius-sm); color: var(--chocolate); font-weight: 500;
+        }
+
+        .campaign-winner {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            background: var(--gold-light); padding: 8px 12px; border-radius: var(--radius-sm);
+            border-right: 4px solid var(--gold); font-size: 13px;
+        }
+        .campaign-winner .winner-name { font-weight: 700; }
+        .campaign-winner .winner-team { font-size: 11px; color: var(--gray-dark); }
+
+        .campaign-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 2px; }
+        .campaign-table th {
+            text-align: right; padding: 4px 8px; background: var(--cream);
+            font-weight: 700; border-bottom: 2px solid var(--caramel-light); font-size: 11px;
+        }
+        .campaign-table td { padding: 4px 8px; border-bottom: 1px solid var(--caramel-light); font-size: 12px; }
+        .campaign-table tr:last-child td { border-bottom: none; }
+        .campaign-table .val-col { text-align: center; font-weight: 700; color: var(--caramel); }
+        .campaign-table .top-row { background: var(--gold-light); }
+
+        /* Yearly campaign */
+        .yearly-campaign {
+            background: var(--white); border-radius: var(--radius); padding: 18px 20px;
+            box-shadow: var(--shadow); margin-top: 14px; border-top: 4px solid var(--gold);
+        }
+        .yearly-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+        .yearly-head .yearly-icon {
+            width: 46px; height: 46px; border-radius: 14px; background: var(--gold-light);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: var(--chocolate); flex-shrink: 0;
+        }
+        .yearly-head .yearly-title { font-size: 17px; font-weight: 700; }
+        .yearly-head .yearly-sub { font-size: 12px; color: var(--gray-dark); }
+        .yearly-head .yearly-amount {
+            margin-right: auto; font-size: 16px; font-weight: 800; color: var(--caramel);
+            background: var(--cream); padding: 4px 16px; border-radius: 20px; direction: ltr;
+        }
+        .yearly-desc { font-size: 13px; line-height: 1.8; color: var(--chocolate-light); margin-bottom: 10px; }
+
+        .continuity-wrap { overflow-x: auto; }
+        .continuity-table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 420px; }
+        .continuity-table th {
+            text-align: right; padding: 7px 10px; background: var(--cream);
+            font-weight: 700; border-bottom: 2px solid var(--caramel-light); font-size: 11.5px;
+        }
+        .continuity-table td { padding: 6px 10px; border-bottom: 1px solid var(--caramel-light); font-size: 12.5px; }
+        .continuity-table tr:last-child td { border-bottom: none; }
+        .continuity-table .qualified-row { background: var(--mint-light); }
+        .continuity-table .months-col { text-align: center; font-weight: 700; }
+        .continuity-table .status-col { text-align: center; }
+
+        .pill {
+            display: inline-block; padding: 1px 10px; border-radius: 12px;
+            font-size: 10.5px; font-weight: 700;
+        }
+        .pill.yes { background: var(--mint); color: #2f6b4d; }
+        .pill.no { background: var(--gray); color: #666; }
+
+        /* ===== BUSINESS MANAGER ===== */
+        .bm-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .bm-card { background: var(--white); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+        .bm-card h4 {
+            font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+            border-bottom: 2px solid var(--caramel-light); padding-bottom: 8px;
+        }
+
+        .rank-item {
+            display: flex; align-items: center; gap: 10px; padding: 6px 0;
+            border-bottom: 1px solid var(--caramel-light); font-size: 13px;
+        }
+        .rank-item:last-child { border-bottom: none; }
+
+        .rank-num {
+            width: 24px; height: 24px; border-radius: 50%; background: var(--cream);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 12px; color: var(--chocolate); flex-shrink: 0;
+        }
+        .rank-num.gold { background: var(--gold); }
+        .rank-num.silver { background: var(--gray); }
+        .rank-num.bronze { background: var(--peach); }
+
+        .rank-info { flex: 1; min-width: 0; }
+        .rank-info .name { font-weight: 600; font-size: 13px; }
+        .rank-info .score { font-size: 11px; color: var(--gray-dark); }
+        .rank-badge { font-size: 12px; font-weight: 700; color: var(--caramel); }
+
+        .league-tag { display: inline-block; padding: 1px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+        .league-tag.serie-a { background: var(--gold-light); color: var(--chocolate); }
+        .league-tag.serie-b { background: var(--peach-light); color: var(--chocolate); }
+
+        .pledge-item {
+            display: flex; justify-content: space-between; padding: 6px 0;
+            border-bottom: 1px solid var(--caramel-light); font-size: 13px;
+        }
+        .pledge-item:last-child { border-bottom: none; }
+        .pledge-item .pledge-label { font-weight: 500; }
+        .pledge-item .pledge-value { font-weight: 700; color: var(--caramel); }
+
+        /* ===== RSM ===== */
+        .rsm-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .rsm-card { background: var(--white); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+        .rsm-card h4 {
+            font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+            border-bottom: 2px solid var(--caramel-light); padding-bottom: 8px;
+        }
+
+        .team-profile { display: flex; align-items: center; gap: 12px; padding: 6px 0; }
+        .team-profile .avatar {
+            width: 48px; height: 48px; border-radius: 50%; background: var(--caramel-light);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: var(--caramel); flex-shrink: 0;
+        }
+        .team-profile .team-info .team-name { font-weight: 700; font-size: 16px; }
+        .team-profile .team-info .team-desc { font-size: 12px; color: var(--gray-dark); }
+
+        .team-members-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+        .team-members-table th {
+            text-align: right; padding: 4px 8px; background: var(--cream); font-weight: 700;
+            border-bottom: 2px solid var(--caramel-light); font-size: 11px;
+        }
+        .team-members-table td { padding: 4px 8px; border-bottom: 1px solid var(--caramel-light); font-size: 12px; }
+        .team-members-table tr:last-child td { border-bottom: none; }
+
+        .guaranteed-reward {
+            background: var(--gold-light); padding: 10px 14px; border-radius: var(--radius-sm);
+            margin-top: 8px; display: flex; justify-content: space-between; align-items: center;
+            border-right: 4px solid var(--gold); font-size: 13px; flex-wrap: wrap; gap: 6px;
+        }
+
+        /* ===== SELLER ===== */
+        .seller-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .seller-card { background: var(--white); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+        .seller-card h4 {
+            font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+            border-bottom: 2px solid var(--caramel-light); padding-bottom: 8px;
+        }
+
+        .sfi-hint {
+            background: var(--peach-light); padding: 10px 14px; border-radius: var(--radius-sm);
+            border-right: 4px solid var(--peach); margin-bottom: 8px;
+        }
+        .sfi-hint .hint-label { font-weight: 700; font-size: 13px; }
+        .sfi-hint .hint-text { font-size: 13px; color: var(--chocolate-light); margin-top: 2px; }
+
+        .progress-bar-wrap { margin: 8px 0; }
+        .progress-bar-wrap .progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px; }
+        .progress-bar { height: 8px; background: var(--caramel-light); border-radius: 20px; overflow: hidden; }
+        .progress-bar .fill {
+            height: 100%; border-radius: 20px;
+            background: linear-gradient(90deg, var(--caramel), var(--gold));
+            transition: width 0.8s ease; width: 0%;
+        }
+
+        .intra-team-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+        .intra-team-table th {
+            text-align: right; padding: 4px 8px; background: var(--cream); font-weight: 700;
+            border-bottom: 2px solid var(--caramel-light); font-size: 11px; white-space: nowrap;
+        }
+        .intra-team-table td { padding: 4px 8px; border-bottom: 1px solid var(--caramel-light); font-size: 12px; }
+        .intra-team-table tr:last-child td { border-bottom: none; }
+        .intra-team-table .highlight-row { background: var(--gold-light); }
+
+        /* ===== LEAGUE LEADERBOARD ===== */
+        .league-section {
+            background: var(--white); border-radius: var(--radius); padding: 16px 18px;
+            margin: 14px 0; box-shadow: var(--shadow);
+        }
+        .league-section .league-header {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 10px; margin-bottom: 12px;
+        }
+        .league-section .league-header h3 { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+        .league-tabs { display: flex; gap: 6px; }
+        .league-tabs .league-tab {
+            padding: 5px 16px; border-radius: 20px; border: 2px solid var(--caramel-light);
+            background: transparent; font-family: var(--font); font-size: 13px; font-weight: 600;
+            color: var(--chocolate); cursor: pointer; transition: var(--transition);
+        }
+        .league-tabs .league-tab.active { background: var(--caramel); color: var(--white); border-color: var(--caramel); }
+        .league-tabs .league-tab:hover:not(.active) { background: var(--peach-light); }
+
+        .league-table-wrap { overflow-x: auto; }
+        .league-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 520px; }
+        .league-table th {
+            text-align: right; padding: 8px 12px; background: var(--cream); color: var(--chocolate);
+            font-weight: 700; border-bottom: 2px solid var(--caramel-light); font-size: 12px; white-space: nowrap;
+        }
+        .league-table td { padding: 7px 12px; border-bottom: 1px solid var(--caramel-light); vertical-align: middle; font-size: 13px; }
+        .league-table tr:last-child td { border-bottom: none; }
+        .league-table .rank-col { font-weight: 700; text-align: center; width: 40px; }
+        .league-table .team-col { font-weight: 600; }
+        .league-table .rsm-col { color: var(--gray-dark); font-size: 12px; }
+        .league-table .score-col { font-weight: 700; color: var(--caramel); text-align: center; }
+        .league-table .medal { color: var(--gold); }
+
+        /* ===== SIMULATION CONTROLS (LTR) ===== */
+        .sim-controls {
+            display: flex; align-items: center; justify-content: center; gap: 16px;
+            margin: 14px 0 6px; flex-wrap: wrap; direction: ltr;
+        }
+        .sim-controls .sim-btn {
+            padding: 6px 20px; border: 2px solid var(--caramel); border-radius: 30px;
+            background: var(--white); font-family: var(--font); font-size: 14px; font-weight: 600;
+            color: var(--chocolate); cursor: pointer; transition: var(--transition);
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .sim-controls .sim-btn:hover { background: var(--caramel); color: var(--white); }
+        .sim-controls .sim-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .sim-controls .sim-month-label {
+            font-size: 15px; font-weight: 700; color: var(--chocolate);
+            min-width: 110px; text-align: center; direction: ltr;
+        }
+        .sim-controls .sim-progress { font-size: 12px; color: var(--gray-dark); direction: ltr; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 820px) {
+            .admin-grid, .bm-dashboard, .rsm-dashboard, .seller-dashboard,
+            .params-grid, .campaign-grid { grid-template-columns: 1fr; }
+            .rules-section { grid-template-columns: 1fr; }
+            .bm-dashboard .bm-card:last-child,
+            .rsm-dashboard .rsm-card:last-child,
+            .seller-dashboard .seller-card:last-child,
+            .admin-card:last-child { grid-column: 1; }
+            .param-grid-inner { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            :root { --header-h: 52px; }
+            body { font-size: 13px; }
+            .header { padding: 6px 12px; }
+            .header-brand h1 { font-size: 14px; }
+            .header-brand .logo-icon { font-size: 18px; }
+            .burger-btn { font-size: 20px; padding: 2px 8px; }
+            .main { padding: 12px 10px 24px; }
+            .landing-hero h2 { font-size: 20px; }
+            .landing-hero .subtitle { font-size: 13px; }
+            .page-title { font-size: 17px; }
+            .page-subtitle { font-size: 12px; }
+            .story-section { padding: 14px 14px; }
+            .story-section h3 { font-size: 15px; }
+            .story-section p { font-size: 13px; }
+            .rules-card { padding: 12px 14px; }
+            .rules-card h4 { font-size: 14px; }
+            .rules-card ul li { font-size: 12px; }
+            .rules-card .formula { font-size: 12px; }
+            .reward-section { padding: 12px 12px; }
+            .reward-section .section-header h3 { font-size: 15px; }
+            .reward-table { font-size: 12px; min-width: 340px; }
+            .reward-table th, .reward-table td { padding: 6px 8px; font-size: 12px; }
+            .counter-section .counter-number { font-size: 32px; }
+            .counter-section .counter-label { font-size: 12px; }
+            .admin-card { padding: 12px 14px; }
+            .admin-card h4 { font-size: 14px; }
+            .admin-card .btn { font-size: 12px; padding: 5px 12px; }
+            .bm-card, .rsm-card, .seller-card { padding: 12px 14px; }
+            .bm-card h4, .rsm-card h4, .seller-card h4 { font-size: 14px; }
+            .rank-item { font-size: 12px; padding: 4px 0; }
+            .rank-info .name { font-size: 12px; }
+            .rank-info .score { font-size: 10px; }
+            .league-section { padding: 12px 14px; }
+            .league-section .league-header h3 { font-size: 15px; }
+            .league-tabs .league-tab { font-size: 12px; padding: 4px 12px; }
+            .league-table { font-size: 12px; min-width: 380px; }
+            .league-table th, .league-table td { padding: 5px 8px; font-size: 12px; }
+            .sim-controls .sim-btn { font-size: 13px; padding: 4px 14px; }
+            .sim-controls .sim-month-label { font-size: 13px; min-width: 80px; }
+            .menu-panel { width: 260px; right: -280px; padding: 16px 12px 20px; }
+            .menu-nav .nav-item { font-size: 13px; padding: 9px 12px; }
+            .budget-progress-wrap { padding: 12px 14px; }
+            .budget-progress-wrap .budget-header { font-size: 12px; }
+            .guaranteed-reward { font-size: 12px; padding: 8px 12px; }
+            .sfi-hint { padding: 8px 12px; }
+            .sfi-hint .hint-label { font-size: 12px; }
+            .sfi-hint .hint-text { font-size: 12px; }
+            .team-profile .avatar { width: 40px; height: 40px; font-size: 18px; }
+            .team-profile .team-info .team-name { font-size: 14px; }
+            .week-table { font-size: 11px; }
+            .week-table th, .week-table td { padding: 4px 6px; font-size: 11px; }
+            .week-table .week-input { width: 48px; font-size: 11px; padding: 2px 4px; }
+            .intra-team-table { font-size: 11px; }
+            .intra-team-table th, .intra-team-table td { padding: 3px 6px; font-size: 11px; }
+            .team-members-table { font-size: 11px; }
+            .team-members-table th, .team-members-table td { padding: 3px 6px; font-size: 11px; }
+            .budget-progress .fill .label-on-bar { font-size: 7px; right: -24px; }
+            .param-grid-inner { grid-template-columns: 1fr; }
+            .campaign-card { padding: 12px 14px; }
+            .campaign-title { font-size: 14px; }
+            .campaign-desc { font-size: 12px; }
+            .campaign-table { font-size: 11px; }
+            .campaign-table th, .campaign-table td { padding: 3px 6px; font-size: 11px; }
+            .yearly-campaign { padding: 14px 14px; }
+            .yearly-head .yearly-title { font-size: 15px; }
+            .continuity-table { font-size: 11px; min-width: 340px; }
+            .continuity-table th, .continuity-table td { padding: 4px 6px; font-size: 11px; }
+        }
+
+        @media (max-width: 400px) {
+            .landing-hero h2 { font-size: 17px; }
+            .header-brand h1 { font-size: 12px; }
+            .counter-section .counter-number { font-size: 26px; }
+            .league-table { min-width: 300px; font-size: 11px; }
+            .league-table th, .league-table td { padding: 4px 6px; font-size: 11px; }
+            .reward-table { min-width: 280px; font-size: 11px; }
+            .reward-table th, .reward-table td { padding: 4px 6px; font-size: 11px; }
+            .sim-controls .sim-month-label { min-width: 60px; font-size: 11px; }
+            .budget-progress .fill .label-on-bar { font-size: 6px; right: -20px; }
+        }
+
+        .text-center { text-align: center; }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mt-16 { margin-top: 16px; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .text-muted { color: var(--gray-dark); font-size: 12px; }
+        .text-sm { font-size: 12px; }
+
+        .admin-note {
+            font-size: 12px; color: var(--gray-dark); margin-top: 6px; padding: 8px 12px;
+            background: var(--cream); border-radius: var(--radius-sm); border-right: 3px solid var(--caramel);
+        }
+
+        .download-txt-btn { margin-top: 6px; }
+        .section-divider { border: none; border-top: 2px dashed var(--caramel-light); margin: 16px 0; }
+
+        .bm-league-wrap { margin-top: 6px; }
+        .bm-league-wrap .bm-league-title {
+            font-size: 13px; font-weight: 700; color: var(--caramel); margin: 10px 0 4px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .bm-league-wrap .bm-league-title:first-child { margin-top: 0; }
+
+        .bm-league-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .bm-league-table th {
+            text-align: right; padding: 4px 8px; background: var(--cream); font-weight: 700;
+            border-bottom: 2px solid var(--caramel-light); font-size: 11px; white-space: nowrap;
+        }
+        .bm-league-table td { padding: 4px 8px; border-bottom: 1px solid var(--caramel-light); font-size: 12px; }
+        .bm-league-table tr:last-child td { border-bottom: none; }
+        .bm-league-table .highlight-row { background: var(--gold-light); }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-brand">
+            <i class="fas fa-crown logo-icon"></i>
+            <h1>باشگاه <span>فروشندگان</span></h1>
+        </div>
+        <button class="burger-btn" id="burgerToggle" aria-label="منو">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- ===== MENU OVERLAY ===== -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- ===== MENU PANEL ===== -->
+    <nav class="menu-panel" id="menuPanel">
+        <button class="menu-close" id="menuClose" aria-label="بستن منو">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="menu-brand">
+            <i class="fas fa-crown"></i>
+            باشگاه فروشندگان
+        </div>
+        <div class="menu-nav">
+            <button class="nav-item active" data-page="landing">
+                <i class="fas fa-home"></i>
+                خانه
+            </button>
+            <button class="nav-item" data-page="campaigns">
+                <i class="fas fa-bullhorn"></i>
+                کمپین‌ها
+                <span class="nav-badge">S4</span>
+            </button>
+            <button class="nav-item" data-page="admin">
+                <i class="fas fa-user-cog"></i>
+                مدیریت
+            </button>
+            <button class="nav-item" data-page="params">
+                <i class="fas fa-sliders"></i>
+                پارامترها
+                <span class="nav-badge">S4</span>
+            </button>
+            <button class="nav-item" data-page="bm">
+                <i class="fas fa-chart-line"></i>
+                مدیر کسب و کار
+            </button>
+            <button class="nav-item" data-page="rsm">
+                <i class="fas fa-users"></i>
+                مدیر فروش منطقه
+            </button>
+            <button class="nav-item" data-page="seller">
+                <i class="fas fa-user"></i>
+                فروشنده
+            </button>
+        </div>
+        <div class="menu-footer">
+            <i class="fas fa-trophy" style="color:var(--gold);"></i>
+            نسخه ۴.۰ – S4 – 2027
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main">
+
+        <!-- ============================================================ -->
+        <!-- PAGE: LANDING -->
+        <!-- ============================================================ -->
+        <section class="page active" id="page-landing">
+
+            <div class="landing-hero">
+                <div class="hero-badge">
+                    <i class="fas fa-star" style="color:var(--gold);"></i>
+                    پروتوتایپ پیشنهادی – S4
+                </div>
+                <h2>
+                    به <span>پلتفرم باشگاه فروشندگان</span>
+                    خوش آمدید
+                </h2>
+                <p class="subtitle">
+                    بستری برای رهبری، انگیزه‌بخشی و پاداش‌دهی به تیم‌های فروش از طریق گیمیفیکیشن هوشمند
+                </p>
+            </div>
+
+            <!-- Progress Bar (LTR) -->
+            <div class="budget-progress-wrap">
+                <div class="budget-header">
+                    <span class="budget-label"><i class="fas fa-coins" style="color:var(--gold);"></i> بودجه جوایز فصل</span>
+                    <span class="budget-value" id="budgetDisplay">$0 of $0</span>
+                </div>
+                <div class="budget-progress">
+                    <div class="fill" id="budgetFill" style="width:0%;">
+                        <span class="label-on-bar" id="barLabel">0%</span>
+                    </div>
+                </div>
+                <div class="budget-foot">
+                    <span>$0</span>
+                    <span class="end-label" id="budgetMaxLabel">$0</span>
+                </div>
+            </div>
+
+            <!-- Story -->
+            <div class="story-section">
+                <h3><i class="fas fa-scroll"></i> داستان و روایت بازی</h3>
+                <p>۱۴ تیم به رهبری مدیرفروش مناطق در یک لیگ سالانه برای دریافت جوایز نقدی و غیر نقدی  با هم رقابت خواهند کرد.
+                هدف این لیگ مدیریت بهتر عملکرد فروشندگان و ایجاد بستری برای انگیزه دهی به افراد مستعد و در حال رشد خواهد بود.
+                </p>
+                <div class="highlight-box">
+                    <p>
+                        <strong>⚡ لیگ‌ها:</strong> دو لیگ مختلف ۷ تیمی وجود دارد.
+                        ۴ تیم اول لیگ قهرمانان در انتهای هر فصل به ترتیب
+                        <strong id="storyRewardA1">۱,۰۰۰</strong>،
+                        <strong id="storyRewardA2">۸۰۰</strong>،
+                        <strong id="storyRewardA3">۵۰۰</strong> و
+                        <strong id="storyRewardA4">۴۰۰</strong> دلار پاداش می‌گیرند.
+                        ۳ تیم انتهایی به لیگ برتر سقوط می‌کنند. ۳ تیم برتر لیگ برتر به ترتیب
+                        <strong id="storyRewardB1">۳۰۰</strong>،
+                        <strong id="storyRewardB2">۲۰۰</strong> و
+                        <strong id="storyRewardB3">۱۰۰</strong> دلار پاداش می‌گیرند و برای فصل آینده به لیگ قهرمانان صعود می‌کنند.
+                    </p>
+                    <p style="margin-top:8px;">
+                        <strong>✈️ جایزه ویژه:</strong> در صورت تحقق برنامه فروش سالیانه کلی، به ازای هر درصد بالای
+                        <strong id="storyThreshold">۹۵٪</strong>،
+                        یک سفر ۷ روزه خارجی به همراه مرخصی برای یکی از اعضای پلتفرم (فروشنده، مدیر فروش منطقه یا اعضای تیم کسب و کار)
+                        در رویداد اختتامیه قرعه‌کشی خواهد شد.
+                    </p>
+                    <p style="margin-top:8px;">
+                        <strong>⭐ پاداش اختصاصی:</strong> به فروشنده با بیشترین امتیاز در بخش فروش اختصاصی یک کارت هدیه
+                        <strong id="storyBestSeller">۱۰۰</strong> دلاری تعلق می‌گیرد.
+                    </p>
+                    <p style="margin-top:8px;">
+                        <strong>🎯 کمپین‌های S4:</strong> پنج کمپین ماهانه (پیشروی، سبد فروش، پوشش‌دهی، تعادل، تاکیدی)
+                        و یک کمپین سالانه (تداوم) به مدل اضافه شده است.
+                        <button class="btn btn-outline" style="font-size:11px;padding:2px 10px;margin-right:6px;vertical-align:middle;"
+                                onclick="document.querySelector('[data-page=campaigns]').click();">
+                            مشاهده کمپین‌ها
+                        </button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Rules -->
+            <div class="rules-section">
+                <div class="rules-card">
+                    <h4>⭐ معیارهای جایزه اختصاصی ماهانه</h4>
+                    <ul>
+                        <li><span class="li-icon">•</span> تعداد محصول فروخته شده از محصول اختصاصی انتخاب شده برای هر ماه توسط تیم بیزنس</li>
+                        <li><span class="li-icon">•</span> درصد تحقق تارگت ماهانه تیم</li>
+                    </ul>
+                    <div class="formula">⭐ امتیاز = (تعداد محصول) × (درصد تحقق تارگت)</div>
+                </div>
+                <div class="rules-card">
+                    <h4>🏆 معیارهای ارزیابی تیم‌ها</h4>
+                    <ul>
+                        <li><span class="li-icon">•</span> درصد رشد حجمی فروش (از ماه دوم) %</li>
+                        <li><span class="li-icon">•</span> درصد پوشش (Coverage %)</li>
+                        <li><span class="li-icon">•</span> درصد تحقق تارگت (AOP %)</li>
+                        <li><span class="li-icon">•</span> میانگین تعداد سطر فاکتور فروشندگان هر تیم (# Line per Invoice)</li>
+                    </ul>
+                    <div class="formula">🏆 امتیاز = (رشد) × (پوشش) × (تحقق) × (میانگین سطر)</div>
+                </div>
+            </div>
+
+            <!-- Reward Table -->
+            <div class="reward-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-gift"></i> جدول جوایز مصوب</h3>
+                    <span style="font-size:12px;color:var(--gray-dark);">
+                        <span style="background:var(--gray);padding:2px 10px;border-radius:12px;color:#666;">⚪ مصوب</span>
+                    </span>
+                </div>
+                <div class="reward-table-wrap">
+                    <table class="reward-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>جایزه</th>
+                                <th>دسته</th>
+                                <th>مبلغ (دلار)</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rewardTableBody">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Counter -->
+            <div class="counter-section" id="counterSection">
+                <div class="counter-icon"><i class="fas fa-coins"></i></div>
+                <div class="counter-label">مجموع جوایز</div>
+                <div class="counter-number" id="counterNumber">$0</div>
+                <div class="counter-sub">✨ پارامتریک – قابل تنظیم در تب «پارامترها»</div>
+            </div>
+
+            <!-- LEAGUE LEADERBOARD -->
+            <div class="league-section" id="leagueSection">
+                <div class="league-header">
+                    <h3><i class="fas fa-trophy" style="color:var(--gold);"></i> رتبه‌بندی تیم‌ها</h3>
+                    <div class="league-tabs" id="leagueTabs">
+                        <button class="league-tab active" data-league="A">🏆 لیگ قهرمانان</button>
+                        <button class="league-tab" data-league="B">⚽ لیگ برتر</button>
+                    </div>
+                </div>
+                <div class="league-table-wrap">
+                    <table class="league-table" id="leagueTable">
+                        <thead>
+                            <tr>
+                                <th>رتبه</th>
+                                <th>نام تیم</th>
+                                <th>مدیر فروش منطقه</th>
+                                <th style="text-align:center;">درصد پوشش</th>
+                                <th style="text-align:center;">درصد تحقق</th>
+                                <th style="text-align:center;">امتیاز نهایی</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leagueTableBody">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Simulation Controls (LTR) -->
+                <div class="sim-controls">
+                    <button class="sim-btn" id="simPrev"><i class="fas fa-chevron-left"></i> Previous</button>
+                    <span class="sim-month-label" id="simMonthLabel">January</span>
+                    <button class="sim-btn" id="simNext">Next <i class="fas fa-chevron-right"></i></button>
+                    <span class="sim-progress" id="simProgress">1 / 12</span>
+                </div>
+                <div style="text-align:center;font-size:12px;color:var(--gray-dark);margin-top:4px;">
+                    <i class="fas fa-calendar-alt"></i> Season 2027 – Monthly Cumulative Results
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: CAMPAIGNS (S4 NEW) -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-campaigns">
+            <h2 class="page-title"><i class="fas fa-bullhorn"></i> کمپین‌ها</h2>
+            <p class="page-subtitle">۵ کمپین ماهانه (فردی / تیمی) + ۱ کمپین سالانه تداوم</p>
+
+            <div class="campaign-intro">
+                <strong>🎯 ساختار کمپین‌های S4:</strong>
+                هر ماه ۵ جایزه مستقل در سطح فردی و تیمی توزیع می‌شود تا انگیزه در ابعاد مختلف عملکردی (رشد، سبد، پوشش، تعادل و تمرکز) ایجاد شود.
+                علاوه بر آن، یک جایزه سالانه «تداوم» به تمامی افرادی که در ۱۲ ماه سال به AOP خود دست یابند تعلق می‌گیرد.
+                مبالغ این جوایز از تب <strong>«پارامترها»</strong> قابل تنظیم است.
+            </div>
+
+            <!-- Month navigation -->
+            <div class="campaign-controls">
+                <button class="camp-btn" id="campPrev"><i class="fas fa-chevron-right"></i> ماه قبل</button>
+                <span class="camp-month-label" id="campMonthLabel">January</span>
+                <button class="camp-btn" id="campNext">ماه بعد <i class="fas fa-chevron-left"></i></button>
+                <span class="camp-progress" id="campProgress">1 / 12</span>
+            </div>
+
+            <!-- Monthly campaign cards -->
+            <div class="campaign-grid" id="campaignGrid">
+                <!-- JS -->
+            </div>
+
+            <!-- Yearly campaign -->
+            <div class="yearly-campaign" id="yearlyCampaign">
+                <!-- JS -->
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: PARAMETERS (S4 NEW) -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-params">
+            <h2 class="page-title"><i class="fas fa-sliders"></i> پارامترهای مدل (S4)</h2>
+            <p class="page-subtitle">تمام اعداد مدل گیمیفیکیشن پارامتریک است – مقادیر را تغییر داده و اعمال کنید</p>
+
+            <div class="params-intro">
+                <strong>⚙️ Baseline Settings:</strong> در این نسخه مقادیر پیش‌فرض زیر اعمال شده است. شما می‌توانید هر عددی را تغییر دهید،
+                روی «اعمال پارامترها» بزنید و خروجی به‌صورت زنده در تمام تب‌ها (خانه، کمپین‌ها، مدیر کسب‌وکار، مدیر فروش، فروشنده) بازتولید شود.
+                تنظیمات به‌صورت خودکار در مرورگر ذخیره می‌شود.
+                <br>
+                <span class="text-muted">
+                    α: ضریب برتری لیگ A &nbsp;|&nbsp; β: ضریب پاداش مدیر فروش &nbsp;|&nbsp; γ: واحد پایه پاداش
+                </span>
+            </div>
+
+            <div class="params-actions">
+                <button class="btn btn-primary" id="applyParams"><i class="fas fa-check"></i> اعمال پارامترها</button>
+                <button class="btn btn-success" id="resetParams"><i class="fas fa-rotate-left"></i> بازنشانی به پیش‌فرض</button>
+                <button class="btn btn-outline" id="downloadParams"><i class="fas fa-download"></i> دانلود JSON پارامترها</button>
+                <button class="btn btn-outline" id="uploadParamsBtn"><i class="fas fa-upload"></i> آپلود JSON پارامترها</button>
+                <input type="file" id="paramsFileInput" accept=".json" style="display:none;">
+                <span class="status-text" id="paramsStatus"></span>
+            </div>
+
+            <div class="params-grid" id="paramsWrap">
+                <!-- JS -->
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: ADMIN -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-admin">
+            <h2 class="page-title"><i class="fas fa-user-cog"></i> پنل مدیریت</h2>
+            <p class="page-subtitle">تنظیمات پیشرفته گیمیفیکیشن، پارامترها و داده‌های هفتگی</p>
+
+            <div class="admin-grid">
+                <!-- Gamification Logic -->
+                <div class="admin-card">
+                    <h4><i class="fas fa-dice-d6"></i> منطق گیمیفیکیشن</h4>
+                    <p style="font-size:13px;color:var(--gray-dark);margin-bottom:10px;">
+                        دانلود نمونه JSON، ویرایش و آپلود مجدد برای اعمال Hyper-Parameters.
+                    </p>
+                    <div class="file-actions">
+                        <button class="btn btn-primary" id="downloadJson"><i class="fas fa-download"></i> دانلود نمونه JSON</button>
+                        <button class="btn btn-outline" id="uploadJsonBtn"><i class="fas fa-upload"></i> آپلود JSON</button>
+                        <input type="file" id="jsonFileInput" accept=".json" style="display:none;">
+                    </div>
+                    <div id="jsonUploadStatus" style="font-size:12px;color:var(--caramel);margin-top:4px;"></div>
+                </div>
+
+                <!-- Weekly Sales XLSX -->
+                <div class="admin-card">
+                    <h4><i class="fas fa-file-excel"></i> نتایج فروش هفتگی</h4>
+                    <p style="font-size:13px;color:var(--gray-dark);margin-bottom:10px;">
+                        دانلود وضعیت آخرین هفته، تکمیل با داده‌های جدید و آپلود مجدد.
+                    </p>
+                    <div class="file-actions">
+                        <button class="btn btn-primary" id="downloadXlsx"><i class="fas fa-download"></i> دانلود XLSX نمونه</button>
+                        <button class="btn btn-outline" id="uploadXlsxBtn"><i class="fas fa-upload"></i> آپلود XLSX</button>
+                        <input type="file" id="xlsxFileInput" accept=".xlsx,.xls" style="display:none;">
+                    </div>
+                    <div id="xlsxUploadStatus" style="font-size:12px;color:var(--caramel);margin-top:4px;"></div>
+                </div>
+
+                <!-- Full Input Table 52 weeks -->
+                <div class="admin-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-table"></i> جدول اهداف برنامه سالانه (AOP)</h4>
+                    <p style="font-size:13px;color:var(--gray-dark);margin-bottom:8px;">
+                        این بخش بایستی به کمک تیم برنامه ریزی فروش، اهداف کسب و کار را به تفکیک منطقه و فروشنده وارد مدل سازی کند.
+                    </p>
+                    <div class="file-actions" style="margin-bottom:10px;">
+                        <button class="btn btn-success" id="downloadWeekStatus"><i class="fas fa-download"></i> دانلود وضعیت آخرین اهداف</button>
+                        <button class="btn btn-outline" id="uploadWeekBtn"><i class="fas fa-upload"></i> آپلود اهداف جدید</button>
+                        <input type="file" id="weekFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+                    </div>
+                    <div class="week-table-wrap">
+                        <table class="week-table">
+                            <thead>
+                                <tr>
+                                    <th>هفته</th>
+                                    <th>تارگت وزنی</th>
+                                    <th>تحقق تارگت %</th>
+                                    <th>پوشش %</th>
+                                    <th>رشد %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="weekTableBody">
+                                <!-- JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="font-size:11px;color:var(--gray-dark);margin-top:6px;text-align:left;">
+                        <i class="fas fa-info-circle"></i> ۵۲ هفته – داده‌های پیش‌فرض نمایشی
+                    </div>
+                </div>
+
+                <!-- Download TXT: Gamification Model -->
+                <div class="admin-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-file-alt"></i> مدل گیمیفیکیشن – مستندات</h4>
+                    <p style="font-size:13px;color:var(--gray-dark);margin-bottom:8px;">
+                        دانلود فایل متنی شامل توضیح کامل مدل گیمیفیکیشن، پارامترها و قوانین پلتفرم (به انگلیسی).
+                        این فایل اکنون شامل کمپین‌های S4 و مقادیر پارامتریک جاری است.
+                    </p>
+                    <button class="btn btn-primary download-txt-btn" id="downloadTxtDoc">
+                        <i class="fas fa-file-download"></i> دانلود Gamification Model (.txt)
+                    </button>
+                    <div class="admin-note">
+                        <i class="fas fa-info-circle" style="color:var(--caramel);"></i>
+                        این فایل را ویرایش کرده و در نسخه‌های بعدی (S5, …) برای کالیبره کردن مدل ارسال کنید.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: BUSINESS MANAGER -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-bm">
+            <h2 class="page-title"><i class="fas fa-chart-line"></i> داشبورد مدیر کسب و کار</h2>
+            <p class="page-subtitle">نمایش کامل رتبه‌بندی، لیگ‌ها و جوایز تعهدشده</p>
+
+            <div class="bm-dashboard">
+                <!-- RSM Ranking -->
+                <div class="bm-card">
+                    <h4><i class="fas fa-flag"></i> رتبه‌بندی مدیران فروش منطقه (RSM)</h4>
+                    <div class="admin-note" style="margin-bottom:8px;font-size:11px;">
+                        پاداش هر مدیر فروش = <strong>β</strong> × پاداش فروشنده &nbsp;–&nbsp; مقدار فعلی β:
+                        <strong id="bmBetaDisplay">1.4</strong>
+                    </div>
+                    <div id="rsmRankingList"></div>
+                </div>
+
+                <!-- Sellers Ranking -->
+                <div class="bm-card">
+                    <h4><i class="fas fa-users"></i> رتبه‌بندی فروشندگان</h4>
+                    <div style="margin-bottom:8px;">
+                        <span class="league-tag serie-a">لیگ قهرمانان</span>
+                        <span class="league-tag serie-b" style="margin-right:6px;">لیگ برتر</span>
+                    </div>
+                    <div id="sellerRankingList"></div>
+                </div>
+
+                <!-- Pledged Rewards -->
+                <div class="bm-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-hand-holding-heart"></i> جوایز متعهدشده</h4>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="pledgeColumns">
+                        <div>
+                            <div style="font-weight:600;color:var(--caramel);font-size:13px;">ماهانه</div>
+                            <div id="monthlyPledges"></div>
+                        </div>
+                        <div>
+                            <div style="font-weight:600;color:var(--caramel);font-size:13px;">فصلی</div>
+                            <div id="quarterlyPledges"></div>
+                        </div>
+                        <div>
+                            <div style="font-weight:600;color:var(--caramel);font-size:13px;">سالانه</div>
+                            <div id="annualPledges"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Separate League Tables (BM) -->
+                <div class="bm-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-trophy" style="color:var(--gold);"></i> رتبه‌بندی لیگ‌ها – جزئیات کامل</h4>
+                    <div class="bm-league-wrap">
+                        <div class="bm-league-title">🏆 لیگ قهرمانان</div>
+                        <div style="overflow-x:auto;">
+                            <table class="bm-league-table" id="bmLeagueA">
+                                <thead>
+                                    <tr>
+                                        <th>رتبه</th>
+                                        <th>نام تیم</th>
+                                        <th>RSM</th>
+                                        <th style="text-align:center;">رشد %</th>
+                                        <th style="text-align:center;">پوشش %</th>
+                                        <th style="text-align:center;">تحقق %</th>
+                                        <th style="text-align:center;">میانگین سطر</th>
+                                        <th style="text-align:center;">🏆 امتیاز نهایی</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bmLeagueABody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <hr class="section-divider">
+                    <div class="bm-league-wrap">
+                        <div class="bm-league-title">⚽ لیگ برتر</div>
+                        <div style="overflow-x:auto;">
+                            <table class="bm-league-table" id="bmLeagueB">
+                                <thead>
+                                    <tr>
+                                        <th>رتبه</th>
+                                        <th>نام تیم</th>
+                                        <th>RSM</th>
+                                        <th style="text-align:center;">رشد %</th>
+                                        <th style="text-align:center;">پوشش %</th>
+                                        <th style="text-align:center;">تحقق %</th>
+                                        <th style="text-align:center;">میانگین سطر</th>
+                                        <th style="text-align:center;">🏆 امتیاز نهایی</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bmLeagueBBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: RSM -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-rsm">
+            <h2 class="page-title"><i class="fas fa-users"></i> داشبورد مدیر فروش منطقه</h2>
+            <p class="page-subtitle">نمایه تیم، اعضا و جوایز تضمینی</p>
+
+            <div class="rsm-dashboard">
+                <div class="rsm-card">
+                    <h4><i class="fas fa-id-card"></i> نمایه تیم</h4>
+                    <div class="team-profile">
+                        <div class="avatar"><i class="fas fa-user-tie"></i></div>
+                        <div class="team-info">
+                            <div class="team-name">تیم اطلس</div>
+                            <div class="team-desc">منطقه شمال – ۱۲ فروشنده</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;font-size:13px;">
+                        <div>📍 رتبه کلی: <strong>#۲</strong></div>
+                        <div>🏆 امتیاز تیم: <strong>۸,۴۲۰</strong></div>
+                        <div>📈 رشد حجمی: <strong>+۱۲.۴٪</strong></div>
+                        <div>📊 پوشش: <strong>۷۸٪</strong></div>
+                        <div>🎯 تحقق تارگت: <strong>۹۲٪</strong></div>
+                    </div>
+                </div>
+
+                <div class="rsm-card">
+                    <h4><i class="fas fa-users"></i> اعضای تیم</h4>
+                    <div style="overflow-x:auto;">
+                        <table class="team-members-table" id="teamMembersTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>نام فروشنده</th>
+                                    <th style="text-align:center;">⭐ امتیاز</th>
+                                    <th style="text-align:center;">تحقق %</th>
+                                    <th style="text-align:center;">پوشش %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teamMembersBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="rsm-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-medal"></i> جوایز تضمینی</h4>
+                    <div class="guaranteed-reward">
+                        <span>🏅 پاداش ماهانه – بهترین فروشنده تیم</span>
+                        <span style="font-weight:700;" id="rsmMonthlyReward">$ ۱۰۰ کارت هدیه</span>
+                    </div>
+                    <div class="guaranteed-reward" style="margin-top:6px;border-right-color:var(--caramel);">
+                        <span>🎯 پاداش فصلی – تحقق ۱۰۰٪ تارگت</span>
+                        <span style="font-weight:700;" id="rsmQuarterlyReward">$ ۵۰۰</span>
+                    </div>
+                    <div class="guaranteed-reward" style="margin-top:6px;border-right-color:var(--gold);">
+                        <span>🌟 پاداش سالانه – صعود به لیگ قهرمانان</span>
+                        <span style="font-weight:700;" id="rsmAnnualReward">سفر ۷ روزه + مرخصی</span>
+                    </div>
+                    <div class="guaranteed-reward" style="margin-top:6px;border-right-color:var(--mint);">
+                        <span>🔁 پاداش تداوم – تحقق AOP در ۱۲ ماه</span>
+                        <span style="font-weight:700;" id="rsmContinuityReward">$ ۵۰۰</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE: SELLER -->
+        <!-- ============================================================ -->
+        <section class="page" id="page-seller">
+            <h2 class="page-title"><i class="fas fa-user"></i> داشبورد فروشنده</h2>
+            <p class="page-subtitle">راهنمای SFI، پیشرفت شخصی و رتبه‌بندی درون تیم</p>
+
+            <div class="seller-dashboard">
+                <div class="seller-card">
+                    <h4><i class="fas fa-lightbulb"></i> راهنمای SFI</h4>
+                    <div class="sfi-hint">
+                        <div class="hint-label">🎯 تمرکز فروش این ماه</div>
+                        <div class="hint-text">محصول اختصاصی: <strong id="sfiFocusProduct">شکلات های سکه ای دارک</strong> – هدف: ۲۰۰ واحد</div>
+                    </div>
+                    <div class="sfi-hint" style="border-right-color:var(--caramel);">
+                        <div class="hint-label">📊 وضعیت فعلی شما</div>
+                        <div class="hint-text">۱۲۸ واحد فروخته‌اید – <strong>۶۴٪</strong> از هدف ماهانه</div>
+                    </div>
+                    <div class="sfi-hint" style="border-right-color:var(--gold);">
+                        <div class="hint-label">⭐ امتیاز جایزه اختصاصی</div>
+                        <div class="hint-text">امتیاز شما: <strong>۲,۵۶۰</strong> – رتبه: <strong>#۳</strong> در تیم</div>
+                    </div>
+                    <div class="sfi-hint" style="border-right-color:var(--mint);">
+                        <div class="hint-label">🏅 کمپین‌های فعال شما</div>
+                        <div class="hint-text" id="sellerCampaignHint">۲ کمپین در دسترس</div>
+                    </div>
+                </div>
+
+                <div class="seller-card">
+                    <h4><i class="fas fa-chart-pie"></i> پیشرفت شخصی</h4>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-label"><span>تحقق تارگت ماهانه</span><span>۶۴٪</span></div>
+                        <div class="progress-bar"><div class="fill" style="width:64%;"></div></div>
+                    </div>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-label"><span>پوشش محصولات</span><span>۷۸٪</span></div>
+                        <div class="progress-bar"><div class="fill" style="width:78%;"></div></div>
+                    </div>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-label"><span>رشد حجمی (نسبت به ماه قبل)</span><span>+۹٪</span></div>
+                        <div class="progress-bar"><div class="fill" style="width:9%;background:linear-gradient(90deg,var(--peach),var(--caramel));"></div></div>
+                    </div>
+                    <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:13px;background:var(--cream);padding:8px 12px;border-radius:var(--radius-sm);">
+                        <span>🏅 رتبه شما در تیم</span>
+                        <span style="font-weight:700;color:var(--caramel);">#۳ از ۱۲</span>
+                    </div>
+                </div>
+
+                <div class="seller-card" style="grid-column:1/-1;">
+                    <h4><i class="fas fa-ranking-star"></i> رتبه‌بندی درون تیم – جزئیات کامل</h4>
+                    <div style="overflow-x:auto;">
+                        <table class="intra-team-table" id="intraTeamTable">
+                            <thead>
+                                <tr>
+                                    <th>رتبه</th>
+                                    <th>نام فروشنده</th>
+                                    <th style="text-align:center;">تعداد محصول</th>
+                                    <th style="text-align:center;">تحقق تارگت %</th>
+                                    <th style="text-align:center;">⭐ امتیاز</th>
+                                    <th style="text-align:center;">پوشش %</th>
+                                    <th style="text-align:center;">رشد %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="intraTeamBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================================ -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        /* ==========================================================
+           SHARED CONSTANTS
+           ========================================================== */
+        const georgianMonths = ['January','February','March','April','May','June',
+                                'July','August','September','October','November','December'];
+
+        function seeded(seed) {
+            const x = Math.sin(seed * 12.9898) * 43758.5453;
+            return x - Math.floor(x);
+        }
+
+        function money(n) {
+            return '$' + Math.round(n).toLocaleString('en-US');
+        }
+
+        /* ==========================================================
+           0. PARAMETERS (S4 – fully parametric)
+           ========================================================== */
+        const DEFAULT_PARAMS = {
+            /* Global coefficients */
+            seasonBudget: 100000,
+            budgetSpent: 67000,
+            alpha: 1.5,          // α : League A superiority (1 < α < 2)
+            beta: 1.4,           // β : Sales Manager multiplier (1 < β < 2)
+            gamma: 10000,        // γ : base reward unit
+
+            /* League A rank multipliers (× γ). League B = ÷ α */
+            rankA1: 1.0,
+            rankA2: 0.8,
+            rankA3: 0.6,
+            rankA4: 0.5,
+            rankA5: 0.4,
+            rankA6: 0.3,
+            rankA7: 0.2,
+
+            /* Monthly rewards ($) */
+            monthlyBestSeller: 100,
+            monthlyBestTeam: 500,
+            campaignProgress: 150,
+            campaignBasket: 120,
+            campaignCoverage: 130,
+            campaignBalance: 110,
+            campaignEmphasisMember: 60,
+            emphasisTeamSize: 8,
+
+            /* Yearly rewards ($) */
+            yearlyContinuity: 500,
+            yearlyChampion: 15000,
+            yearlyTrip: 3000,
+
+            /* Score formula */
+            wCoverage: 1,
+            wCoverageGrowth: 1,
+            wAop: 1,
+            wAopGrowth: 1,
+            scoreDivisor: 2,
+            pointsMultiplier: 100,
+
+            /* Team score formula */
+            teamScoreScale: 10000,
+            growthDivisor: 10,
+
+            /* Hyper parameters */
+            specialThreshold: 95,
+            starMultiplier: 1.0,
+            trophyWeight: 0.85,
+            weeklyBonusCap: 500,
+            leaguePromotionThreshold: 0.75,
+            monthlyFocus: 'شکلات های سکه ای دارک'
+        };
+
+        const STORAGE_KEY = 'sfi_s4_params';
+        let PARAMS = Object.assign({}, DEFAULT_PARAMS);
+
+        function loadParams() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) PARAMS = Object.assign({}, DEFAULT_PARAMS, JSON.parse(raw));
+            } catch (e) { /* ignore */ }
+        }
+        function saveParams() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(PARAMS)); } catch (e) { /* ignore */ }
+        }
+
+        /* --- Parameter UI schema --- */
+        const PARAM_SCHEMA = [
+            {
+                title: '💰 ضرایب و بودجه کلی', icon: 'fa-coins',
+                items: [
+                    { key: 'seasonBudget',  label: 'بودجه فصل ($)',              step: 1000, min: 0 },
+                    { key: 'budgetSpent',   label: 'بودجه مصرف‌شده ($)',         step: 1000, min: 0 },
+                    { key: 'alpha',         label: 'α – ضریب برتری لیگ A (۱<α<۲)', step: 0.1, min: 1, max: 2 },
+                    { key: 'beta',          label: 'β – ضریب پاداش مدیر فروش (۱<β<۲)', step: 0.1, min: 1, max: 2 },
+                    { key: 'gamma',         label: 'γ – واحد پایه پاداش ($)',      step: 500, min: 0 }
+                ]
+            },
+            {
+                title: '🏆 ضریب پاداش رتبه‌های لیگ A (× γ)', icon: 'fa-trophy',
+                items: [
+                    { key: 'rankA1', label: 'رتبه ۱', step: 0.1, min: 0 },
+                    { key: 'rankA2', label: 'رتبه ۲', step: 0.1, min: 0 },
+                    { key: 'rankA3', label: 'رتبه ۳', step: 0.1, min: 0 },
+                    { key: 'rankA4', label: 'رتبه ۴', step: 0.1, min: 0 },
+                    { key: 'rankA5', label: 'رتبه ۵', step: 0.1, min: 0 },
+                    { key: 'rankA6', label: 'رتبه ۶', step: 0.1, min: 0 },
+                    { key: 'rankA7', label: 'رتبه ۷', step: 0.1, min: 0 }
+                ]
+            },
+            {
+                title: '🎯 کمپین‌های ماهانه ($)', icon: 'fa-bullhorn',
+                items: [
+                    { key: 'campaignProgress',       label: 'جایزه پیشروی',                 step: 10, min: 0 },
+                    { key: 'campaignBasket',         label: 'جایزه سبد فروش',               step: 10, min: 0 },
+                    { key: 'campaignCoverage',       label: 'جایزه پوشش‌دهی',               step: 10, min: 0 },
+                    { key: 'campaignBalance',        label: 'جایزه تعادل',                  step: 10, min: 0 },
+                    { key: 'campaignEmphasisMember', label: 'جایزه تاکیدی (هر عضو)',        step: 5,  min: 0 },
+                    { key: 'emphasisTeamSize',       label: 'تعداد اعضای تیم تاکیدی',       step: 1,  min: 1 },
+                    { key: 'monthlyBestSeller',      label: 'بهترین فروشنده ماه',           step: 10, min: 0 },
+                    { key: 'monthlyBestTeam',        label: 'تیم برتر ماه',                 step: 10, min: 0 }
+                ]
+            },
+            {
+                title: '🗓️ پاداش‌های سالانه ($)', icon: 'fa-calendar-check',
+                items: [
+                    { key: 'yearlyContinuity', label: 'جایزه تداوم (هر فرد)', step: 50, min: 0 },
+                    { key: 'yearlyChampion',   label: 'قهرمان سال (تیم)',     step: 500, min: 0 },
+                    { key: 'yearlyTrip',       label: 'ارزش سفر ۷ روزه',      step: 100, min: 0 }
+                ]
+            },
+            {
+                title: '📐 پارامترهای فرمول امتیاز', icon: 'fa-square-root-variable',
+                items: [
+                    { key: 'wCoverage',        label: 'وزن پوشش',                 step: 0.1, min: 0 },
+                    { key: 'wCoverageGrowth',  label: 'وزن رشد پوشش',             step: 0.1, min: 0 },
+                    { key: 'wAop',             label: 'وزن تحقق AOP',             step: 0.1, min: 0 },
+                    { key: 'wAopGrowth',       label: 'وزن رشد تحقق AOP',         step: 0.1, min: 0 },
+                    { key: 'scoreDivisor',     label: 'مخرج فرمول Score',         step: 0.5, min: 0.5 },
+                    { key: 'pointsMultiplier', label: 'ضریب Points',              step: 1,   min: 0 },
+                    { key: 'teamScoreScale',   label: 'مقیاس امتیاز تیمی',        step: 1000, min: 1 },
+                    { key: 'growthDivisor',    label: 'مخرج نرمال‌سازی رشد',      step: 1,   min: 1 }
+                ]
+            },
+            {
+                title: '✈️ جایزه ویژه و هایپرپارامترها', icon: 'fa-gears',
+                items: [
+                    { key: 'specialThreshold',           label: 'آستانه تحقق ویژه (%)',   step: 1,   min: 0, max: 100 },
+                    { key: 'starMultiplier',             label: 'ضریب ستاره',             step: 0.05, min: 0 },
+                    { key: 'trophyWeight',               label: 'وزن جام',                step: 0.05, min: 0, max: 1 },
+                    { key: 'weeklyBonusCap',             label: 'سقف پاداش هفتگی ($)',    step: 50,  min: 0 },
+                    { key: 'leaguePromotionThreshold',   label: 'آستانه صعود لیگ',        step: 0.05, min: 0, max: 1 }
+                ]
+            }
+        ];
+
+        function buildParamsUI() {
+            const wrap = document.getElementById('paramsWrap');
+            wrap.innerHTML = '';
+            PARAM_SCHEMA.forEach(group => {
+                const card = document.createElement('div');
+                card.className = 'param-card';
+                card.innerHTML = '<h4><i class="fas ' + group.icon + '"></i> ' + group.title + '</h4>';
+                const inner = document.createElement('div');
+                inner.className = 'param-grid-inner';
+                group.items.forEach(item => {
+                    const field = document.createElement('div');
+                    field.className = 'param-field';
+                    let attrs = '';
+                    if (item.step !== undefined) attrs += ' step="' + item.step + '"';
+                    if (item.min !== undefined) attrs += ' min="' + item.min + '"';
+                    if (item.max !== undefined) attrs += ' max="' + item.max + '"';
+                    field.innerHTML =
+                        '<label for="p_' + item.key + '">' + item.label + '</label>' +
+                        '<input type="number" id="p_' + item.key + '" data-key="' + item.key + '"' +
+                        ' value="' + PARAMS[item.key] + '"' + attrs + '>';
+                    inner.appendChild(field);
+                });
+                card.appendChild(inner);
+                wrap.appendChild(card);
+            });
+
+            // live update on Enter / blur
+            wrap.querySelectorAll('input[data-key]').forEach(inp => {
+                inp.addEventListener('keydown', e => { if (e.key === 'Enter') applyParams(); });
+            });
+        }
+
+        function applyParams() {
+            let changed = 0;
+            document.querySelectorAll('#paramsWrap input[data-key]').forEach(inp => {
+                const k = inp.dataset.key;
+                const v = parseFloat(inp.value);
+                if (!isNaN(v) && PARAMS[k] !== v) { PARAMS[k] = v; changed++; }
+            });
+            saveParams();
+            renderAll();
+            const st = document.getElementById('paramsStatus');
+            st.textContent = '✅ پارامترها اعمال شد' + (changed ? ' (' + changed + ' تغییر)' : '');
+            setTimeout(() => { st.textContent = ''; }, 2600);
+        }
+
+        function resetParams() {
+            PARAMS = Object.assign({}, DEFAULT_PARAMS);
+            saveParams();
+            buildParamsUI();
+            renderAll();
+            const st = document.getElementById('paramsStatus');
+            st.textContent = '↺ بازنشانی به مقادیر پیش‌فرض';
+            setTimeout(() => { st.textContent = ''; }, 2600);
+        }
+
+        /* ==========================================================
+           1. MENU
+           ========================================================== */
+        const burgerBtn = document.getElementById('burgerToggle');
+        const menuPanel = document.getElementById('menuPanel');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const menuClose = document.getElementById('menuClose');
+
+        function openMenu() {
+            menuPanel.classList.add('open');
+            menuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMenu() {
+            menuPanel.classList.remove('open');
+            menuOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        burgerBtn.addEventListener('click', openMenu);
+        menuClose.addEventListener('click', closeMenu);
+        menuOverlay.addEventListener('click', closeMenu);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+        /* ==========================================================
+           2. NAVIGATION
+           ========================================================== */
+        const navItems = document.querySelectorAll('.nav-item');
+        const pages = {
+            landing:   document.getElementById('page-landing'),
+            campaigns: document.getElementById('page-campaigns'),
+            admin:     document.getElementById('page-admin'),
+            params:    document.getElementById('page-params'),
+            bm:        document.getElementById('page-bm'),
+            rsm:       document.getElementById('page-rsm'),
+            seller:    document.getElementById('page-seller')
+        };
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function () {
+                const pageId = this.dataset.page;
+                if (!pageId || !pages[pageId]) return;
+                navItems.forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                Object.keys(pages).forEach(k => pages[k].classList.remove('active'));
+                pages[pageId].classList.add('active');
+                closeMenu();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        /* ==========================================================
+           3. REWARD TABLE (parametric)
+           ========================================================== */
+        function getRewardRows() {
+            const p = PARAMS;
+            const g = p.gamma, a = p.alpha;
+            return [
+                { name: 'جایزه پیشروی',                 category: 'ماهانه', amount: p.campaignProgress },
+                { name: 'جایزه سبد فروش',               category: 'ماهانه', amount: p.campaignBasket },
+                { name: 'جایزه پوشش‌دهی',               category: 'ماهانه', amount: p.campaignCoverage },
+                { name: 'جایزه تعادل',                  category: 'ماهانه', amount: p.campaignBalance },
+                { name: 'جایزه تاکیدی (هر عضو)',        category: 'ماهانه', amount: p.campaignEmphasisMember },
+                { name: 'بهترین فروشنده ماه',           category: 'ماهانه', amount: p.monthlyBestSeller },
+                { name: 'تیم برتر ماه',                 category: 'ماهانه', amount: p.monthlyBestTeam },
+                { name: 'جایزه تداوم (۱۲ ماه AOP)',     category: 'سالانه', amount: p.yearlyContinuity },
+                { name: 'قهرمان لیگ A – رتبه ۱',        category: 'فصلی',   amount: g * p.rankA1 },
+                { name: 'نایب قهرمان لیگ A – رتبه ۲',   category: 'فصلی',   amount: g * p.rankA2 },
+                { name: 'رتبه ۳ لیگ A',                 category: 'فصلی',   amount: g * p.rankA3 },
+                { name: 'رتبه ۴ لیگ A',                 category: 'فصلی',   amount: g * p.rankA4 },
+                { name: 'قهرمان لیگ B – رتبه ۱',        category: 'فصلی',   amount: g * p.rankA1 / a },
+                { name: 'نایب قهرمان لیگ B – رتبه ۲',   category: 'فصلی',   amount: g * p.rankA2 / a },
+                { name: 'رتبه ۳ لیگ B',                 category: 'فصلی',   amount: g * p.rankA3 / a },
+                { name: 'سفر ۷ روزه + مرخصی',           category: 'سالانه', amount: p.yearlyTrip },
+                { name: 'قهرمان سال (تیم)',             category: 'سالانه', amount: p.yearlyChampion }
+            ];
+        }
+
+        function renderRewardTable() {
+            const tbody = document.getElementById('rewardTableBody');
+            tbody.innerHTML = '';
+            getRewardRows().forEach((r, i) => {
+                const tr = document.createElement('tr');
+                tr.className = 'row-approved';
+                tr.innerHTML =
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td class="prize-name approved">' +
+                        '<i class="fas fa-circle prize-icon approved" style="margin-left:6px;font-size:10px;"></i>' +
+                        r.name + '</td>' +
+                    '<td>' + r.category + '</td>' +
+                    '<td>' + money(r.amount) + '</td>' +
+                    '<td><span class="status-badge approved">⚪ مصوب</span></td>';
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* ==========================================================
+           4. BUDGET BAR + COUNTER (parametric)
+           ========================================================== */
+        let counterAnimated = false;
+
+        function renderBudget() {
+            const budget = PARAMS.seasonBudget || 1;
+            const spent = Math.min(PARAMS.budgetSpent, budget);
+            const pct = Math.max(0, Math.min(100, (spent / budget) * 100));
+
+            document.getElementById('budgetDisplay').textContent =
+                money(spent) + ' of ' + money(budget);
+            document.getElementById('budgetFill').style.width = pct + '%';
+            document.getElementById('barLabel').textContent = Math.round(pct) + '%';
+            document.getElementById('budgetMaxLabel').textContent = money(budget);
+        }
+
+        function renderCounter() {
+            const el = document.getElementById('counterNumber');
+            const target = PARAMS.seasonBudget;
+
+            if (counterAnimated) { el.textContent = money(target); return; }
+
+            const duration = 2200;
+            const startTime = performance.now();
+            (function step(time) {
+                const elapsed = time - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = money(eased * target);
+                if (progress < 1) requestAnimationFrame(step);
+                else { el.textContent = money(target); counterAnimated = true; }
+            })(performance.now());
+        }
+
+        /* ==========================================================
+           5. CAMPAIGNS (S4)
+           ========================================================== */
+        const CAMPAIGN_DEFS = [
+            {
+                key: 'progress',
+                title: 'جایزه پیشروی',
+                icon: 'fa-rocket',
+                cssClass: '',
+                freq: 'ماهانه – فردی',
+                amountKey: 'campaignProgress',
+                desc: 'به فردی تعلق می‌گیرد که بیشترین رشد وزنی فروش را نسبت به ماه گذشته خودش رقم بزند.',
+                metric: 'معیار: بیشترین رشد وزنی (%) نسبت به ماه قبل خودِ فرد',
+                unit: '%',
+                lowerIsBetter: false
+            },
+            {
+                key: 'basket',
+                title: 'جایزه سبد فروش',
+                icon: 'fa-basket-shopping',
+                cssClass: '',
+                freq: 'ماهانه – فردی',
+                amountKey: 'campaignBasket',
+                desc: 'به فردی تعلق می‌گیرد که بالاترین میانگین تعداد اقلام هر فاکتور را ثبت کرده باشد.',
+                metric: 'معیار: بالاترین میانگین #Line per Invoice',
+                unit: 'سطر',
+                lowerIsBetter: false
+            },
+            {
+                key: 'coverage',
+                title: 'جایزه پوشش‌دهی',
+                icon: 'fa-user-plus',
+                cssClass: 'coverage',
+                freq: 'ماهانه – فردی',
+                amountKey: 'campaignCoverage',
+                desc: 'به فردی تعلق می‌گیرد که بیشترین مشتری جدید را در ماه فعال کرده باشد.',
+                metric: 'معیار: بیشترین تعداد مشتری جدید فعال‌شده',
+                unit: 'مشتری',
+                lowerIsBetter: false
+            },
+            {
+                key: 'balance',
+                title: 'جایزه تعادل',
+                icon: 'fa-scale-balanced',
+                cssClass: 'balance',
+                freq: 'ماهانه – فردی',
+                amountKey: 'campaignBalance',
+                desc: 'به فردی تعلق می‌گیرد که کمترین اختلاف فروش بین نیمه اول و نیمه دوم ماه را داشته باشد.',
+                metric: 'معیار: کمترین اختلاف فروش نیمه اول و دوم ماه (%)',
+                unit: '% اختلاف',
+                lowerIsBetter: true
+            },
+            {
+                key: 'emphasis',
+                title: 'جایزه تاکیدی',
+                icon: 'fa-bullseye',
+                cssClass: 'emphasis',
+                freq: 'ماهانه – تیمی',
+                amountKey: 'campaignEmphasisMember',
+                desc: 'به تیمی تعلق می‌گیرد که بیشترین تعداد فروش از سبد تاکیدی را داشته باشد. تمامی اعضای تیم این جایزه را دریافت می‌کنند.',
+                metric: 'معیار: بیشترین تعداد فروش از سبد تاکیدی (واحد)',
+                unit: 'واحد',
+                lowerIsBetter: false,
+                isTeam: true
+            }
+        ];
+
+        const sellerPool = [
+            ['امیر حسینی', 'تیم اطلس'],
+            ['نیما شریفی', 'تیم اطلس'],
+            ['فاطمه زارع', 'تیم اطلس'],
+            ['محسن ملکی', 'تیم هرمس'],
+            ['ترنم عباسی', 'تیم هرمس'],
+            ['کیان رضوی', 'تیم هرمس'],
+            ['پریسا نوری', 'تیم زئوس'],
+            ['یاسین احمدی', 'تیم زئوس'],
+            ['سارا کریمی', 'تیم زئوس'],
+            ['مهدی عباسی', 'تیم آپولو'],
+            ['لیلا محمدی', 'تیم آپولو'],
+            ['علی نوری', 'تیم آپولو'],
+            ['زهرا حسینی', 'تیم آرتمیس'],
+            ['رضا صادقی', 'تیم آرتمیس'],
+            ['مریم کاظمی', 'تیم آرتمیس']
+        ];
+
+        const campaignTeamNames = ['تیم اطلس','تیم هرمس','تیم زئوس','تیم آپولو','تیم آرتمیس','تیم پوزئیدون','تیم دیمتر'];
+
+        function genIndividualValue(campKey, monthIdx, i) {
+            const s = seeded(i * 31.7 + monthIdx * 97.3 + campKey.charCodeAt(0) * 3.1);
+            switch (campKey) {
+                case 'progress': return +(3 + s * 37).toFixed(1);      // %
+                case 'basket':   return +(1.5 + s * 4.5).toFixed(1);   // lines
+                case 'coverage': return Math.round(s * 25);            // new customers
+                case 'balance':  return +(1 + s * 28).toFixed(1);      // % difference
+                default: return 0;
+            }
+        }
+
+        function genTeamValue(monthIdx, i) {
+            const s = seeded(i * 41.3 + monthIdx * 63.7 + 11.1);
+            return Math.round(120 + s * 320);
+        }
+
+        function getCampaignRows(def, monthIdx) {
+            let rows;
+            if (def.isTeam) {
+                rows = campaignTeamNames.map((t, i) => ({
+                    name: t,
+                    team: '۷ عضو',
+                    value: genTeamValue(monthIdx, i)
+                }));
+            } else {
+                rows = sellerPool.map(([n, t], i) => ({
+                    name: n,
+                    team: t,
+                    value: genIndividualValue(def.key, monthIdx, i)
+                }));
+            }
+            rows.sort((a, b) => def.lowerIsBetter ? (a.value - b.value) : (b.value - a.value));
+            return rows;
+        }
+
+        let campMonth = 0;
+        const CAMP_TOTAL_MONTHS = 12;
+
+        function renderCampaigns() {
+            const grid = document.getElementById('campaignGrid');
+            grid.innerHTML = '';
+
+            CAMPAIGN_DEFS.forEach(def => {
+                const rows = getCampaignRows(def, campMonth);
+                const winner = rows[0];
+                const perMember = PARAMS[def.amountKey];
+                const teamSize = PARAMS.emphasisTeamSize || 1;
+
+                const card = document.createElement('div');
+                card.className = 'campaign-card ' + def.cssClass;
+
+                const amountLabel = def.isTeam
+                    ? money(perMember) + ' / عضو'
+                    : money(perMember);
+
+                let extra = '';
+                if (def.isTeam) {
+                    extra = '<div class="campaign-metric">' +
+                            '💰 مجموع توزیعی تیم: <strong>' + money(perMember * teamSize) +
+                            '</strong> (' + teamSize + ' عضو)</div>';
+                }
+
+                const top5 = rows.slice(0, 5).map((r, idx) =>
+                    '<tr class="' + (idx === 0 ? 'top-row' : '') + '">' +
+                        '<td>' + (idx + 1) + '</td>' +
+                        '<td>' + r.name + '</td>' +
+                        '<td style="font-size:11px;color:var(--gray-dark);">' + r.team + '</td>' +
+                        '<td class="val-col">' + r.value + ' ' + def.unit + '</td>' +
+                    '</tr>'
+                ).join('');
+
+                card.innerHTML =
+                    '<div class="campaign-head">' +
+                        '<div class="campaign-icon"><i class="fas ' + def.icon + '"></i></div>' +
+                        '<div class="campaign-head-text">' +
+                            '<div class="campaign-title">' + def.title + '</div>' +
+                            '<div class="campaign-freq">' + def.freq + '</div>' +
+                        '</div>' +
+                        '<div class="campaign-amount">' + amountLabel + '</div>' +
+                    '</div>' +
+                    '<p class="campaign-desc">' + def.desc + '</p>' +
+                    '<div class="campaign-metric">📏 ' + def.metric + '</div>' +
+                    extra +
+                    '<div class="campaign-winner">' +
+                        '<span>🥇 برنده ' + georgianMonths[campMonth] + ':</span>' +
+                        '<span class="winner-name">' + winner.name + '</span>' +
+                        '<span class="winner-team">– ' + winner.team + '</span>' +
+                        '<span style="margin-right:auto;font-weight:700;color:var(--caramel);">' +
+                            winner.value + ' ' + def.unit +
+                        '</span>' +
+                    '</div>' +
+                    '<table class="campaign-table">' +
+                        '<thead><tr>' +
+                            '<th style="width:28px;">#</th>' +
+                            '<th>نام</th>' +
+                            '<th>تیم</th>' +
+                            '<th style="text-align:center;">مقدار</th>' +
+                        '</tr></thead>' +
+                        '<tbody>' + top5 + '</tbody>' +
+                    '</table>';
+
+                grid.appendChild(card);
+            });
+
+            document.getElementById('campMonthLabel').textContent = georgianMonths[campMonth];
+            document.getElementById('campProgress').textContent = (campMonth + 1) + ' / ' + CAMP_TOTAL_MONTHS;
+            document.getElementById('campPrev').disabled = campMonth === 0;
+            document.getElementById('campNext').disabled = campMonth === CAMP_TOTAL_MONTHS - 1;
+
+            renderYearlyCampaign();
+        }
+
+        function renderYearlyCampaign() {
+            const wrap = document.getElementById('yearlyCampaign');
+            const reward = PARAMS.yearlyContinuity;
+
+            const list = sellerPool.map(([n, t], i) => {
+                let monthsHit = 0;
+                for (let m = 0; m < 12; m++) {
+                    if (seeded(i * 17.3 + m * 29.7 + 5.5) > 0.32) monthsHit++;
+                }
+                return { name: n, team: t, months: monthsHit, qualified: monthsHit === 12 };
+            }).sort((a, b) => b.months - a.months);
+
+            const qualifiedCount = list.filter(x => x.qualified).length;
+
+            const rowsHtml = list.map(r =>
+                '<tr class="' + (r.qualified ? 'qualified-row' : '') + '">' +
+                    '<td>' + r.name + '</td>' +
+                    '<td style="font-size:11px;color:var(--gray-dark);">' + r.team + '</td>' +
+                    '<td class="months-col">' + r.months + ' / 12</td>' +
+                    '<td class="status-col">' +
+                        '<span class="pill ' + (r.qualified ? 'yes' : 'no') + '">' +
+                            (r.qualified ? '✅ واجد شرایط' : '—') +
+                        '</span>' +
+                    '</td>' +
+                    '<td style="text-align:center;font-weight:700;color:var(--caramel);">' +
+                        (r.qualified ? money(reward) : '—') +
+                    '</td>' +
+                '</tr>'
+            ).join('');
+
+            wrap.innerHTML =
+                '<div class="yearly-head">' +
+                    '<div class="yearly-icon"><i class="fas fa-arrows-rotate"></i></div>' +
+                    '<div>' +
+                        '<div class="yearly-title">🏅 جایزه تداوم (سالانه)</div>' +
+                        '<div class="yearly-sub">تحقق AOP در تمام ۱۲ ماه سال – ' +
+                            qualifiedCount + ' نفر واجد شرایط در این نمونه</div>' +
+                    '</div>' +
+                    '<div class="yearly-amount">' + money(reward) + ' / نفر</div>' +
+                '</div>' +
+                '<p class="yearly-desc">' +
+                    'تمامی کسانی که در طول ۱۲ ماه سال، AOP (تحقق تارگت) خود را به‌طور کامل محقق کنند، ' +
+                    'این جایزه را دریافت می‌کنند. مجموع توزیعی این کمپین در نمونه فعلی: ' +
+                    '<strong>' + money(reward * qualifiedCount) + '</strong>' +
+                '</p>' +
+                '<div class="continuity-wrap">' +
+                    '<table class="continuity-table">' +
+                        '<thead><tr>' +
+                            '<th>نام فروشنده</th>' +
+                            '<th>تیم</th>' +
+                            '<th style="text-align:center;">ماه‌های تحقق</th>' +
+                            '<th style="text-align:center;">وضعیت</th>' +
+                            '<th style="text-align:center;">جایزه</th>' +
+                        '</tr></thead>' +
+                        '<tbody>' + rowsHtml + '</tbody>' +
+                    '</table>' +
+                '</div>';
+        }
+
+        document.getElementById('campPrev').addEventListener('click', () => {
+            if (campMonth > 0) { campMonth--; renderCampaigns(); }
+        });
+        document.getElementById('campNext').addEventListener('click', () => {
+            if (campMonth < CAMP_TOTAL_MONTHS - 1) { campMonth++; renderCampaigns(); }
+        });
+
+        /* ==========================================================
+           6. ADMIN: JSON / XLSX / 52-WEEK TABLE
+           ========================================================== */
+        document.getElementById('downloadJson').addEventListener('click', function () {
+            const sample = {
+                hyperParameters: {
+                    starMultiplier: PARAMS.starMultiplier,
+                    trophyWeight: PARAMS.trophyWeight,
+                    weeklyBonusCap: PARAMS.weeklyBonusCap,
+                    leaguePromotionThreshold: PARAMS.leaguePromotionThreshold,
+                    monthlyFocus: PARAMS.monthlyFocus,
+                    teamEvaluation: ['growth', 'coverage', 'aop', 'linePerInvoice']
+                },
+                coefficients: {
+                    alpha: PARAMS.alpha,
+                    beta: PARAMS.beta,
+                    gamma: PARAMS.gamma
+                },
+                campaigns: {
+                    progress: PARAMS.campaignProgress,
+                    basket: PARAMS.campaignBasket,
+                    coverage: PARAMS.campaignCoverage,
+                    balance: PARAMS.campaignBalance,
+                    emphasisPerMember: PARAMS.campaignEmphasisMember,
+                    continuityYearly: PARAMS.yearlyContinuity
+                }
+            };
+            const blob = new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'gamification_sample.json'; a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('uploadJsonBtn').addEventListener('click', () =>
+            document.getElementById('jsonFileInput').click());
+
+        document.getElementById('jsonFileInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    JSON.parse(ev.target.result);
+                    document.getElementById('jsonUploadStatus').textContent = '✅ JSON با موفقیت آپلود شد';
+                } catch (err) {
+                    document.getElementById('jsonUploadStatus').textContent = '❌ خطا: JSON نامعتبر';
+                }
+            };
+            reader.readAsText(file);
+            this.value = '';
+        });
+
+        document.getElementById('downloadXlsx').addEventListener('click', () =>
+            alert('📥 فایل XLSX نمونه دانلود شد (شبیه‌سازی)'));
+        document.getElementById('uploadXlsxBtn').addEventListener('click', () =>
+            document.getElementById('xlsxFileInput').click());
+        document.getElementById('xlsxFileInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('xlsxUploadStatus').textContent =
+                '✅ فایل "' + file.name + '" با موفقیت آپلود شد (' + (file.size / 1024).toFixed(1) + ' KB)';
+            this.value = '';
+        });
+
+        /* 52-week table */
+        const weekTbody = document.getElementById('weekTableBody');
+        const weekData = [];
+        for (let w = 1; w <= 52; w++) {
+            weekData.push({
+                week: w,
+                sales: Math.floor(50 + Math.random() * 200),
+                targetPct: (70 + Math.random() * 30).toFixed(1),
+                coverage: (60 + Math.random() * 35).toFixed(1),
+                growth: (Math.random() * 20 - 5).toFixed(1)
+            });
+        }
+
+        function renderWeekTable(data) {
+            weekTbody.innerHTML = '';
+            data.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.innerHTML =
+                    '<td style="font-weight:600;">هفته ' + d.week + '</td>' +
+                    '<td><input class="week-input" type="number" value="' + d.sales + '" data-week="' + d.week + '" data-field="sales"></td>' +
+                    '<td><input class="week-input" type="number" step="0.1" value="' + d.targetPct + '" data-week="' + d.week + '" data-field="targetPct"></td>' +
+                    '<td><input class="week-input" type="number" step="0.1" value="' + d.coverage + '" data-week="' + d.week + '" data-field="coverage"></td>' +
+                    '<td><input class="week-input" type="number" step="0.1" value="' + d.growth + '" data-week="' + d.week + '" data-field="growth"></td>';
+                weekTbody.appendChild(tr);
+            });
+            document.querySelectorAll('.week-input').forEach(inp => {
+                inp.addEventListener('change', function () {
+                    const week = parseInt(this.dataset.week);
+                    const field = this.dataset.field;
+                    const val = parseFloat(this.value);
+                    const idx = weekData.findIndex(d => d.week === week);
+                    if (idx !== -1 && !isNaN(val)) weekData[idx][field] = val;
+                });
+            });
+        }
+        renderWeekTable(weekData);
+
+        document.getElementById('downloadWeekStatus').addEventListener('click', function () {
+            let csv = 'هفته,تعداد فروش,تحقق تارگت %,پوشش %,رشد %\n';
+            weekData.forEach(d => { csv += d.week + ',' + d.sales + ',' + d.targetPct + ',' + d.coverage + ',' + d.growth + '\n'; });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'weekly_status_week52.csv'; a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('uploadWeekBtn').addEventListener('click', () =>
+            document.getElementById('weekFileInput').click());
+
+        document.getElementById('weekFileInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const newData = weekData.map(d => ({
+                ...d,
+                sales: Math.floor(40 + Math.random() * 220),
+                targetPct: (65 + Math.random() * 35).toFixed(1),
+                coverage: (55 + Math.random() * 40).toFixed(1),
+                growth: (Math.random() * 22 - 6).toFixed(1)
+            }));
+            weekData.splice(0, weekData.length, ...newData);
+            renderWeekTable(weekData);
+            alert('✅ داده‌های هفتگی با موفقیت به‌روزرسانی شدند!');
+            this.value = '';
+        });
+
+        /* ==========================================================
+           7. BUSINESS MANAGER
+           ========================================================== */
+        const rsmNames = ['احمد رضایی','سارا کریمی','مهدی عباسی','لیلا محمدی','علی نوری','زهرا حسینی','رضا صادقی'];
+        const rsmScores = [9850, 9120, 8700, 8350, 7800, 7200, 6500];
+
+        function renderRSMRanking() {
+            const el = document.getElementById('rsmRankingList');
+            el.innerHTML = '';
+            rsmNames.forEach((name, i) => {
+                const rank = i + 1;
+                let cls = '';
+                if (rank === 1) cls = 'gold';
+                else if (rank === 2) cls = 'silver';
+                else if (rank === 3) cls = 'bronze';
+                const div = document.createElement('div');
+                div.className = 'rank-item';
+                div.innerHTML =
+                    '<span class="rank-num ' + cls + '">' + rank + '</span>' +
+                    '<div class="rank-info"><div class="name">' + name + '</div>' +
+                    '<div class="score">⭐ ' + rsmScores[i].toLocaleString() + ' امتیاز</div></div>' +
+                    '<span class="rank-badge">' + (rank <= 3 ? '🏆' : '') + '</span>';
+                el.appendChild(div);
+            });
+        }
+
+        const sellerNames = ['امیر حسینی','نیما شریفی','فاطمه زارع','محسن ملکی','ترنم عباسی','کیان رضوی','پریسا نوری','یاسین احمدی'];
+        const sellerScores = [3200, 3050, 2900, 2700, 2550, 2400, 2200, 2000];
+        const sellerLeagues = ['serie-a','serie-a','serie-a','serie-a','serie-b','serie-b','serie-b','serie-b'];
+
+        function renderSellerRanking() {
+            const el = document.getElementById('sellerRankingList');
+            el.innerHTML = '';
+            sellerNames.forEach((name, i) => {
+                const rank = i + 1;
+                const league = sellerLeagues[i];
+                const div = document.createElement('div');
+                div.className = 'rank-item';
+                div.innerHTML =
+                    '<span class="rank-num" style="background:' +
+                        (league === 'serie-a' ? 'var(--gold-light)' : 'var(--peach-light)') + '">' + rank + '</span>' +
+                    '<div class="rank-info"><div class="name">' + name +
+                        ' <span class="league-tag ' + league + '">' +
+                        (league === 'serie-a' ? 'قهرمانان' : 'برتر') + '</span></div>' +
+                    '<div class="score">🏆 ' + sellerScores[i].toLocaleString() + ' امتیاز</div></div>' +
+                    '<span class="rank-badge">' + (rank <= 3 ? '⭐' : '') + '</span>';
+                el.appendChild(div);
+            });
+        }
+
+        function renderPledges() {
+            const p = PARAMS;
+            const g = p.gamma, a = p.alpha;
+
+            const monthly = [
+                { label: 'جایزه پیشروی',        value: money(p.campaignProgress) },
+                { label: 'جایزه سبد فروش',      value: money(p.campaignBasket) },
+                { label: 'جایزه پوشش‌دهی',      value: money(p.campaignCoverage) },
+                { label: 'جایزه تعادل',         value: money(p.campaignBalance) },
+                { label: 'جایزه تاکیدی (عضو)',  value: money(p.campaignEmphasisMember) },
+                { label: 'بهترین فروشنده ماه',  value: money(p.monthlyBestSeller) },
+                { label: 'تیم برتر ماه',        value: money(p.monthlyBestTeam) }
+            ];
+            const quarterly = [
+                { label: 'مقام اول لیگ A',  value: money(g * p.rankA1) },
+                { label: 'مقام دوم لیگ A',  value: money(g * p.rankA2) },
+                { label: 'مقام سوم لیگ A',  value: money(g * p.rankA3) },
+                { label: 'مقام اول لیگ B',  value: money(g * p.rankA1 / a) },
+                { label: 'مقام دوم لیگ B',  value: money(g * p.rankA2 / a) },
+                { label: 'مقام سوم لیگ B',  value: money(g * p.rankA3 / a) }
+            ];
+            const annual = [
+                { label: 'جایزه تداوم (هر نفر)', value: money(p.yearlyContinuity) },
+                { label: 'قهرمان سال (تیم)',     value: money(p.yearlyChampion) },
+                { label: 'سفر ۷ روزه + مرخصی',   value: money(p.yearlyTrip) }
+            ];
+
+            function fill(id, rows) {
+                const el = document.getElementById(id);
+                el.innerHTML = '';
+                rows.forEach(d => {
+                    const div = document.createElement('div');
+                    div.className = 'pledge-item';
+                    div.innerHTML = '<span class="pledge-label">' + d.label + '</span>' +
+                                    '<span class="pledge-value">' + d.value + '</span>';
+                    el.appendChild(div);
+                });
+            }
+            fill('monthlyPledges', monthly);
+            fill('quarterlyPledges', quarterly);
+            fill('annualPledges', annual);
+
+            document.getElementById('bmBetaDisplay').textContent = PARAMS.beta;
+        }
+
+        /* --- BM League tables --- */
+        const bmTeamDataA = [
+            { name: 'تیم اطلس',      rsm: 'احمد رضایی',  growth: 12.4, coverage: 78, aop: 92, avgLines: 4.2 },
+            { name: 'تیم هرمس',      rsm: 'سارا کریمی',  growth: 15.1, coverage: 82, aop: 95, avgLines: 4.5 },
+            { name: 'تیم زئوس',      rsm: 'مهدی عباسی',  growth: 8.7,  coverage: 70, aop: 85, avgLines: 3.8 },
+            { name: 'تیم آپولو',     rsm: 'لیلا محمدی',  growth: 10.2, coverage: 74, aop: 88, avgLines: 4.0 },
+            { name: 'تیم آرتمیس',    rsm: 'علی نوری',    growth: 6.5,  coverage: 66, aop: 80, avgLines: 3.5 },
+            { name: 'تیم پوزئیدون',  rsm: 'زهرا حسینی',  growth: 5.0,  coverage: 62, aop: 76, avgLines: 3.2 },
+            { name: 'تیم دیمتر',     rsm: 'رضا صادقی',   growth: 3.8,  coverage: 58, aop: 72, avgLines: 3.0 }
+        ];
+        const bmTeamDataB = [
+            { name: 'تیم آرس',       rsm: 'محمد تقی‌پور', growth: 9.0, coverage: 68, aop: 82, avgLines: 3.6 },
+            { name: 'تیم آتنا',      rsm: 'نرگس احمدی',   growth: 7.2, coverage: 64, aop: 78, avgLines: 3.3 },
+            { name: 'تیم هفائستوس',  rsm: 'کریم موسوی',   growth: 5.8, coverage: 60, aop: 74, avgLines: 3.1 },
+            { name: 'تیم دیونیسوس',  rsm: 'شبنم رضایی',   growth: 4.5, coverage: 56, aop: 70, avgLines: 2.9 },
+            { name: 'تیم آفرودیت',   rsm: 'حسین کریمی',   growth: 3.2, coverage: 52, aop: 66, avgLines: 2.7 },
+            { name: 'تیم هادس',      rsm: 'مینا نوروزی',  growth: 2.0, coverage: 48, aop: 62, avgLines: 2.5 },
+            { name: 'تیم پرسئوس',    rsm: 'سعید غفاری',   growth: 1.0, coverage: 44, aop: 58, avgLines: 2.3 }
+        ];
+
+        function calcFinalScore(d) {
+            const p = PARAMS;
+            return Math.round(
+                (d.growth / p.growthDivisor + 1) *
+                (d.coverage / 100) *
+                (d.aop / 100) *
+                d.avgLines *
+                p.teamScoreScale
+            );
+        }
+
+        function renderBMLeagueTable(data, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            const enriched = data.map(d => ({ ...d, finalScore: calcFinalScore(d) }));
+            enriched.sort((a, b) => b.finalScore - a.finalScore);
+            tbody.innerHTML = '';
+            enriched.forEach((d, idx) => {
+                const rank = idx + 1;
+                const tr = document.createElement('tr');
+                if (rank <= 3) tr.className = 'highlight-row';
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                tr.innerHTML =
+                    '<td>' + rank + ' ' + medal + '</td>' +
+                    '<td style="font-weight:600;">' + d.name + '</td>' +
+                    '<td>' + d.rsm + '</td>' +
+                    '<td style="text-align:center;">' + d.growth + '%</td>' +
+                    '<td style="text-align:center;">' + d.coverage + '%</td>' +
+                    '<td style="text-align:center;">' + d.aop + '%</td>' +
+                    '<td style="text-align:center;">' + d.avgLines + '</td>' +
+                    '<td style="text-align:center;font-weight:700;color:var(--caramel);">' +
+                        d.finalScore.toLocaleString() + '</td>';
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* ==========================================================
+           8. RSM: Team Members
+           ========================================================== */
+        const teamMembers = [
+            { name: 'امیر حسینی',  score: 3200, aop: 92, coverage: 85 },
+            { name: 'نیما شریفی',  score: 3050, aop: 88, coverage: 80 },
+            { name: 'فاطمه زارع',  score: 2900, aop: 85, coverage: 78 },
+            { name: 'محسن ملکی',   score: 2700, aop: 80, coverage: 74 },
+            { name: 'ترنم عباسی',  score: 2550, aop: 76, coverage: 70 },
+            { name: 'کیان رضوی',   score: 2400, aop: 72, coverage: 66 },
+            { name: 'پریسا نوری',  score: 2200, aop: 68, coverage: 62 },
+            { name: 'یاسین احمدی', score: 2000, aop: 64, coverage: 58 }
+        ];
+
+        function renderTeamMembers() {
+            const body = document.getElementById('teamMembersBody');
+            body.innerHTML = '';
+            const sorted = [...teamMembers].sort((a, b) => b.score - a.score);
+            sorted.forEach((m, idx) => {
+                const rank = idx + 1;
+                const tr = document.createElement('tr');
+                if (rank === 1) tr.style.background = 'var(--gold-light)';
+                tr.innerHTML =
+                    '<td>' + rank + '</td>' +
+                    '<td>' + m.name + '</td>' +
+                    '<td style="text-align:center;">' + m.score.toLocaleString() + '</td>' +
+                    '<td style="text-align:center;">' + m.aop + '%</td>' +
+                    '<td style="text-align:center;">' + m.coverage + '%</td>';
+                body.appendChild(tr);
+            });
+
+            document.getElementById('rsmMonthlyReward').textContent =
+                money(PARAMS.monthlyBestSeller) + ' کارت هدیه';
+            document.getElementById('rsmQuarterlyReward').textContent =
+                money(PARAMS.monthlyBestTeam);
+            document.getElementById('rsmAnnualReward').textContent =
+                'سفر ۷ روزه + مرخصی (' + money(PARAMS.yearlyTrip) + ')';
+            document.getElementById('rsmContinuityReward').textContent =
+                money(PARAMS.yearlyContinuity);
+        }
+
+        /* ==========================================================
+           9. SELLER: Intra-Team Ranking + hints
+           ========================================================== */
+        const intraTeamData = [
+            { name: 'امیر حسینی',  units: 185, aop: 92, coverage: 85, growth: 14 },
+            { name: 'نیما شریفی',  units: 172, aop: 88, coverage: 80, growth: 11 },
+            { name: 'فاطمه زارع',  units: 160, aop: 85, coverage: 78, growth: 9 },
+            { name: 'محسن ملکی',   units: 148, aop: 80, coverage: 74, growth: 7 },
+            { name: 'ترنم عباسی',  units: 135, aop: 76, coverage: 70, growth: 5 },
+            { name: 'کیان رضوی',   units: 125, aop: 72, coverage: 66, growth: 3 },
+            { name: 'پریسا نوری',  units: 110, aop: 68, coverage: 62, growth: 1 },
+            { name: 'یاسین احمدی', units: 98,  aop: 64, coverage: 58, growth: -1 }
+        ];
+
+        function renderIntraTeam() {
+            const body = document.getElementById('intraTeamBody');
+            body.innerHTML = '';
+
+            const enriched = intraTeamData.map(d => ({
+                ...d,
+                starScore: Math.round(d.units * (d.aop / 100) * PARAMS.starMultiplier)
+            }));
+            enriched.sort((a, b) => b.starScore - a.starScore);
+
+            enriched.forEach((d, idx) => {
+                const rank = idx + 1;
+                const tr = document.createElement('tr');
+                if (rank === 1) tr.className = 'highlight-row';
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                tr.innerHTML =
+                    '<td>' + rank + ' ' + medal + '</td>' +
+                    '<td>' + d.name + '</td>' +
+                    '<td style="text-align:center;">' + d.units + '</td>' +
+                    '<td style="text-align:center;">' + d.aop + '%</td>' +
+                    '<td style="text-align:center;font-weight:700;color:var(--caramel);">' +
+                        d.starScore.toLocaleString() + '</td>' +
+                    '<td style="text-align:center;">' + d.coverage + '%</td>' +
+                    '<td style="text-align:center;">' + d.growth + '%</td>';
+                body.appendChild(tr);
+            });
+
+            document.getElementById('sfiFocusProduct').textContent = PARAMS.monthlyFocus;
+            document.getElementById('sellerCampaignHint').innerHTML =
+                '۵ کمپین ماهانه فعال – مجموع جوایز ماهانه: <strong>' +
+                money(PARAMS.campaignProgress + PARAMS.campaignBasket + PARAMS.campaignCoverage +
+                      PARAMS.campaignBalance + PARAMS.campaignEmphasisMember) +
+                '</strong> + جایزه تداوم سالانه ' + money(PARAMS.yearlyContinuity);
+        }
+
+        /* ==========================================================
+           10. LEAGUE LEADERBOARD + SIMULATION
+           ========================================================== */
+        const leagueTeams = {
+            A: [
+                { name: 'تیم اطلس',     rsm: 'احمد رضایی', base: 920 },
+                { name: 'تیم هرمس',     rsm: 'سارا کریمی', base: 880 },
+                { name: 'تیم زئوس',     rsm: 'مهدی عباسی', base: 840 },
+                { name: 'تیم آپولو',    rsm: 'لیلا محمدی', base: 810 },
+                { name: 'تیم آرتمیس',   rsm: 'علی نوری',   base: 760 },
+                { name: 'تیم پوزئیدون', rsm: 'زهرا حسینی', base: 710 },
+                { name: 'تیم دیمتر',    rsm: 'رضا صادقی',  base: 660 }
+            ],
+            B: [
+                { name: 'تیم آرس',      rsm: 'محمد تقی‌پور', base: 620 },
+                { name: 'تیم آتنا',     rsm: 'نرگس احمدی',   base: 590 },
+                { name: 'تیم هفائستوس', rsm: 'کریم موسوی',   base: 560 },
+                { name: 'تیم دیونیسوس', rsm: 'شبنم رضایی',   base: 530 },
+                { name: 'تیم آفرودیت',  rsm: 'حسین کریمی',   base: 490 },
+                { name: 'تیم هادس',     rsm: 'مینا نوروزی',  base: 450 },
+                { name: 'تیم پرسئوس',   rsm: 'سعید غفاری',   base: 410 }
+            ]
+        };
+
+        function generateMonthlyScores(teams, months) {
+            const result = {};
+            teams.forEach((t, idx) => {
+                const scores = [];
+                for (let m = 0; m < months; m++) {
+                    const variation = (Math.random() * 200) - 80;
+                    const trend = (m / months) * 60 * (idx % 2 === 0 ? 1 : -0.5);
+                    let val = t.base + variation + trend + (Math.random() * 40);
+                    val = Math.max(100, Math.min(1400, val));
+                    scores.push(Math.round(val));
+                }
+                result[t.name] = scores;
+            });
+            return result;
+        }
+
+        const monthlyDataA = generateMonthlyScores(leagueTeams.A, 12);
+        const monthlyDataB = generateMonthlyScores(leagueTeams.B, 12);
+
+        function getCumulativeScores(league, monthIdx) {
+            const teams = league === 'A' ? leagueTeams.A : leagueTeams.B;
+            const data = league === 'A' ? monthlyDataA : monthlyDataB;
+            const results = teams.map(t => {
+                const scores = data[t.name] || [];
+                const cumulative = scores.slice(0, monthIdx + 1).reduce((a, b) => a + b, 0);
+                const baseCov = 50 + Math.random() * 40;
+                const baseAop = 50 + Math.random() * 40;
+                const perfFactor = cumulative / 1000;
+                const coverage = Math.min(99, Math.round(baseCov + perfFactor * 2));
+                const aop = Math.min(99, Math.round(baseAop + perfFactor * 1.5));
+                return { name: t.name, rsm: t.rsm, score: cumulative, coverage, aop };
+            });
+            results.sort((a, b) => b.score - a.score);
+            return results;
+        }
+
+        let currentMonth = 0;
+        const totalMonths = 12;
+        let currentLeague = 'A';
+
+        const leagueTableBody = document.getElementById('leagueTableBody');
+        const simMonthLabel = document.getElementById('simMonthLabel');
+        const simProgress = document.getElementById('simProgress');
+        const simPrev = document.getElementById('simPrev');
+        const simNext = document.getElementById('simNext');
+
+        function renderLeagueTable() {
+            const data = getCumulativeScores(currentLeague, currentMonth);
+            leagueTableBody.innerHTML = '';
+            data.forEach((d, idx) => {
+                const rank = idx + 1;
+                const tr = document.createElement('tr');
+                let medal = '';
+                if (rank === 1) medal = '🥇';
+                else if (rank === 2) medal = '🥈';
+                else if (rank === 3) medal = '🥉';
+                tr.innerHTML =
+                    '<td class="rank-col">' + rank + ' ' + medal + '</td>' +
+                    '<td class="team-col">' + d.name + '</td>' +
+                    '<td class="rsm-col">' + d.rsm + '</td>' +
+                    '<td style="text-align:center;">' + d.coverage + '%</td>' +
+                    '<td style="text-align:center;">' + d.aop + '%</td>' +
+                    '<td class="score-col">' + d.score.toLocaleString() + '</td>';
+                if (rank === 1) tr.style.background = 'var(--gold-light)';
+                else if (rank === 2) tr.style.background = 'var(--peach-light)';
+                else if (rank === 3) tr.style.background = 'var(--cream)';
+                leagueTableBody.appendChild(tr);
+            });
+
+            simMonthLabel.textContent = georgianMonths[currentMonth];
+            simProgress.textContent = (currentMonth + 1) + ' / ' + totalMonths;
+            simPrev.disabled = currentMonth === 0;
+            simNext.disabled = currentMonth === totalMonths - 1;
+        }
+
+        document.querySelectorAll('.league-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.league-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentLeague = this.dataset.league;
+                renderLeagueTable();
+            });
+        });
+
+        simPrev.addEventListener('click', () => {
+            if (currentMonth > 0) { currentMonth--; renderLeagueTable(); }
+        });
+        simNext.addEventListener('click', () => {
+            if (currentMonth < totalMonths - 1) { currentMonth++; renderLeagueTable(); }
+        });
+
+        /* ==========================================================
+           11. STORY NUMBERS (parametric)
+           ========================================================== */
+        function renderStoryNumbers() {
+            const p = PARAMS, g = p.gamma, a = p.alpha;
+            const set = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+            set('storyRewardA1', money(g * p.rankA1));
+            set('storyRewardA2', money(g * p.rankA2));
+            set('storyRewardA3', money(g * p.rankA3));
+            set('storyRewardA4', money(g * p.rankA4));
+            set('storyRewardB1', money(g * p.rankA1 / a));
+            set('storyRewardB2', money(g * p.rankA2 / a));
+            set('storyRewardB3', money(g * p.rankA3 / a));
+            set('storyThreshold', p.specialThreshold + '٪');
+            set('storyBestSeller', money(p.monthlyBestSeller));
+        }
+
+        /* ==========================================================
+           12. TXT DOWNLOAD (parametric, S4)
+           ========================================================== */
+        document.getElementById('downloadTxtDoc').addEventListener('click', function () {
+            const p = PARAMS, g = p.gamma, a = p.alpha;
+            const content = `============================================================
+SELLERS CLUB PLATFORM - GAMIFICATION MODEL
+============================================================
+
+VERSION: 4.0 (S4)
+DATE: 2027
+COMPETITION: 2027 Season (14 Teams, 2 Leagues)
+
+============================================================
+1. OVERVIEW
+============================================================
+The Sellers Club Platform (SFI) is a gamified sales performance
+system designed to motivate, track, and reward sales teams.
+14 teams, led by Regional Sales Managers (RSMs), compete
+annually in a two-league structure.
+
+S4 adds a CAMPAIGNS layer:
+ - 5 monthly individual/team campaigns
+ - 1 yearly continuity campaign
+
+============================================================
+2. LEAGUE STRUCTURE
+============================================================
+- League A (Champions League): 7 teams
+- League B (Premier League): 7 teams
+
+Promotion & Relegation:
+- Top 3 teams in League B promote to League A
+- Bottom 3 teams in League A relegate to League B
+
+============================================================
+3. CURRENT PARAMETERS (S4 baseline / user configurable)
+============================================================
+Season Budget               : ${money(p.seasonBudget)}
+Budget Spent                : ${money(p.budgetSpent)}
+Alpha (α, League A factor)  : ${p.alpha}
+Beta  (β, Sales Mgr factor) : ${p.beta}
+Gamma (γ, base reward unit) : ${money(p.gamma)}
+
+League A rank multipliers (× γ):
+  1st = ${p.rankA1}  2nd = ${p.rankA2}  3rd = ${p.rankA3}
+  4th = ${p.rankA4}  5th = ${p.rankA5}  6th = ${p.rankA6}  7th = ${p.rankA7}
+League B = League A ÷ α  (α = ${p.alpha})
+
+----------------------------------------
+MONTHLY CAMPAIGN REWARDS ($)
+----------------------------------------
+Progress Award (جایزه پیشروی)        : ${money(p.campaignProgress)}
+Basket Award   (جایزه سبد فروش)      : ${money(p.campaignBasket)}
+Coverage Award (جایزه پوشش‌دهی)      : ${money(p.campaignCoverage)}
+Balance Award  (جایزه تعادل)         : ${money(p.campaignBalance)}
+Emphasis Award (جایزه تاکیدی / عضو)  : ${money(p.campaignEmphasisMember)}
+  -> Emphasis team size              : ${p.emphasisTeamSize} members
+Best Seller of the Month             : ${money(p.monthlyBestSeller)}
+Best Team of the Month               : ${money(p.monthlyBestTeam)}
+
+----------------------------------------
+YEARLY REWARDS ($)
+----------------------------------------
+Continuity Award (جایزه تداوم)       : ${money(p.yearlyContinuity)} per person
+Champion of the Year (team)          : ${money(p.yearlyChampion)}
+7-day trip value                     : ${money(p.yearlyTrip)}
+
+============================================================
+4. CAMPAIGNS (NEW IN S4)
+============================================================
+--- MONTHLY (5 campaigns) ---
+
+A. جایزه پیشروی (Progress Award)
+   Criteria: highest weighted sales growth vs. the person's
+             own previous month.
+   Scope: individual.
+
+B. جایزه سبد فروش (Basket Award)
+   Criteria: highest average number of invoice lines
+             (# Line per Invoice).
+   Scope: individual.
+
+C. جایزه پوشش‌دهی (Coverage Award)
+   Criteria: most newly activated customers.
+   Scope: individual.
+
+D. جایزه تعادل (Balance Award)
+   Criteria: smallest difference between first-half and
+             second-half monthly sales.
+   Scope: individual.
+
+E. جایزه تاکیدی (Emphasis Award)
+   Criteria: team with the highest volume of sales from the
+             emphasis basket (سبد تاکیدی).
+   Scope: TEAM -- all team members receive the reward.
+
+--- YEARLY (1 campaign) ---
+
+F. جایزه تداوم (Continuity Award)
+   Criteria: all individuals who achieved their AOP target
+             in ALL 12 months of the year.
+   Scope: individual.
+
+============================================================
+5. EVALUATION CRITERIA
+============================================================
+
+A. Individual Score (⭐):
+   Score = (Coverage% + Coverage Growth% + AOP Realization%
+            + AOP Growth%) / ${p.scoreDivisor}
+   Current weights:
+     wCoverage       = ${p.wCoverage}
+     wCoverageGrowth = ${p.wCoverageGrowth}
+     wAop            = ${p.wAop}
+     wAopGrowth      = ${p.wAopGrowth}
+
+B. Points:
+   Points = Weighted share of emphasis-basket sales × ${p.pointsMultiplier}
+
+C. Credits:
+   Credits = Sum(Score × Points)   -> annual lottery weight
+
+D. Team Evaluation (🏆):
+   Score = Growth × Coverage × AOP × AvgLines
+   Normalization:
+     growthDivisor   = ${p.growthDivisor}
+     teamScoreScale  = ${p.teamScoreScale}
+
+E. Sales Manager Reward:
+   Sales Manager Reward = β × Seller Reward   (β = ${p.beta})
+
+============================================================
+6. REWARDS STRUCTURE (CURRENT CONFIG)
+============================================================
+
+Monthly Rewards:
+- Best Seller        : ${money(p.monthlyBestSeller)}
+- Best Team          : ${money(p.monthlyBestTeam)}
+- 5 Campaign Awards  : see section 3
+
+Seasonal Rewards:
+League A:
+  1st : ${money(g * p.rankA1)}
+  2nd : ${money(g * p.rankA2)}
+  3rd : ${money(g * p.rankA3)}
+  4th : ${money(g * p.rankA4)}
+League B:
+  1st : ${money(g * p.rankA1 / a)}
+  2nd : ${money(g * p.rankA2 / a)}
+  3rd : ${money(g * p.rankA3 / a)}
+
+Annual Rewards:
+- Continuity (per person) : ${money(p.yearlyContinuity)}
+- Champion Team           : ${money(p.yearlyChampion)}
+- Special: 7-day international trip + paid leave
+  For every 1% above ${p.specialThreshold}% annual target achievement,
+  one lucky participant (Seller, RSM, or Business Team member)
+  wins a 7-day international trip + paid leave
+  (draw at closing ceremony).
+
+============================================================
+7. HYPER-PARAMETERS (Configurable via JSON / Params tab)
+============================================================
+{
+  "seasonBudget": ${p.seasonBudget},
+  "budgetSpent": ${p.budgetSpent},
+  "alpha": ${p.alpha},
+  "beta": ${p.beta},
+  "gamma": ${p.gamma},
+  "campaignProgress": ${p.campaignProgress},
+  "campaignBasket": ${p.campaignBasket},
+  "campaignCoverage": ${p.campaignCoverage},
+  "campaignBalance": ${p.campaignBalance},
+  "campaignEmphasisMember": ${p.campaignEmphasisMember},
+  "emphasisTeamSize": ${p.emphasisTeamSize},
+  "yearlyContinuity": ${p.yearlyContinuity},
+  "yearlyChampion": ${p.yearlyChampion},
+  "yearlyTrip": ${p.yearlyTrip},
+  "starMultiplier": ${p.starMultiplier},
+  "trophyWeight": ${p.trophyWeight},
+  "weeklyBonusCap": ${p.weeklyBonusCap},
+  "leaguePromotionThreshold": ${p.leaguePromotionThreshold},
+  "monthlyFocus": "${p.monthlyFocus}",
+  "teamEvaluation": ["growth", "coverage", "aop", "linePerInvoice"]
+}
+
+============================================================
+8. DATA INPUT
+============================================================
+- Weekly sales results: .xlsx file (52 weeks)
+- Full input table with 52 weeks of data
+- Download latest status, add past weeks data, re-upload
+
+============================================================
+9. SIMULATION
+============================================================
+The platform simulates the 2027 season month-by-month.
+Users can navigate through months using Previous / Next
+(LTR orientation) to see cumulative results and team rankings.
+Georgian month names are displayed (January - December).
+
+The Campaigns tab has its own month navigator to preview
+the monthly campaign winners for each month.
+
+============================================================
+10. USER ROLES
+============================================================
+- Admin: Full control, JSON upload, XLSX management
+- Business Manager: Dashboard with separate League A & B tables
+  showing full details (Growth %, Coverage %, AOP %, Avg Lines,
+  Final Score) sorted by Final Score.
+- RSM (Team Captain): Team profile, detailed member rankings
+  with Score, AOP %, Coverage %
+- Seller: SFI hints, personal progress, intra-team ranking
+  with full criteria (Units, AOP %, Star Score, Coverage %, Growth %)
+
+============================================================
+11. CONTACT & FEEDBACK
+============================================================
+For modifications and calibration (S5, ...),
+please edit this document and send it back in this chat.
+
+============================================================`;
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'gamification_model_S4.txt'; a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        /* ==========================================================
+           13. PARAMS: apply / reset / download / upload
+           ========================================================== */
+        document.getElementById('applyParams').addEventListener('click', applyParams);
+        document.getElementById('resetParams').addEventListener('click', resetParams);
+
+        document.getElementById('downloadParams').addEventListener('click', function () {
+            const blob = new Blob([JSON.stringify(PARAMS, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'sfi_s4_params.json'; a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('uploadParamsBtn').addEventListener('click', () =>
+            document.getElementById('paramsFileInput').click());
+
+        document.getElementById('paramsFileInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const obj = JSON.parse(ev.target.result);
+                    PARAMS = Object.assign({}, DEFAULT_PARAMS, obj);
+                    saveParams();
+                    buildParamsUI();
+                    renderAll();
+                    document.getElementById('paramsStatus').textContent = '✅ پارامترها از فایل بارگذاری شد';
+                    setTimeout(() => { document.getElementById('paramsStatus').textContent = ''; }, 2600);
+                } catch (err) {
+                    document.getElementById('paramsStatus').textContent = '❌ فایل JSON نامعتبر است';
+                }
+            };
+            reader.readAsText(file);
+            this.value = '';
+        });
+
+        /* ==========================================================
+           14. MASTER RENDER
+           ========================================================== */
+        function renderAll() {
+            renderBudget();
+            renderCounter();
+            renderRewardTable();
+            renderCampaigns();
+            renderRSMRanking();
+            renderSellerRanking();
+            renderPledges();
+            renderBMLeagueTable(bmTeamDataA, 'bmLeagueABody');
+            renderBMLeagueTable(bmTeamDataB, 'bmLeagueBBody');
+            renderTeamMembers();
+            renderIntraTeam();
+            renderLeagueTable();
+            renderStoryNumbers();
+        }
+
+        /* ==========================================================
+           15. BOOT
+           ========================================================== */
+        loadParams();
+        buildParamsUI();
+        renderAll();
+
+    });
+    </script>
+
+</body>
+</html>
