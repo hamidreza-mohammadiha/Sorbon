@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Category Management · Hierarchy Explorer</title>
+<style>
+  :root{
+    --bg:#eef2f7; --panel:#ffffff; --ink:#0f172a; --muted:#64748b;
+    --line:#e2e8f0; --accent:#2563eb; --amber:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); display:flex; flex-direction:column; overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:12px 18px; background:#0f172a; color:#fff; flex-wrap:wrap;
+    box-shadow:0 2px 10px rgba(15,23,42,.18); z-index:5;
+  }
+  .brand{display:flex; align-items:center; gap:12px; min-width:0}
+  .logo{
+    width:38px;height:38px;border-radius:10px;flex:none;
+    background:linear-gradient(135deg,#2563eb,#0891b2);
+    display:grid;place-items:center;font-weight:700;font-size:13px;letter-spacing:.5px;
+  }
+  header h1{font-size:15px;margin:0;font-weight:600;letter-spacing:.2px}
+  header p{margin:2px 0 0;font-size:11.5px;color:#94a3b8}
+
+  .tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tools input[type=search]{
+    width:250px;padding:8px 12px;border-radius:9px;border:1px solid #334155;
+    background:#1e293b;color:#e2e8f0;font-size:12.5px;outline:none;
+  }
+  .tools input[type=search]::placeholder{color:#7c8ba1}
+  .tools input[type=search]:focus{border-color:var(--accent);background:#0f1b2e}
+  button{
+    font:inherit;font-size:12px;padding:8px 12px;border-radius:9px;cursor:pointer;
+    border:1px solid #334155;background:#1e293b;color:#cbd5e1;transition:.15s;
+  }
+  button:hover{background:#334155;color:#fff;border-color:#475569}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary:hover{background:#1d4ed8}
+  button.ghost{background:transparent}
+  .icon-btn{width:34px;padding:8px 0;text-align:center;font-weight:700;font-size:14px}
+
+  /* ---------- layout ---------- */
+  main{flex:1;display:flex;min-height:0}
+  #canvas{position:relative;flex:1;min-width:0;background:
+      radial-gradient(circle at 1px 1px, #d7dee9 1px, transparent 0) 0 0/22px 22px,
+      var(--bg);
+    overflow:hidden}
+  svg#tree{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+  svg#tree.grabbing{cursor:grabbing}
+
+  #hint{
+    position:absolute;right:14px;bottom:12px;font-size:11px;color:#7c8ba1;
+    background:rgba(255,255,255,.85);padding:6px 10px;border-radius:8px;
+    border:1px solid var(--line);pointer-events:none;
+  }
+  #legend{
+    position:absolute;left:14px;bottom:12px;display:flex;gap:12px;flex-wrap:wrap;
+    background:rgba(255,255,255,.9);padding:7px 12px;border-radius:9px;
+    border:1px solid var(--line);font-size:10.5px;color:#475569;pointer-events:none;
+  }
+  #legend span{display:flex;align-items:center;gap:5px}
+  #legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+  /* ---------- nodes ---------- */
+  .node{cursor:pointer}
+  .node rect.box{transition:filter .15s}
+  .node:hover rect.box{filter:brightness(1.18)}
+  .node text{pointer-events:none;user-select:none;fill:#fff}
+  .node .lbl{font-size:12.5px;font-weight:600}
+  .node .sub{font-size:10.5px;opacity:.82}
+  .toggle{cursor:pointer}
+  .toggle circle{transition:.15s}
+  .toggle:hover circle{stroke-width:3}
+
+  /* ---------- details ---------- */
+  aside#details{
+    width:330px;flex:none;background:var(--panel);border-left:1px solid var(--line);
+    overflow-y:auto;padding:18px;
+  }
+  aside#details .empty{color:var(--muted);font-size:13px;line-height:1.6;margin-top:20px}
+  .d-head{border-left:4px solid #999;padding:2px 0 2px 12px;margin-bottom:18px}
+  .d-head h2{margin:0 0 6px;font-size:16px;line-height:1.3;word-break:break-word}
+  .path{font-size:11px;color:var(--muted);line-height:1.7;word-break:break-word}
+  .path .sep{margin:0 5px;color:#cbd5e1}
+  dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:9px 14px;font-size:12.5px}
+  dt{color:var(--muted)}
+  dd{margin:0;text-align:right;font-weight:500;word-break:break-word}
+  dd code{background:#f1f5f9;padding:2px 6px;border-radius:5px;font-size:11.5px;color:#0f172a}
+
+  /* ---------- modal ---------- */
+  #overlay{
+    position:fixed;inset:0;background:rgba(15,23,42,.55);display:grid;place-items:center;
+    z-index:50;padding:20px;backdrop-filter:blur(3px);
+  }
+  #overlay.hidden{display:none}
+  .modal{
+    background:#fff;border-radius:16px;padding:22px;width:min(680px,100%);
+    box-shadow:0 24px 60px rgba(15,23,42,.35);
+  }
+  .modal h2{margin:0 0 8px;font-size:17px}
+  .modal p{margin:0 0 8px;font-size:12.5px;color:#475569;line-height:1.6}
+  .modal p.warn{color:#b45309;background:#fffbeb;border:1px solid #fde68a;padding:8px 10px;border-radius:8px}
+  .modal code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:11.5px}
+  #pasteArea{
+    width:100%;height:200px;margin-top:12px;padding:12px;border-radius:10px;
+    border:1px solid var(--line);font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12px;resize:vertical;outline:none;line-height:1.55;
+  }
+  #pasteArea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+  .modal-actions button{border-color:var(--line);background:#f8fafc;color:#334155}
+  .modal-actions button:hover{background:#e2e8f0;color:#0f172a}
+  .modal-actions button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .modal-actions button.primary:hover{background:#1d4ed8}
+
+  @media (max-width:860px){
+    aside#details{display:none}
+    .tools input[type=search]{width:150px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">CM</div>
+    <div>
+      <h1>Category Management · Hierarchy Explorer</h1>
+      <p id="subtitle">Loading…</p>
+    </div>
+  </div>
+  <div class="tools">
+    <input id="search" type="search" placeholder="Search categories & materials…" autocomplete="off">
+    <button id="expandAll">Expand all</button>
+    <button id="collapseAll">Collapse all</button>
+    <button id="fit">Fit</button>
+    <button id="zoomIn" class="icon-btn" title="Zoom in">+</button>
+    <button id="zoomOut" class="icon-btn" title="Zoom out">−</button>
+    <button id="loadBtn" class="primary">Paste data</button>
+  </div>
+</header>
+
+<main>
+  <div id="canvas">
+    <svg id="tree" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.18"/>
+        </filter>
+        <filter id="glow" x="-40%" y="-40%" width="180%" height="200%">
+          <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#f59e0b" flood-opacity="0.85"/>
+        </filter>
+      </defs>
+      <g id="viewport">
+        <g id="links"></g>
+        <g id="nodes"></g>
+      </g>
+    </svg>
+    <div id="legend">
+      <span><i style="background:#1e3a8a"></i>L1</span>
+      <span><i style="background:#2563eb"></i>L2</span>
+      <span><i style="background:#0891b2"></i>L3</span>
+      <span><i style="background:#7c3aed"></i>L4</span>
+      <span><i style="background:#059669"></i>Material</span>
+    </div>
+    <div id="hint">Drag to pan · Scroll to zoom · Click node for details · Click +/− to collapse</div>
+  </div>
+  <aside id="details"></aside>
+</main>
+
+<div id="overlay" class="hidden">
+  <div class="modal">
+    <h2>Paste table data</h2>
+    <p>Copy rows from Excel with the six columns in order:
+      <code>L1 · L2 · L3 · L4 · Material · Material Description</code>.
+      Tab- or comma-separated both work.</p>
+    <p class="warn">Paste <strong>values</strong>, not formulas. Cells like
+      <code>=[1]Sheet2!P2</code> cannot be read here — use
+      <em>Copy → Paste Special → Values</em> from the sheet that holds the real data.</p>
+    <textarea id="pasteArea" spellcheck="false"
+      placeholder="Sorbon&#9;Wound Care&#9;Dressings&#9;Gauze Swabs&#9;MAT-1001&#9;Sterile gauze swab 7.5cm x 7.5cm"></textarea>
+    <div class="modal-actions">
+      <button id="cancelLoad" class="ghost">Cancel</button>
+      <button id="doLoad" class="primary">Build tree</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     CONFIG
+     ========================================================= */
+  const NS = 'http://www.w3.org/2000/svg';
+  const NODE_W = 214, NODE_H = 48, V_GAP = 12, H_GAP = 76;
+  const COLORS = { 0:'#0f172a', 1:'#1e3a8a', 2:'#2563eb', 3:'#0891b2', 4:'#7c3aed', 5:'#059669' };
+
+  /* =========================================================
+     SAMPLE DATA  —  [L1, L2, L3, L4, Material, Material Description]
+     Replace with your real rows, or use the "Paste data" button.
+     ========================================================= */
+  const SAMPLE = [
+    ["Sorbon","Wound Care","Dressings","Gauze Swabs","MAT-1001","Sterile gauze swab 7.5cm x 7.5cm, pack of 5"],
+    ["Sorbon","Wound Care","Dressings","Gauze Swabs","MAT-1002","Non-sterile gauze swab 10cm x 10cm, pack of 100"],
+    ["Sorbon","Wound Care","Dressings","Adhesive Dressings","MAT-1010","Fabric plaster strip 2.5cm x 5m"],
+    ["Sorbon","Wound Care","Dressings","Adhesive Dressings","MAT-1011","Waterproof dressing 6cm x 7cm, pack of 25"],
+    ["Sorbon","Wound Care","Dressings","Film Dressings","MAT-1020","Transparent film dressing 10cm x 12cm"],
+    ["Sorbon","Wound Care","Bandages","Crepe Bandages","MAT-1100","Cotton crepe bandage 7.5cm x 4.5m"],
+    ["Sorbon","Wound Care","Bandages","Cohesive Bandages","MAT-1110","Cohesive support bandage 10cm x 4m"],
+    ["Sorbon","Incontinence","Pads","Maternity Pads","MAT-2001","Maternity pad, ultra absorbent, pack of 10"],
+    ["Sorbon","Incontinence","Pads","Incontinence Pads","MAT-2002","Incontinence pad 60cm x 90cm, pack of 30"],
+    ["Sorbon","Incontinence","Pants","Pull-Up Pants","MAT-2010","Adult pull-up pants, medium, pack of 14"],
+    ["Sorbon","Gloves","Examination Gloves","Nitrile Gloves","MAT-3001","Nitrile examination glove, powder-free, medium, box of 100"],
+    ["Sorbon","Gloves","Examination Gloves","Latex Gloves","MAT-3002","Latex examination glove, powdered, medium, box of 100"],
+    ["Sorbon","Gloves","Surgical Gloves","Sterile Gloves","MAT-3010","Sterile surgical glove, size 7.5, pair"],
+    ["Sorbon","Syringes & Needles","Syringes","Luer Lock Syringes","MAT-4001","Luer lock syringe 10ml, sterile"],
+    ["Sorbon","Syringes & Needles","Syringes","Insulin Syringes","MAT-4002","Insulin syringe 1ml with 29G needle"],
+    ["Sorbon","Syringes & Needles","Needles","Hypodermic Needles","MAT-4010","Hypodermic needle 21G x 1.5in"],
+    ["Sorbon","Consumables","Cotton & Swabs","Cotton Wool","MAT-5001","Absorbent cotton wool roll 500g"],
+    ["Sorbon","Consumables","Cotton & Swabs","Cotton Buds","MAT-5002","Cotton bud, single ended, pack of 100"],
+    ["Sorbon","Consumables","Protective Wear","Disposable Aprons","MAT-5010","White polythene disposable apron, pack of 100"],
+    ["Sorbon","Consumables","Protective Wear","Face Masks","MAT-5011","Type IIR surgical face mask, box of 50"]
+  ];
+
+  /* =========================================================
+     DOM
+     ========================================================= */
+  const svg        = document.getElementById('tree');
+  const viewport   = document.getElementById('viewport');
+  const linksLayer = document.getElementById('links');
+  const nodesLayer = document.getElementById('nodes');
+  const detailsEl  = document.getElementById('details');
+  const subtitle   = document.getElementById('subtitle');
+  const searchInput= document.getElementById('search');
+  const overlay    = document.getElementById('overlay');
+  const pasteArea  = document.getElementById('pasteArea');
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+  let treeRoot = null;
+  let selected = null;
+  let searchTerm = '';
+  let searchInfo = null;
+  let lastSearch = '\u0000';
+  let view = { x: 40, y: 40, k: 1 };
+  let bounds = { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+  let idSeq = 0;
+
+  /* =========================================================
+     TREE BUILDING
+     ========================================================= */
+  function buildTree(rows) {
+    idSeq = 0;
+    const virtual = {
+      id: 'n' + (idSeq++), name: 'All Categories', level: 0,
+      children: [], parent: null, _virtual: true
+    };
+    const index = new Map();
+
+    rows.forEach(function (r) {
+      let parent = virtual;
+      const path = [];
+
+      for (let i = 0; i < 4; i++) {
+        const v = String(r[i] == null ? '' : r[i]).trim();
+        if (!v) continue;
+        path.push(v);
+        const key = path.join('\u0001');
+
+        let node = index.get(key);
+        if (!node) {
+          node = { id: 'n' + (idSeq++), name: v, level: i + 1, children: [], parent: parent };
+          index.set(key, node);
+          parent.children.push(node);
+        }
+        parent = node;
+      }
+
+      const mat  = String(r[4] == null ? '' : r[4]).trim();
+      const desc = String(r[5] == null ? '' : r[5]).trim();
+      if (mat || desc) {
+        parent.children.push({
+          id: 'n' + (idSeq++), name: mat || desc, material: mat, description: desc,
+          level: 5, children: [], parent: parent
+        });
+      }
+    });
+
+    // If there is only one L1 value, promote it to be the root.
+    if (virtual.children.length === 1) {
+      const r = virtual.children[0];
+      r.parent = null;
+      return r;
+    }
+    return virtual;
+  }
+
+  function countMaterials(n) {
+    if (n._matCount !== undefined) return n._matCount;
+    const v = n.children.length
+      ? n.children.reduce(function (s, c) { return s + countMaterials(c); }, 0)
+      : 1;
+    n._matCount = v;
+    return v;
+  }
+
+  function totalNodes(n) {
+    return 1 + n.children.reduce(function (s, c) { return s + totalNodes(c); }, 0);
+  }
+
+  /* =========================================================
+     LAYOUT  (left ➜ right)
+     ========================================================= */
+  function layoutTree(root) {
+    const nodes = [], links = [];
+    let cursor = 0;
+
+    (function walk(n, depth) {
+      n.depth = depth;
+      n.x = depth * (NODE_W + H_GAP);
+
+      const kids = n._collapsed ? [] : n.children;
+
+      if (kids.length === 0) {
+        n.y = cursor * (NODE_H + V_GAP);
+        cursor++;
+      } else {
+        kids.forEach(function (k) { walk(k, depth + 1); });
+        n.y = (kids[0].y + kids[kids.length - 1].y) / 2;
+      }
+
+      nodes.push(n);
+      kids.forEach(function (k) { links.push([n, k]); });
+    })(root, 0);
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    nodes.forEach(function (n) {
+      if (n.x < minX) minX = n.x;
+      if (n.y < minY) minY = n.y;
+      if (n.x + NODE_W > maxX) maxX = n.x + NODE_W;
+      if (n.y + NODE_H > maxY) maxY = n.y + NODE_H;
+    });
+    bounds = { minX: minX, minY: minY, maxX: maxX, maxY: maxY };
+
+    return { nodes: nodes, links: links };
+  }
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+  function nodeColor(n) {
+    return COLORS[Math.min(Math.max(n.level, 0), 5)];
+  }
+
+  function truncate(str, max) {
+    if (!str) return '';
+    return str.length > max ? str.slice(0, max - 1) + '…' : str;
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function el(tag, attrs) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  /* =========================================================
+     SEARCH
+     ========================================================= */
+  function computeSearch(term) {
+    if (!term) return null;
+    const matches = new Set();
+    const keep = new Set();
+
+    (function walk(n) {
+      let childHit = false;
+      n.children.forEach(function (c) { if (walk(c)) childHit = true; });
+
+      const hay = ((n.name || '') + ' ' + (n.material || '') + ' ' + (n.description || '')).toLowerCase();
+      const self = hay.indexOf(term) !== -1;
+
+      if (self) matches.add(n.id);
+      const relevant = self || childHit;
+      if (relevant) keep.add(n.id);
+      if (childHit) n._collapsed = false;   // auto-expand path to matches
+
+      return relevant;
+    })(treeRoot);
+
+    return { matches: matches, keep: keep };
+  }
+
+  /* =========================================================
+     RENDER
+     ========================================================= */
+  function render() {
+    if (!treeRoot) return;
+
+    if (searchTerm !== lastSearch) {
+      lastSearch = searchTerm;
+      searchInfo = computeSearch(searchTerm);
+    }
+    if (!searchTerm) searchInfo = null;
+
+    const result = layoutTree(treeRoot);
+
+    linksLayer.textContent = '';
+    nodesLayer.textContent = '';
+
+    // --- links ---
+    result.links.forEach(function (pair) {
+      const s = pair[0], t = pair[1];
+      const x1 = s.x + NODE_W, y1 = s.y + NODE_H / 2;
+      const x2 = t.x,          y2 = t.y + NODE_H / 2;
+      const dx = Math.max(26, (x2 - x1) / 2);
+
+      const p = el('path', {
+        d: 'M' + x1 + ',' + y1 + ' C' + (x1 + dx) + ',' + y1 + ' ' + (x2 - dx) + ',' + y2 + ' ' + x2 + ',' + y2,
+        fill: 'none',
+        stroke: nodeColor(t),
+        'stroke-width': 1.8,
+        'stroke-linecap': 'round',
+        opacity: 0.5
+      });
+      linksLayer.appendChild(p);
+    });
+
+    // --- nodes ---
+    result.nodes.forEach(function (n) {
+      nodesLayer.appendChild(renderNode(n));
+    });
+
+    // --- subtitle ---
+    subtitle.textContent =
+      treeRoot.name + ' · ' + countMaterials(treeRoot) + ' materials · ' +
+      totalNodes(treeRoot) + ' nodes' +
+      (searchInfo ? ' · ' + searchInfo.matches.size + ' search matches' : '');
+  }
+
+  function renderNode(n) {
+    const g = el('g', { class: 'node', transform: 'translate(' + n.x + ',' + n.y + ')' });
+    g.dataset.id = n.id;
+
+    const isMatch = searchInfo && searchInfo.matches.has(n.id);
+    const isKept  = !searchInfo || searchInfo.keep.has(n.id);
+    const isSel   = selected && selected.id === n.id;
+
+    g.setAttribute('opacity', isKept ? 1 : 0.13);
+
+    const color = nodeColor(n);
+
+    // body
+    const rect = el('rect', {
+      class: 'box',
+      width: NODE_W,
+      height: NODE_H,
+      rx: 9,
+      fill: color,
+      filter: (isSel || isMatch) ? 'url(#glow)' : 'url(#shadow)'
+    });
+    g.appendChild(rect);
+
+    // selection / match outline
+    if (isSel || isMatch) {
+      g.appendChild(el('rect', {
+        x: -2.5, y: -2.5,
+        width: NODE_W + 5, height: NODE_H + 5,
+        rx: 11,
+        fill: 'none',
+        stroke: isSel ? '#f59e0b' : '#facc15',
+        'stroke-width': isSel ? 3 : 2.5
+      }));
+    }
+
+    // labels
+    const isLeaf = n.children.length === 0;
+    const title = truncate(n.name, 27);
+    const sub   = isLeaf
+      ? truncate(n.description || '', 34)
+      : countMaterials(n) + ' material' + (countMaterials(n) === 1 ? '' : 's');
+
+    const t1 = el('text', { class: 'lbl', x: 14, y: 21 });
+    t1.textContent = title;
+    g.appendChild(t1);
+
+    const t2 = el('text', { class: 'sub', x: 14, y: 37 });
+    t2.textContent = sub;
+    g.appendChild(t2);
+
+    // toggle
+    if (!isLeaf) {
+      const tg = el('g', { class: 'toggle' });
+      tg.appendChild(el('circle', {
+        cx: NODE_W, cy: NODE_H / 2, r: 10,
+        fill: '#ffffff', stroke: color, 'stroke-width': 2
+      }));
+      const sign = el('text', {
+        x: NODE_W, y: NODE_H / 2 + 0.5,
+        'text-anchor': 'middle', 'dominant-baseline': 'central',
+        'font-size': 14, 'font-weight': 700, fill: color,
+        'pointer-events': 'none'
+      });
+      sign.textContent = n._collapsed ? '+' : '−';
+      tg.appendChild(sign);
+
+      tg.addEventListener('click', function (e) {
+        e.stopPropagation();
+        n._collapsed = !n._collapsed;
+        render();
+      });
+      g.appendChild(tg);
+    }
+
+    // interactions
+    g.addEventListener('click', function (e) {
+      e.stopPropagation();
+      selected = n;
+      showDetails(n);
+      render();
+    });
+
+    g.addEventListener('dblclick', function (e) {
+      e.stopPropagation();
+      if (n.children.length) {
+        n._collapsed = !n._collapsed;
+        render();
+      }
+    });
+
+    return g;
+  }
+
+  /* =========================================================
+     DETAILS PANEL
+     ========================================================= */
+  function showDetails(n) {
+    if (!n) {
+      detailsEl.innerHTML =
+        '<div class="empty">Select a node in the tree to inspect its category path, ' +
+        'material code and description.</div>';
+      return;
+    }
+
+    const crumbs = [];
+    let p = n;
+    while (p) { crumbs.unshift(p); p = p.parent; }
+
+    const pathHtml = crumbs.map(function (c) {
+      return '<span class="crumb">' + esc(c.name) + '</span>';
+    }).join('<span class="sep">›</span>');
+
+    const levelLabel = n.level === 5 ? 'Material (leaf)'
+      : (n.level === 0 ? 'Root' : 'L' + n.level);
+
+    detailsEl.innerHTML =
+      '<div class="d-head" style="border-left-color:' + nodeColor(n) + '">' +
+        '<h2>' + esc(n.name) + '</h2>' +
+        '<div class="path">' + pathHtml + '</div>' +
+      '</div>' +
+      '<dl>' +
+        '<dt>Hierarchy level</dt><dd>' + levelLabel + '</dd>' +
+        (n.material ? '<dt>Material code</dt><dd><code>' + esc(n.material) + '</code></dd>' : '') +
+        (n.description ? '<dt>Description</dt><dd>' + esc(n.description) + '</dd>' : '') +
+        '<dt>Direct children</dt><dd>' + n.children.length + '</dd>' +
+        '<dt>Materials in subtree</dt><dd>' + countMaterials(n) + '</dd>' +
+      '</dl>';
+  }
+
+  /* =========================================================
+     VIEW (pan / zoom / fit)
+     ========================================================= */
+  function applyView() {
+    viewport.setAttribute('transform',
+      'translate(' + view.x + ',' + view.y + ') scale(' + view.k + ')');
+  }
+
+  function fitView() {
+    const rect = svg.getBoundingClientRect();
+    const w = Math.max(bounds.maxX - bounds.minX, 1);
+    const h = Math.max(bounds.maxY - bounds.minY, 1);
+    const pad = 70;
+
+    const k = Math.min(
+      (rect.width  - pad * 2) / w,
+      (rect.height - pad * 2) / h,
+      1.2
+    );
+
+    view.k = Math.max(k, 0.05);
+    view.x = (rect.width  - w * view.k) / 2 - bounds.minX * view.k;
+    view.y = (rect.height - h * view.k) / 2 - bounds.minY * view.k;
+    applyView();
+  }
+
+  function zoomBy(factor, cx, cy) {
+    const rect = svg.getBoundingClientRect();
+    const mx = (cx === undefined ? rect.width  / 2 : cx);
+    const my = (cy === undefined ? rect.height / 2 : cy);
+
+    const k2 = Math.min(Math.max(view.k * factor, 0.1), 3);
+    const s = k2 / view.k;
+
+    view.x = mx - s * (mx - view.x);
+    view.y = my - s * (my - view.y);
+    view.k = k2;
+    applyView();
+  }
+
+  svg.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    const rect = svg.getBoundingClientRect();
+    zoomBy(Math.exp(-e.deltaY * 0.0015), e.clientX - rect.left, e.clientY - rect.top);
+  }, { passive: false });
+
+  let panning = null;
+  svg.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('.node')) return;
+    panning = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
+    svg.classList.add('grabbing');
+    try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  svg.addEventListener('pointermove', function (e) {
+    if (!panning) return;
+    view.x = panning.vx + (e.clientX - panning.x);
+    view.y = panning.vy + (e.clientY - panning.y);
+    applyView();
+  });
+  function endPan(e) {
+    panning = null;
+    svg.classList.remove('grabbing');
+    try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
+  }
+  svg.addEventListener('pointerup', endPan);
+  svg.addEventListener('pointercancel', endPan);
+
+  /* =========================================================
+     TOOLBAR
+     ========================================================= */
+  document.getElementById('expandAll').addEventListener('click', function () {
+    (function walk(n) { n._collapsed = false; n.children.forEach(walk); })(treeRoot);
+    render();
+  });
+
+  document.getElementById('collapseAll').addEventListener('click', function () {
+    (function walk(n, d) {
+      if (n.children.length) n._collapsed = d >= 1;
+      n.children.forEach(function (c) { walk(c, d + 1); });
+    })(treeRoot, 0);
+    render();
+  });
+
+  document.getElementById('fit').addEventListener('click', fitView);
+  document.getElementById('zoomIn').addEventListener('click', function () { zoomBy(1.2); });
+  document.getElementById('zoomOut').addEventListener('click', function () { zoomBy(1 / 1.2); });
+
+  let searchTimer = null;
+  searchInput.addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    const val = searchInput.value.trim().toLowerCase();
+    searchTimer = setTimeout(function () {
+      searchTerm = val;
+      render();
+    }, 130);
+  });
+
+  /* =========================================================
+     DATA LOADING
+     ========================================================= */
+  function splitLine(line, delim) {
+    if (delim === '\t') return line.split('\t');
+    const out = [];
+    let cur = '', q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (q && line[i + 1] === '"') { cur += '"'; i++; }
+        else q = !q;
+      } else if (ch === ',' && !q) {
+        out.push(cur); cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    out.push(cur);
+    return out;
+  }
+
+  function parseTable(text) {
+    const lines = text.replace(/\r/g, '').split('\n').filter(function (l) { return l.trim(); });
+    if (!lines.length) return [];
+
+    const delim = lines[0].indexOf('\t') !== -1 ? '\t' : ',';
+    let rows = lines.map(function (l) { return splitLine(l, delim); });
+
+    // drop a header row if present
+    const first = rows[0].join(' ').toLowerCase();
+    if (first.indexOf('material') !== -1 && (first.indexOf('l1') !== -1 || first.indexOf('l2') !== -1)) {
+      rows = rows.slice(1);
+    }
+
+    // normalise to 6 columns
+    rows = rows.map(function (r) {
+      const a = r.slice(0, 6);
+      while (a.length < 6) a.push('');
+      return a.map(function (v) { return String(v).trim(); });
+    });
+
+    return rows.filter(function (r) { return r.some(function (v) { return v; }); });
+  }
+
+  function loadRows(rows) {
+    treeRoot = buildTree(rows);
+    selected = null;
+    searchTerm = '';
+    lastSearch = '\u0000';
+    searchInfo = null;
+    searchInput.value = '';
+
+    render();
+    showDetails(null);
+    fitView();
+  }
+
+  document.getElementById('loadBtn').addEventListener('click', function () {
+    overlay.classList.remove('hidden');
+    pasteArea.focus();
+  });
+  document.getElementById('cancelLoad').addEventListener('click', function () {
+    overlay.classList.add('hidden');
+  });
+  document.getElementById('doLoad').addEventListener('click', function () {
+    const rows = parseTable(pasteArea.value);
+    if (!rows.length) {
+      alert('No rows detected. Paste tab- or comma-separated rows from Excel.');
+      return;
+    }
+    overlay.classList.add('hidden');
+    pasteArea.value = '';
+    loadRows(rows);
+  });
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) overlay.classList.add('hidden');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') overlay.classList.add('hidden');
+  });
+
+  /* =========================================================
+     BOOT
+     ========================================================= */
+  loadRows(SAMPLE);
+
+  let resizeTimer = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitView, 150);
+  });
+})();
+</script>
+</body>
+</html>
