@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sorbon Category Management · Hierarchy Explorer</title>
+<style>
+  :root{
+    --bg:#eef2f7; --panel:#ffffff; --ink:#0f172a; --muted:#64748b;
+    --line:#e2e8f0; --accent:#2563eb; --amber:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,
+                "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;
+    background:var(--bg); color:var(--ink); display:flex; flex-direction:column; overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:12px 18px; background:#0f172a; color:#fff; flex-wrap:wrap;
+    box-shadow:0 2px 10px rgba(15,23,42,.18); z-index:5;
+  }
+  .brand{display:flex; align-items:center; gap:12px; min-width:0}
+  .logo{
+    width:40px;height:40px;border-radius:11px;flex:none;
+    background:linear-gradient(135deg,#2563eb,#0891b2);
+    display:grid;place-items:center;font-size:21px;line-height:1;
+    box-shadow:0 3px 10px rgba(37,99,235,.35);
+  }
+  header h1{font-size:15.5px;margin:0;font-weight:600;letter-spacing:.2px}
+  header p{margin:2px 0 0;font-size:11.5px;color:#94a3b8}
+
+  .tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tools input[type=search]{
+    width:250px;padding:8px 12px;border-radius:9px;border:1px solid #334155;
+    background:#1e293b;color:#e2e8f0;font-size:12.5px;outline:none;
+  }
+  .tools input[type=search]::placeholder{color:#7c8ba1}
+  .tools input[type=search]:focus{border-color:var(--accent);background:#0f1b2e}
+  button{
+    font:inherit;font-size:12px;padding:8px 12px;border-radius:9px;cursor:pointer;
+    border:1px solid #334155;background:#1e293b;color:#cbd5e1;transition:.15s;
+  }
+  button:hover{background:#334155;color:#fff;border-color:#475569}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary:hover{background:#1d4ed8}
+  button.ghost{background:transparent}
+  .icon-btn{width:34px;padding:8px 0;text-align:center;font-weight:700;font-size:14px}
+
+  /* ---------- layout ---------- */
+  main{flex:1;display:flex;min-height:0}
+  #canvas{position:relative;flex:1;min-width:0;background:
+      radial-gradient(circle at 1px 1px, #d7dee9 1px, transparent 0) 0 0/22px 22px,
+      var(--bg);
+    overflow:hidden}
+  svg#tree{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+  svg#tree.grabbing{cursor:grabbing}
+
+  #hint{
+    position:absolute;right:14px;bottom:12px;font-size:11px;color:#7c8ba1;
+    background:rgba(255,255,255,.88);padding:6px 10px;border-radius:8px;
+    border:1px solid var(--line);pointer-events:none;
+  }
+  #legend{
+    position:absolute;left:14px;bottom:12px;display:flex;gap:10px;flex-wrap:wrap;
+    max-width:calc(100% - 300px);
+    background:rgba(255,255,255,.92);padding:7px 12px;border-radius:9px;
+    border:1px solid var(--line);font-size:10.5px;color:#475569;pointer-events:none;
+  }
+  #legend span{display:flex;align-items:center;gap:5px}
+  #legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+  #legend .grp{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #legend .mgr i{border-radius:50%}
+  #legend .divider{width:1px;height:12px;background:#cbd5e1;display:inline-block}
+
+  /* ---------- nodes ---------- */
+  .node{cursor:pointer}
+  .node rect.box{transition:filter .15s}
+  .node:hover rect.box{filter:brightness(1.18)}
+  .node text{pointer-events:none;user-select:none;fill:#fff}
+  .node .lbl{font-size:12.5px;font-weight:600}
+  .node .sub{font-size:10.5px;opacity:.88}
+  .toggle{cursor:pointer}
+  .toggle circle{transition:.15s}
+  .toggle:hover circle{stroke-width:3}
+
+  /* ---------- details ---------- */
+  aside#details{
+    width:350px;flex:none;background:var(--panel);border-left:1px solid var(--line);
+    overflow-y:auto;padding:18px;
+  }
+  aside#details .empty{color:var(--muted);font-size:13px;line-height:1.6;margin-top:20px}
+  .d-head{border-left:4px solid #999;padding:2px 0 2px 12px;margin-bottom:18px}
+  .d-head h2{margin:0 0 6px;font-size:16px;line-height:1.35;word-break:break-word}
+  .d-head h2 .code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14.5px}
+  .path{font-size:11px;color:var(--muted);line-height:1.8;word-break:break-word}
+  .path .sep{margin:0 5px;color:#cbd5e1}
+
+  dl{margin:0;display:grid;grid-template-columns:96px 1fr;gap:9px 14px;font-size:12.5px}
+  dt{color:var(--muted);white-space:nowrap}
+  dd{margin:0;text-align:right;font-weight:500;word-break:break-word;line-height:1.55}
+  dd[dir="rtl"]{text-align:left}     /* RTL strings sit under the right-aligned column */
+  dd code{background:#f1f5f9;padding:2px 6px;border-radius:5px;font-size:11.5px;color:#0f172a}
+  dd .plain{font-weight:500}
+
+  .mgr-dot{
+    display:inline-block;width:9px;height:9px;border-radius:50%;
+    margin-right:6px;vertical-align:middle;box-shadow:0 0 0 1.5px rgba(255,255,255,.9);
+  }
+  .mgr-tag{
+    display:inline-flex;align-items:center;
+    background:#f1f5f9;border-radius:20px;padding:3px 10px 3px 6px;
+    font-size:11.5px;font-weight:600;color:#0f172a;margin:2px 0;
+  }
+  .layer-dot{
+    display:inline-block;width:8px;height:8px;border-radius:2px;
+    margin-right:7px;vertical-align:middle;
+  }
+
+  /* ---------- modal ---------- */
+  #overlay{
+    position:fixed;inset:0;background:rgba(15,23,42,.55);display:grid;place-items:center;
+    z-index:50;padding:20px;backdrop-filter:blur(3px);
+  }
+  #overlay.hidden{display:none}
+  .modal{
+    background:#fff;border-radius:16px;padding:22px;width:min(700px,100%);
+    box-shadow:0 24px 60px rgba(15,23,42,.35);
+  }
+  .modal h2{margin:0 0 8px;font-size:17px}
+  .modal p{margin:0 0 8px;font-size:12.5px;color:#475569;line-height:1.6}
+  .modal p.warn{color:#b45309;background:#fffbeb;border:1px solid #fde68a;padding:8px 10px;border-radius:8px}
+  .modal code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:11.5px}
+  #pasteArea{
+    width:100%;height:200px;margin-top:12px;padding:12px;border-radius:10px;
+    border:1px solid var(--line);font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12px;resize:vertical;outline:none;line-height:1.55;
+  }
+  #pasteArea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+  .modal-actions button{border-color:var(--line);background:#f8fafc;color:#334155}
+  .modal-actions button:hover{background:#e2e8f0;color:#0f172a}
+  .modal-actions button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .modal-actions button.primary:hover{background:#1d4ed8}
+
+  @media (max-width:900px){
+    aside#details{display:none}
+    .tools input[type=search]{width:150px}
+    #legend{max-width:calc(100% - 30px)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">🏷️</div>
+    <div>
+      <h1>Sorbon Category Management</h1>
+      <p id="subtitle">Loading…</p>
+    </div>
+  </div>
+  <div class="tools">
+    <input id="search" type="search" placeholder="Search categories, materials & managers…" autocomplete="off">
+    <button id="expandAll">Expand all</button>
+    <button id="collapseAll">Collapse all</button>
+    <button id="fit">Fit</button>
+    <button id="zoomIn" class="icon-btn" title="Zoom in">+</button>
+    <button id="zoomOut" class="icon-btn" title="Zoom out">−</button>
+    <button id="loadBtn" class="primary">Paste data</button>
+  </div>
+</header>
+
+<main>
+  <div id="canvas">
+    <svg id="tree" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.18"/>
+        </filter>
+        <filter id="glow" x="-40%" y="-40%" width="180%" height="200%">
+          <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#f59e0b" flood-opacity="0.85"/>
+        </filter>
+      </defs>
+      <g id="viewport">
+        <g id="links"></g>
+        <g id="nodes"></g>
+      </g>
+    </svg>
+    <div id="legend"></div>
+    <div id="hint">Drag to pan · Scroll to zoom · Click node for details · Click +/− to collapse</div>
+  </div>
+  <aside id="details"></aside>
+</main>
+
+<div id="overlay" class="hidden">
+  <div class="modal">
+    <h2>Paste table data</h2>
+    <p>Copy rows from Excel with the seven columns in order:
+      <code>L1 · L2 · L3 · L4 · Material · Material Description · Business Manager</code>.
+      Tab- or comma-separated both work.</p>
+    <p class="warn">Paste <strong>values</strong>, not formulas. Cells like
+      <code>=[1]Sheet2!P2</code> cannot be read here — use
+      <em>Copy → Paste Special → Values</em> from the sheet that holds the real data.</p>
+    <textarea id="pasteArea" spellcheck="false"
+      placeholder="Sorbon&#9;Chocolate&#9;Chocolate-Minicone&#9;Bulk-Minicone&#9;30002893&#9;ميني کن شکلات رنگين کمان فله 1.5KG&#9;Mr. Ashtiani"></textarea>
+    <div class="modal-actions">
+      <button id="cancelLoad" class="ghost">Cancel</button>
+      <button id="doLoad" class="primary">Build tree</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     CONFIG
+     ========================================================= */
+  const NS = 'http://www.w3.org/2000/svg';
+  const NODE_W  = 240;   // node width
+  const NODE_H  = 50;    // base height for non-leaf nodes
+  const V_GAP   = 10;    // vertical gap between sibling leaves
+  const H_GAP   = 76;    // horizontal gap between levels
+
+  const PAD_X   = 14;    // inner horizontal padding
+  const LINE_H  = 13.5;  // description line height (leaf)
+
+  // Fonts used for canvas text measurement (kept close to the CSS)
+  const FONT_LBL = '600 12.5px "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+  const FONT_SUB = '10.5px "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
+  const LEVEL_COLORS = {
+    0: '#0f172a',   // virtual root
+    1: '#1e3a8a',   // L1
+    2: '#2563eb',   // L2 (fallback — normally replaced by manager colour)
+    3: '#0891b2',   // L3
+    4: '#7c3aed',   // L4
+    5: '#059669'    // Material leaf
+  };
+
+  const MANAGER_PALETTE = [
+    '#db2777', '#ea580c', '#16a34a', '#9333ea', '#0d9488',
+    '#ca8a04', '#dc2626', '#4f46e5', '#0891b2', '#be185d',
+    '#65a30d', '#0284c7', '#b45309', '#7c3aed', '#059669',
+    '#e11d48', '#0369a1', '#15803d', '#a21caf', '#c2410c'
+  ];
+  const MIXED_MANAGER_COLOR = '#64748b';
+
+  /* =========================================================
+     DEFAULT DATA — 7 columns:
+     [L1, L2, L3, L4, Material, Material Description, Business Manager]
+     ========================================================= */
+  const SAMPLE = [
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30002893","ميني کن شکلات رنگين کمان فله 1.5KG","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30003674","ميني کن شکلات رنگين کمان فله 1 کيلوگرمي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30004550","ميني کن کاکائويي پرشده شکلات بادام زميني","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30005512","ميني کن شکلات فندقي سوربن 1.5 کيلوگرمي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30005514","ميني کن شکلات سوهان سوربن 1.5 کيلوگرمي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30005646","ميني کن شکلات قهوه 1.5 کيلوگرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30005649","ميني کن شکلات سوهان 1.5 کيلوگرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30005654","ميني کن شکلات نارگيل 1.5 کيلوگرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30005674","ميني کن شکلات رنگين کمان 1.5کيلو بريموند","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30008295","ميني کن فله بريموند رنگين کمان 2 کيلويي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30008296","ميني کن فله جرقه اي 1.5 کيلويي بريموند","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30008297","ميني کن فله نعنا 1.5 کيلويي بريموند","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30008298","ميني کن فله بادام زميني 1.5 کيلويي بريمو","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30008299","ميني کن فله نارگيل 1.5 کيلويي بريموند","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30008300","ميني کن فله قهوه 1.5 کيلويي بريموند","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30009656","ميني کن شکلات  فله 2KG_فندقي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30009657","ميني کن شکلات  فله 2KG_سوهان سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30001995","ميني کن وانيلي شکلات فندقي سوربن 200 گرم","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30002506","ميني کن  شکلات فندقي 200 گرمي قرمز","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30002872","ميني کن شکلات  فندقي فيروزه","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30002947","ميني کن شکلات فندقي سوربن زمرد 200 گرمي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30005601","ميني کن شکلات 350 گرمي _طرح گارنت","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30005655","ميني کن بادام زميني 200 گرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30005658","ميني کن سوهان 200 گرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30005659","ميني کن شکلات قهوه 200 گرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30005660","ميني کن شکلات نعنا 200 گرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30005676","ميني کن جرقه اي 200 گرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30005677","ميني کن دارک و بادام 200 گرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30007535","پک شکلات سوربن 1","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30008046","ميني کن نارگيل 200 گرمي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30014982","ميني کن شکلات 300 گرمي _طرح گارنت","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Gifting-Minicone","30015519","ميني کن يلدا  170 گرمي  سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Jijis-Minicone","30002082","ميني کن اسليودار ژي ژيس 24 عددي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Jijis-Minicone","30002838","ميني کن اسليودار کريسپي سوربن 24عددي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Jijis-Minicone","30002863","ميني کن اسليودار ژي ژيس تک عددي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Jijis-Minicone","30002864","ميني کن اسليودار کريسپي سوربن تک عددي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Jijis-Minicone","30008743","ميني کن اسليودار جرقه اي سوربن 24 عددي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Jijis-Minicone","30011636","ميني کن اسليودار ژله اي سوربن24عددي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Jijis-Minicone","30013315","ميني کن اسليودار جرقه اي تک عددي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Minicone","Jijis-Minicone","30013316","ميني کن اسليودار ژله اي تک عددي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Bulk-Molding","30013149","شکلات ايموجي فله 1.5 کيلويي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Bulk-Molding","30013353","شکلات سکه اي دارک کافه يک کيلويي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Gifting-Molding","30011409","شکلات سوربن سلکشن 180 گرمي brown","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Gifting-Molding","30011410","شکلات سوربن سلکشن 180 گرمي fruity","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Gifting-Molding","30013459","شکلات سوربن سلکشن فله 1 کيلويي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Gifting-Molding","30014095","شکلات سوربن سلکشن فروتي فله 1کيلويي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Jijis-Molding","30011408","شکلات مغزدار28pcميني جوي ماست توت فرنگي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Jijis-Molding","30011492","شکلات مغزدار 28pc ميني جوي شيري","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Jijis-Molding","30012225","شکلات سکه اي شيري ايموجي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Jijis-Molding","30012565","ميني جوي ماست و توت فرنگي تک عددي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Jijis-Molding","30012566","ميني جوي شيري تک عددي سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Tablet","30012086","تبلت75گرمي Compound  شيري سوربن 6 عددي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Tablet","30012088","تبلت75گرمي Compound  دارک سوربن 6 عددي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Tablet","30012089","تبلتg75Compoundشيري با تکه هاي فندق6 عدد","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Tablet","30012768","تبلت 75Compound گرمي شيري سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Tablet","30012769","تبلت 75Compound گرمي دارک سوربن","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Molding","Tablet","30012770","تبلت 75Compoundگرمي شيري با تکه هاي فندق","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Sauce","500 gr","30004440","سس شکلات 500 گرمي دارک","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Sauce","500 gr","30004441","سس شکلات 500 گرمي فندقي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Sauce","500 gr","30004442","سس شکلات 500 گرمي شيري","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Sauce","500 gr","30009545","سس کارامل سوربن 500 گرمي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Sauce","800 gr","30002833","سس شکلات شيري 800 گرمي","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Sauce","800 gr","30005311","سس شکلات 800 گرمي دارک","Mr. Ashtiani"],
+["Sorbon","Chocolate","Chocolate-Sauce","800 gr","30013397","سس کارامل سوربن 800 گرمي","Mr. Ashtiani"]
+  ];
+
+  /* =========================================================
+     DOM
+     ========================================================= */
+  const svg         = document.getElementById('tree');
+  const viewport    = document.getElementById('viewport');
+  const linksLayer  = document.getElementById('links');
+  const nodesLayer  = document.getElementById('nodes');
+  const detailsEl   = document.getElementById('details');
+  const subtitle    = document.getElementById('subtitle');
+  const searchInput = document.getElementById('search');
+  const overlay     = document.getElementById('overlay');
+  const pasteArea   = document.getElementById('pasteArea');
+  const legendEl    = document.getElementById('legend');
+
+  /* =========================================================
+     TEXT MEASUREMENT  (canvas 2D, works before rendering)
+     ========================================================= */
+  const measureCtx = document.createElement('canvas').getContext('2d');
+  function textWidth(str, font) {
+    measureCtx.font = font;
+    return measureCtx.measureText(String(str == null ? '' : str)).width;
+  }
+
+  // Truncate a string so it fits into maxWidth, appending an ellipsis.
+  function fitText(str, maxWidth, font) {
+    str = String(str == null ? '' : str);
+    if (textWidth(str, font) <= maxWidth) return str;
+    let s = str;
+    while (s.length > 1 && textWidth(s + '…', font) > maxWidth) s = s.slice(0, -1);
+    return s + '…';
+  }
+
+  // Word-wrap into at most maxLines lines, each fitting inside maxWidth.
+  // The final line is ellipsized if the text does not fit.
+  function wrapText(text, maxWidth, font, maxLines) {
+    const words = String(text == null ? '' : text).split(/\s+/).filter(Boolean);
+    if (!words.length) return [];
+
+    const lines = [];
+    let cur = '';
+
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i];
+      const test = cur ? cur + ' ' + w : w;
+
+      if (!cur || textWidth(test, font) <= maxWidth) {
+        cur = test;
+      } else {
+        lines.push(cur);
+        cur = w;
+
+        if (lines.length >= maxLines - 1) {
+          // everything left goes into the final line, truncated to fit
+          const full = words.slice(i).join(' ');
+          let rest = full;
+          while (rest.length > 1 && textWidth(rest + '…', font) > maxWidth) {
+            rest = rest.slice(0, -1);
+          }
+          lines.push(rest === full ? rest : rest + '…');
+          return lines;
+        }
+      }
+    }
+    if (cur) lines.push(cur);
+    return lines.slice(0, maxLines);
+  }
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+  let treeRoot = null;
+  let selected = null;
+  let searchTerm = '';
+  let searchInfo = null;
+  let lastSearch = '\u0000';
+  let view = { x: 40, y: 40, k: 1 };
+  let bounds = { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+  let idSeq = 0;
+
+  const managerColors = new Map();
+  let managerCounter = 0;
+
+  function managerColor(name) {
+    if (!name) return '#64748b';
+    if (!managerColors.has(name)) {
+      managerColors.set(name, MANAGER_PALETTE[managerCounter % MANAGER_PALETTE.length]);
+      managerCounter++;
+    }
+    return managerColors.get(name);
+  }
+
+  /* =========================================================
+     TREE BUILDING
+     ========================================================= */
+  function buildTree(rows) {
+    idSeq = 0;
+    const virtual = {
+      id: 'n' + (idSeq++), name: 'All Categories', level: 0,
+      children: [], parent: null, _virtual: true
+    };
+    const index = new Map();
+
+    rows.forEach(function (r) {
+      let parent = virtual;
+      const path = [];
+
+      for (let i = 0; i < 4; i++) {
+        const v = String(r[i] == null ? '' : r[i]).trim();
+        if (!v) continue;
+        path.push(v);
+        const key = path.join('\u0001');
+
+        let node = index.get(key);
+        if (!node) {
+          node = { id: 'n' + (idSeq++), name: v, level: i + 1, children: [], parent: parent };
+          index.set(key, node);
+          parent.children.push(node);
+        }
+        parent = node;
+      }
+
+      const mat  = String(r[4] == null ? '' : r[4]).trim();
+      const desc = String(r[5] == null ? '' : r[5]).trim();
+      const mgr  = String(r[6] == null ? '' : r[6]).trim();
+
+      if (mat || desc) {
+        parent.children.push({
+          id: 'n' + (idSeq++),
+          name: mat || desc,
+          material: mat,
+          description: desc,
+          manager: mgr,
+          level: 5, children: [], parent: parent
+        });
+      }
+    });
+
+    if (virtual.children.length === 1) {
+      const r = virtual.children[0];
+      r.parent = null;
+      return r;
+    }
+    return virtual;
+  }
+
+  // Bottom-up: set of Business Managers per subtree
+  function computeManagers(n) {
+    if (n.children.length === 0) {
+      n._managers = new Set(n.manager ? [n.manager] : []);
+      return n._managers;
+    }
+    const s = new Set();
+    n.children.forEach(function (c) {
+      computeManagers(c).forEach(function (m) { s.add(m); });
+    });
+    n._managers = s;
+    return s;
+  }
+
+  /* ---------------------------------------------------------
+     NODE METRICS  — wraps leaf descriptions and computes heights
+     --------------------------------------------------------- */
+  function computeNodeMetrics(root) {
+    (function walk(n) {
+      const isLeaf = n.children.length === 0;
+
+      if (isLeaf) {
+        // Title = material code (bold). Description wraps onto its own lines.
+        const hasMat  = !!(n.material && n.material.trim());
+        const descTxt = hasMat
+          ? (n.description || '')
+          : '';                    // no code → description becomes the title
+
+        n._title = hasMat ? n.material : (n.description || n.name || '');
+        n._lines = descTxt
+          ? wrapText(descTxt, NODE_W - PAD_X * 2, FONT_SUB, 4)
+          : [];
+
+        const nLines = n._lines.length;
+        // 20 (title baseline) + 15 (gap) + extra lines + 8 (bottom pad)
+        n._h = Math.max(48, 43 + Math.max(0, nLines - 1) * LINE_H);
+      } else {
+        n._title = n.name;
+        n._lines = null;
+        n._h = NODE_H;
+      }
+
+      n.children.forEach(walk);
+    })(root);
+  }
+
+  function countMaterials(n) {
+    if (n._matCount !== undefined) return n._matCount;
+    const v = n.children.length
+      ? n.children.reduce(function (s, c) { return s + countMaterials(c); }, 0)
+      : 1;
+    n._matCount = v;
+    return v;
+  }
+
+  function totalNodes(n) {
+    return 1 + n.children.reduce(function (s, c) { return s + totalNodes(c); }, 0);
+  }
+
+  /* =========================================================
+     LAYOUT (left ➜ right, variable node heights)
+     ========================================================= */
+  function layoutTree(root) {
+    const nodes = [], links = [];
+    let cursor = 0;
+
+    (function walk(n, depth) {
+      n.depth = depth;
+      n.x = depth * (NODE_W + H_GAP);
+
+      const h = n._h;
+      const kids = n._collapsed ? [] : n.children;
+
+      if (kids.length === 0) {
+        n.y = cursor;
+        cursor += h + V_GAP;
+      } else {
+        kids.forEach(function (k) { walk(k, depth + 1); });
+        const first = kids[0];
+        const last  = kids[kids.length - 1];
+        const top    = first.y;
+        const bottom = last.y + last._h;
+        n.y = (top + bottom) / 2 - h / 2;
+      }
+
+      nodes.push(n);
+      kids.forEach(function (k) { links.push([n, k]); });
+    })(root, 0);
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    nodes.forEach(function (n) {
+      if (n.x < minX) minX = n.x;
+      if (n.y < minY) minY = n.y;
+      if (n.x + NODE_W > maxX) maxX = n.x + NODE_W;
+      if (n.y + n._h > maxY) maxY = n.y + n._h;
+    });
+    bounds = { minX: minX, minY: minY, maxX: maxX, maxY: maxY };
+
+    return { nodes: nodes, links: links };
+  }
+
+  /* =========================================================
+     COLOUR LOGIC  — L2 nodes take their Business Manager colour
+     ========================================================= */
+  function nodeColor(n) {
+    if (n.level === 2 && n._managers) {
+      if (n._managers.size === 1) return managerColor(Array.from(n._managers)[0]);
+      if (n._managers.size > 1)  return MIXED_MANAGER_COLOR;
+    }
+    return LEVEL_COLORS[Math.min(Math.max(n.level, 0), 5)];
+  }
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function el(tag, attrs) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  const RTL_RE = /[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  function isRTL(s) { return RTL_RE.test(String(s || '')); }
+  function rtlAttr(s) { return isRTL(s) ? ' dir="rtl"' : ''; }
+
+  /* =========================================================
+     SEARCH
+     ========================================================= */
+  function computeSearch(term) {
+    if (!term) return null;
+    const matches = new Set();
+    const keep = new Set();
+
+    (function walk(n) {
+      let childHit = false;
+      n.children.forEach(function (c) { if (walk(c)) childHit = true; });
+
+      const hay = (
+        (n.name || '') + ' ' +
+        (n.material || '') + ' ' +
+        (n.description || '') + ' ' +
+        (n.manager || '')
+      ).toLowerCase();
+
+      const self = hay.indexOf(term) !== -1;
+      if (self) matches.add(n.id);
+
+      const relevant = self || childHit;
+      if (relevant) keep.add(n.id);
+      if (childHit) n._collapsed = false;
+
+      return relevant;
+    })(treeRoot);
+
+    return { matches: matches, keep: keep };
+  }
+
+  /* =========================================================
+     RENDER
+     ========================================================= */
+  function render() {
+    if (!treeRoot) return;
+
+    if (searchTerm !== lastSearch) {
+      lastSearch = searchTerm;
+      searchInfo = computeSearch(searchTerm);
+    }
+    if (!searchTerm) searchInfo = null;
+
+    const result = layoutTree(treeRoot);
+
+    linksLayer.textContent = '';
+    nodesLayer.textContent = '';
+
+    // --- links ---
+    result.links.forEach(function (pair) {
+      const s = pair[0], t = pair[1];
+      const x1 = s.x + NODE_W,     y1 = s.y + s._h / 2;
+      const x2 = t.x,              y2 = t.y + t._h / 2;
+      const dx = Math.max(26, (x2 - x1) / 2);
+
+      const p = el('path', {
+        d: 'M' + x1 + ',' + y1 + ' C' + (x1 + dx) + ',' + y1 + ' ' + (x2 - dx) + ',' + y2 + ' ' + x2 + ',' + y2,
+        fill: 'none',
+        stroke: nodeColor(t),
+        'stroke-width': 1.8,
+        'stroke-linecap': 'round',
+        opacity: 0.5
+      });
+      linksLayer.appendChild(p);
+    });
+
+    // --- nodes ---
+    result.nodes.forEach(function (n) {
+      nodesLayer.appendChild(renderNode(n));
+    });
+
+    renderLegend();
+
+    subtitle.textContent =
+      treeRoot.name + ' · ' + countMaterials(treeRoot) + ' materials · ' +
+      totalNodes(treeRoot) + ' nodes · ' +
+      managerColors.size + ' manager' + (managerColors.size === 1 ? '' : 's') +
+      (searchInfo ? ' · ' + searchInfo.matches.size + ' search matches' : '');
+  }
+
+  function renderNode(n) {
+    const h = n._h;
+    const g = el('g', { class: 'node', transform: 'translate(' + n.x + ',' + n.y + ')' });
+    g.dataset.id = n.id;
+
+    const isMatch = searchInfo && searchInfo.matches.has(n.id);
+    const isKept  = !searchInfo || searchInfo.keep.has(n.id);
+    const isSel   = selected && selected.id === n.id;
+
+    g.setAttribute('opacity', isKept ? 1 : 0.13);
+
+    const color = nodeColor(n);
+    const isLeaf = n.children.length === 0;
+    const maxTextW = NODE_W - PAD_X * 2;
+
+    // body
+    g.appendChild(el('rect', {
+      class: 'box',
+      width: NODE_W,
+      height: h,
+      rx: 9,
+      fill: color,
+      filter: (isSel || isMatch) ? 'url(#glow)' : 'url(#shadow)'
+    }));
+
+    if (isSel || isMatch) {
+      g.appendChild(el('rect', {
+        x: -2.5, y: -2.5,
+        width: NODE_W + 5, height: h + 5,
+        rx: 11,
+        fill: 'none',
+        stroke: isSel ? '#f59e0b' : '#facc15',
+        'stroke-width': isSel ? 3 : 2.5
+      }));
+    }
+
+    /* ---------------- title line ---------------- */
+    const titleText = fitText(n._title || '', maxTextW, FONT_LBL);
+    const t1 = el('text', { class: 'lbl', x: PAD_X, y: 21 });
+    if (isRTL(titleText)) {
+      t1.setAttribute('direction', 'rtl');
+      t1.setAttribute('text-anchor', 'end');
+      t1.setAttribute('x', NODE_W - PAD_X);
+    }
+    t1.textContent = titleText;
+    g.appendChild(t1);
+
+    /* ---------------- second line(s) ---------------- */
+    if (isLeaf) {
+      // description wrapped over several lines, never overflowing the box
+      (n._lines || []).forEach(function (line, i) {
+        const y = 21 + 15 + i * LINE_H;
+        const attrs = { class: 'sub', x: PAD_X, y: y };
+        if (isRTL(line)) {
+          attrs.direction = 'rtl';
+          attrs.x = NODE_W - PAD_X;
+          attrs['text-anchor'] = 'end';
+        }
+        const t = el('text', attrs);
+        t.textContent = line;
+        g.appendChild(t);
+      });
+    } else {
+      // summary line for branch nodes
+      const cnt = countMaterials(n);
+      let sub = cnt + ' material' + (cnt === 1 ? '' : 's');
+      if (n._managers && n._managers.size === 1) {
+        sub += ' · ' + Array.from(n._managers)[0];
+      } else if (n._managers && n._managers.size > 1) {
+        sub += ' · ' + n._managers.size + ' managers';
+      }
+      sub = fitText(sub, maxTextW, FONT_SUB);
+
+      const attrs = { class: 'sub', x: PAD_X, y: 37 };
+      if (isRTL(sub)) {
+        attrs.direction = 'rtl';
+        attrs.x = NODE_W - PAD_X;
+        attrs['text-anchor'] = 'end';
+      }
+      const t2 = el('text', attrs);
+      t2.textContent = sub;
+      g.appendChild(t2);
+    }
+
+    /* ---------------- collapse toggle ---------------- */
+    if (!isLeaf) {
+      const cy = h / 2;
+      const tg = el('g', { class: 'toggle' });
+      tg.appendChild(el('circle', {
+        cx: NODE_W, cy: cy, r: 10,
+        fill: '#ffffff', stroke: color, 'stroke-width': 2
+      }));
+      const sign = el('text', {
+        x: NODE_W, y: cy + 0.5,
+        'text-anchor': 'middle', 'dominant-baseline': 'central',
+        'font-size': 14, 'font-weight': 700, fill: color,
+        'pointer-events': 'none'
+      });
+      sign.textContent = n._collapsed ? '+' : '−';
+      tg.appendChild(sign);
+
+      tg.addEventListener('click', function (e) {
+        e.stopPropagation();
+        n._collapsed = !n._collapsed;
+        render();
+      });
+      g.appendChild(tg);
+    }
+
+    /* ---------------- interactions ---------------- */
+    g.addEventListener('click', function (e) {
+      e.stopPropagation();
+      selected = n;
+      showDetails(n);
+      render();
+    });
+
+    g.addEventListener('dblclick', function (e) {
+      e.stopPropagation();
+      if (n.children.length) {
+        n._collapsed = !n._collapsed;
+        render();
+      }
+    });
+
+    return g;
+  }
+
+  function renderLegend() {
+    const parts = [];
+
+    parts.push(
+      '<span><i style="background:' + LEVEL_COLORS[1] + '"></i>L1</span>' +
+      '<span><i style="background:' + LEVEL_COLORS[3] + '"></i>L3</span>' +
+      '<span><i style="background:' + LEVEL_COLORS[4] + '"></i>L4</span>' +
+      '<span><i style="background:' + LEVEL_COLORS[5] + '"></i>Material</span>'
+    );
+
+    if (managerColors.size) {
+      parts.push('<span class="divider"></span>');
+      let mgrHtml = '<span class="grp">';
+      managerColors.forEach(function (col, name) {
+        mgrHtml += '<span class="mgr"><i style="background:' + col + '"></i>' + esc(name) + '</span>';
+      });
+      if (managerColors.size > 1) {
+        mgrHtml += '<span class="mgr"><i style="background:' + MIXED_MANAGER_COLOR + '"></i>Mixed</span>';
+      }
+      mgrHtml += '</span>';
+      parts.push(mgrHtml);
+    }
+
+    legendEl.innerHTML = parts.join(' ');
+  }
+
+  /* =========================================================
+     DETAILS PANEL
+     ========================================================= */
+  function showDetails(n) {
+    if (!n) {
+      detailsEl.innerHTML =
+        '<div class="empty">Select a node in the tree to inspect its category layers, ' +
+        'material code, description and Business Manager.</div>';
+      return;
+    }
+
+    // breadcrumb
+    const crumbs = [];
+    let p = n;
+    while (p) { crumbs.unshift(p); p = p.parent; }
+
+    const pathHtml = crumbs.map(function (c) {
+      return '<span class="crumb">' + esc(c.name) + '</span>';
+    }).join('<span class="sep">›</span>');
+
+    /* ---- one row per hierarchy layer ---- */
+    let rows = '';
+
+    crumbs.forEach(function (c) {
+      if (c._virtual) return;
+      if (c.level >= 1 && c.level <= 4) {
+        rows +=
+          '<dt><span class="layer-dot" style="background:' + LEVEL_COLORS[c.level] + '"></span>' +
+            'L' + c.level + '</dt>' +
+          '<dd' + rtlAttr(c.name) + '>' + esc(c.name) + '</dd>';
+      }
+    });
+
+    /* ---- leaf-specific rows ---- */
+    if (n.level === 5) {
+      if (n.material) {
+        rows += '<dt>Material</dt><dd><code>' + esc(n.material) + '</code></dd>';
+      }
+      if (n.description) {
+        rows += '<dt>Description</dt><dd' + rtlAttr(n.description) + '>' + esc(n.description) + '</dd>';
+      }
+    }
+
+    /* ---- Business Manager ---- */
+    if (n._managers && n._managers.size === 1) {
+      const name = Array.from(n._managers)[0];
+      const col = managerColor(name);
+      rows +=
+        '<dt>Business Manager</dt><dd>' +
+          '<span class="mgr-tag"><span class="mgr-dot" style="background:' + col + '"></span>' +
+          esc(name) + '</span></dd>';
+    } else if (n._managers && n._managers.size > 1) {
+      const list = Array.from(n._managers).map(function (m) {
+        return '<span class="mgr-tag"><span class="mgr-dot" style="background:' +
+          managerColor(m) + '"></span>' + esc(m) + '</span>';
+      }).join(' ');
+      rows += '<dt>Business Managers</dt><dd>' + list + '</dd>';
+    }
+
+    detailsEl.innerHTML =
+      '<div class="d-head" style="border-left-color:' + nodeColor(n) + '">' +
+        '<h2>' + esc(n.name) + '</h2>' +
+        '<div class="path">' + pathHtml + '</div>' +
+      '</div>' +
+      '<dl>' + rows + '</dl>';
+  }
+
+  /* =========================================================
+     VIEW (pan / zoom / fit)
+     ========================================================= */
+  function applyView() {
+    viewport.setAttribute('transform',
+      'translate(' + view.x + ',' + view.y + ') scale(' + view.k + ')');
+  }
+
+  function fitView() {
+    const rect = svg.getBoundingClientRect();
+    const w = Math.max(bounds.maxX - bounds.minX, 1);
+    const h = Math.max(bounds.maxY - bounds.minY, 1);
+    const pad = 70;
+
+    const k = Math.min(
+      (rect.width  - pad * 2) / w,
+      (rect.height - pad * 2) / h,
+      1.2
+    );
+
+    view.k = Math.max(k, 0.05);
+    view.x = (rect.width  - w * view.k) / 2 - bounds.minX * view.k;
+    view.y = (rect.height - h * view.k) / 2 - bounds.minY * view.k;
+    applyView();
+  }
+
+  function zoomBy(factor, cx, cy) {
+    const rect = svg.getBoundingClientRect();
+    const mx = (cx === undefined ? rect.width  / 2 : cx);
+    const my = (cy === undefined ? rect.height / 2 : cy);
+
+    const k2 = Math.min(Math.max(view.k * factor, 0.1), 3);
+    const s = k2 / view.k;
+
+    view.x = mx - s * (mx - view.x);
+    view.y = my - s * (my - view.y);
+    view.k = k2;
+    applyView();
+  }
+
+  svg.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    const rect = svg.getBoundingClientRect();
+    zoomBy(Math.exp(-e.deltaY * 0.0015), e.clientX - rect.left, e.clientY - rect.top);
+  }, { passive: false });
+
+  let panning = null;
+  svg.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('.node')) return;
+    panning = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
+    svg.classList.add('grabbing');
+    try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  svg.addEventListener('pointermove', function (e) {
+    if (!panning) return;
+    view.x = panning.vx + (e.clientX - panning.x);
+    view.y = panning.vy + (e.clientY - panning.y);
+    applyView();
+  });
+  function endPan(e) {
+    panning = null;
+    svg.classList.remove('grabbing');
+    try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
+  }
+  svg.addEventListener('pointerup', endPan);
+  svg.addEventListener('pointercancel', endPan);
+
+  /* =========================================================
+     COLLAPSE / EXPAND
+     ========================================================= */
+  function collapseAllExceptRoot() {
+    (function walk(n, d) {
+      if (n.children.length) n._collapsed = d >= 1;
+      n.children.forEach(function (c) { walk(c, d + 1); });
+    })(treeRoot, 0);
+  }
+
+  /* =========================================================
+     TOOLBAR
+     ========================================================= */
+  document.getElementById('expandAll').addEventListener('click', function () {
+    (function walk(n) { n._collapsed = false; n.children.forEach(walk); })(treeRoot);
+    render();
+  });
+
+  document.getElementById('collapseAll').addEventListener('click', function () {
+    collapseAllExceptRoot();
+    render();
+  });
+
+  document.getElementById('fit').addEventListener('click', fitView);
+  document.getElementById('zoomIn').addEventListener('click', function () { zoomBy(1.2); });
+  document.getElementById('zoomOut').addEventListener('click', function () { zoomBy(1 / 1.2); });
+
+  let searchTimer = null;
+  searchInput.addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    const val = searchInput.value.trim().toLowerCase();
+    searchTimer = setTimeout(function () {
+      searchTerm = val;
+      render();
+    }, 130);
+  });
+
+  /* =========================================================
+     DATA LOADING
+     ========================================================= */
+  function splitLine(line, delim) {
+    if (delim === '\t') return line.split('\t');
+    const out = [];
+    let cur = '', q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (q && line[i + 1] === '"') { cur += '"'; i++; }
+        else q = !q;
+      } else if (ch === ',' && !q) {
+        out.push(cur); cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    out.push(cur);
+    return out;
+  }
+
+  function parseTable(text) {
+    const lines = text.replace(/\r/g, '').split('\n').filter(function (l) { return l.trim(); });
+    if (!lines.length) return [];
+
+    const delim = lines[0].indexOf('\t') !== -1 ? '\t' : ',';
+    let rows = lines.map(function (l) { return splitLine(l, delim); });
+
+    const first = rows[0].join(' ').toLowerCase();
+    if (first.indexOf('material') !== -1 &&
+        (first.indexOf('l1') !== -1 || first.indexOf('l2') !== -1 || first.indexOf('business') !== -1)) {
+      rows = rows.slice(1);
+    }
+
+    rows = rows.map(function (r) {
+      const a = r.slice(0, 7);
+      while (a.length < 7) a.push('');
+      return a.map(function (v) { return String(v).trim(); });
+    });
+
+    return rows.filter(function (r) { return r.some(function (v) { return v; }); });
+  }
+
+  function loadRows(rows) {
+    managerColors.clear();
+    managerCounter = 0;
+
+    treeRoot = buildTree(rows);
+    computeManagers(treeRoot);
+    computeNodeMetrics(treeRoot);   // wraps leaf text + assigns heights
+
+    selected = null;
+    searchTerm = '';
+    lastSearch = '\u0000';
+    searchInfo = null;
+    searchInput.value = '';
+
+    // default gesture after new data: collapse everything below the root
+    collapseAllExceptRoot();
+
+    render();
+    showDetails(null);
+    fitView();
+  }
+
+  document.getElementById('loadBtn').addEventListener('click', function () {
+    overlay.classList.remove('hidden');
+    pasteArea.focus();
+  });
+  document.getElementById('cancelLoad').addEventListener('click', function () {
+    overlay.classList.add('hidden');
+  });
+  document.getElementById('doLoad').addEventListener('click', function () {
+    const rows = parseTable(pasteArea.value);
+    if (!rows.length) {
+      alert('No rows detected. Paste tab- or comma-separated rows from Excel.');
+      return;
+    }
+    overlay.classList.add('hidden');
+    pasteArea.value = '';
+    loadRows(rows);
+  });
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) overlay.classList.add('hidden');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') overlay.classList.add('hidden');
+  });
+
+  /* =========================================================
+     BOOT
+     ========================================================= */
+  loadRows(SAMPLE);
+
+  let resizeTimer = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitView, 150);
+  });
+})();
+</script>
+</body>
+</html>
