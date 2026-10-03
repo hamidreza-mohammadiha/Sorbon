@@ -96,16 +96,14 @@
   aside#details .empty{color:var(--muted);font-size:13px;line-height:1.6;margin-top:20px}
   .d-head{border-left:4px solid #999;padding:2px 0 2px 12px;margin-bottom:18px}
   .d-head h2{margin:0 0 6px;font-size:16px;line-height:1.35;word-break:break-word}
-  .d-head h2 .code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14.5px}
   .path{font-size:11px;color:var(--muted);line-height:1.8;word-break:break-word}
   .path .sep{margin:0 5px;color:#cbd5e1}
 
   dl{margin:0;display:grid;grid-template-columns:96px 1fr;gap:9px 14px;font-size:12.5px}
   dt{color:var(--muted);white-space:nowrap}
   dd{margin:0;text-align:right;font-weight:500;word-break:break-word;line-height:1.55}
-  dd[dir="rtl"]{text-align:left}     /* RTL strings sit under the right-aligned column */
+  dd[dir="rtl"]{text-align:left}
   dd code{background:#f1f5f9;padding:2px 6px;border-radius:5px;font-size:11.5px;color:#0f172a}
-  dd .plain{font-weight:500}
 
   .mgr-dot{
     display:inline-block;width:9px;height:9px;border-radius:50%;
@@ -223,25 +221,24 @@
      CONFIG
      ========================================================= */
   const NS = 'http://www.w3.org/2000/svg';
-  const NODE_W  = 240;   // node width
-  const NODE_H  = 50;    // base height for non-leaf nodes
-  const V_GAP   = 10;    // vertical gap between sibling leaves
-  const H_GAP   = 76;    // horizontal gap between levels
-
+  const NODE_W  = 240;
+  const NODE_H  = 52;    // constant height, both for leaves and branches
+  const V_GAP   = 12;
+  const H_GAP   = 76;
   const PAD_X   = 14;    // inner horizontal padding
-  const LINE_H  = 13.5;  // description line height (leaf)
+  const LINE_1_Y = 22;   // baseline of the title line
+  const LINE_2_Y = 40;   // baseline of the second line
 
-  // Fonts used for canvas text measurement (kept close to the CSS)
   const FONT_LBL = '600 12.5px "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
   const FONT_SUB = '10.5px "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
   const LEVEL_COLORS = {
-    0: '#0f172a',   // virtual root
-    1: '#1e3a8a',   // L1
-    2: '#2563eb',   // L2 (fallback — normally replaced by manager colour)
-    3: '#0891b2',   // L3
-    4: '#7c3aed',   // L4
-    5: '#059669'    // Material leaf
+    0: '#0f172a',
+    1: '#1e3a8a',
+    2: '#2563eb',
+    3: '#0891b2',
+    4: '#7c3aed',
+    5: '#059669'
   };
 
   const MANAGER_PALETTE = [
@@ -253,8 +250,7 @@
   const MIXED_MANAGER_COLOR = '#64748b';
 
   /* =========================================================
-     DEFAULT DATA — 7 columns:
-     [L1, L2, L3, L4, Material, Material Description, Business Manager]
+     DEFAULT DATA — [L1, L2, L3, L4, Material, Description, Manager]
      ========================================================= */
   const SAMPLE = [
 ["Sorbon","Chocolate","Chocolate-Minicone","Bulk-Minicone","30002893","ميني کن شکلات رنگين کمان فله 1.5KG","Mr. Ashtiani"],
@@ -338,7 +334,7 @@
   const legendEl    = document.getElementById('legend');
 
   /* =========================================================
-     TEXT MEASUREMENT  (canvas 2D, works before rendering)
+     TEXT MEASUREMENT (canvas 2D)
      ========================================================= */
   const measureCtx = document.createElement('canvas').getContext('2d');
   function textWidth(str, font) {
@@ -346,48 +342,19 @@
     return measureCtx.measureText(String(str == null ? '' : str)).width;
   }
 
-  // Truncate a string so it fits into maxWidth, appending an ellipsis.
+  // Binary-search truncation with an ellipsis. Never overflows maxWidth.
   function fitText(str, maxWidth, font) {
     str = String(str == null ? '' : str);
+    if (!str) return '';
     if (textWidth(str, font) <= maxWidth) return str;
-    let s = str;
-    while (s.length > 1 && textWidth(s + '…', font) > maxWidth) s = s.slice(0, -1);
-    return s + '…';
-  }
 
-  // Word-wrap into at most maxLines lines, each fitting inside maxWidth.
-  // The final line is ellipsized if the text does not fit.
-  function wrapText(text, maxWidth, font, maxLines) {
-    const words = String(text == null ? '' : text).split(/\s+/).filter(Boolean);
-    if (!words.length) return [];
-
-    const lines = [];
-    let cur = '';
-
-    for (let i = 0; i < words.length; i++) {
-      const w = words[i];
-      const test = cur ? cur + ' ' + w : w;
-
-      if (!cur || textWidth(test, font) <= maxWidth) {
-        cur = test;
-      } else {
-        lines.push(cur);
-        cur = w;
-
-        if (lines.length >= maxLines - 1) {
-          // everything left goes into the final line, truncated to fit
-          const full = words.slice(i).join(' ');
-          let rest = full;
-          while (rest.length > 1 && textWidth(rest + '…', font) > maxWidth) {
-            rest = rest.slice(0, -1);
-          }
-          lines.push(rest === full ? rest : rest + '…');
-          return lines;
-        }
-      }
+    let lo = 0, hi = str.length;
+    while (lo < hi) {
+      const mid = Math.floor((lo + hi + 1) / 2);
+      if (textWidth(str.slice(0, mid) + '…', font) <= maxWidth) lo = mid;
+      else hi = mid - 1;
     }
-    if (cur) lines.push(cur);
-    return lines.slice(0, maxLines);
+    return str.slice(0, lo) + '…';
   }
 
   /* =========================================================
@@ -468,7 +435,6 @@
     return virtual;
   }
 
-  // Bottom-up: set of Business Managers per subtree
   function computeManagers(n) {
     if (n.children.length === 0) {
       n._managers = new Set(n.manager ? [n.manager] : []);
@@ -480,38 +446,6 @@
     });
     n._managers = s;
     return s;
-  }
-
-  /* ---------------------------------------------------------
-     NODE METRICS  — wraps leaf descriptions and computes heights
-     --------------------------------------------------------- */
-  function computeNodeMetrics(root) {
-    (function walk(n) {
-      const isLeaf = n.children.length === 0;
-
-      if (isLeaf) {
-        // Title = material code (bold). Description wraps onto its own lines.
-        const hasMat  = !!(n.material && n.material.trim());
-        const descTxt = hasMat
-          ? (n.description || '')
-          : '';                    // no code → description becomes the title
-
-        n._title = hasMat ? n.material : (n.description || n.name || '');
-        n._lines = descTxt
-          ? wrapText(descTxt, NODE_W - PAD_X * 2, FONT_SUB, 4)
-          : [];
-
-        const nLines = n._lines.length;
-        // 20 (title baseline) + 15 (gap) + extra lines + 8 (bottom pad)
-        n._h = Math.max(48, 43 + Math.max(0, nLines - 1) * LINE_H);
-      } else {
-        n._title = n.name;
-        n._lines = null;
-        n._h = NODE_H;
-      }
-
-      n.children.forEach(walk);
-    })(root);
   }
 
   function countMaterials(n) {
@@ -528,7 +462,7 @@
   }
 
   /* =========================================================
-     LAYOUT (left ➜ right, variable node heights)
+     LAYOUT (left ➜ right, constant node height)
      ========================================================= */
   function layoutTree(root) {
     const nodes = [], links = [];
@@ -538,19 +472,18 @@
       n.depth = depth;
       n.x = depth * (NODE_W + H_GAP);
 
-      const h = n._h;
       const kids = n._collapsed ? [] : n.children;
 
       if (kids.length === 0) {
         n.y = cursor;
-        cursor += h + V_GAP;
+        cursor += NODE_H + V_GAP;
       } else {
         kids.forEach(function (k) { walk(k, depth + 1); });
         const first = kids[0];
         const last  = kids[kids.length - 1];
         const top    = first.y;
-        const bottom = last.y + last._h;
-        n.y = (top + bottom) / 2 - h / 2;
+        const bottom = last.y + NODE_H;
+        n.y = (top + bottom) / 2 - NODE_H / 2;
       }
 
       nodes.push(n);
@@ -562,7 +495,7 @@
       if (n.x < minX) minX = n.x;
       if (n.y < minY) minY = n.y;
       if (n.x + NODE_W > maxX) maxX = n.x + NODE_W;
-      if (n.y + n._h > maxY) maxY = n.y + n._h;
+      if (n.y + NODE_H > maxY) maxY = n.y + NODE_H;
     });
     bounds = { minX: minX, minY: minY, maxX: maxX, maxY: maxY };
 
@@ -570,7 +503,7 @@
   }
 
   /* =========================================================
-     COLOUR LOGIC  — L2 nodes take their Business Manager colour
+     COLOUR LOGIC
      ========================================================= */
   function nodeColor(n) {
     if (n.level === 2 && n._managers) {
@@ -598,6 +531,39 @@
   const RTL_RE = /[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/;
   function isRTL(s) { return RTL_RE.test(String(s || '')); }
   function rtlAttr(s) { return isRTL(s) ? ' dir="rtl"' : ''; }
+
+  /* =========================================================
+     RTL-AWARE SVG TEXT PLACEMENT
+     ---------------------------------------------------------
+     For RTL strings we anchor the RIGHT edge of the text.
+     The reliable cross-browser way to do this is:
+
+       direction="rtl" + text-anchor="start" + x = NODE_W - PAD_X
+
+     (In an RTL context, "start" is the logical beginning = right side.)
+     Using text-anchor="end" together with direction="rtl" is what
+     caused the overflow bug — some browsers place the anchor on the
+     wrong side, so the string grows to the right and escapes the box.
+     ========================================================= */
+  function makeText(x, y, str, cls, font, isBold) {
+    const attrs = {
+      class: cls,
+      x: x,
+      y: y,
+      'font-family': 'inherit'
+    };
+    if (isRTL(str)) {
+      attrs.direction = 'rtl';
+      attrs['text-anchor'] = 'start';           // right edge in RTL
+      attrs.x = NODE_W - PAD_X;
+    } else {
+      attrs['text-anchor'] = 'start';           // left edge in LTR
+      attrs.x = PAD_X;
+    }
+    const t = el('text', attrs);
+    t.textContent = str;
+    return t;
+  }
 
   /* =========================================================
      SEARCH
@@ -648,25 +614,22 @@
     linksLayer.textContent = '';
     nodesLayer.textContent = '';
 
-    // --- links ---
     result.links.forEach(function (pair) {
       const s = pair[0], t = pair[1];
-      const x1 = s.x + NODE_W,     y1 = s.y + s._h / 2;
-      const x2 = t.x,              y2 = t.y + t._h / 2;
+      const x1 = s.x + NODE_W,     y1 = s.y + NODE_H / 2;
+      const x2 = t.x,              y2 = t.y + NODE_H / 2;
       const dx = Math.max(26, (x2 - x1) / 2);
 
-      const p = el('path', {
+      linksLayer.appendChild(el('path', {
         d: 'M' + x1 + ',' + y1 + ' C' + (x1 + dx) + ',' + y1 + ' ' + (x2 - dx) + ',' + y2 + ' ' + x2 + ',' + y2,
         fill: 'none',
         stroke: nodeColor(t),
         'stroke-width': 1.8,
         'stroke-linecap': 'round',
         opacity: 0.5
-      });
-      linksLayer.appendChild(p);
+      }));
     });
 
-    // --- nodes ---
     result.nodes.forEach(function (n) {
       nodesLayer.appendChild(renderNode(n));
     });
@@ -681,7 +644,6 @@
   }
 
   function renderNode(n) {
-    const h = n._h;
     const g = el('g', { class: 'node', transform: 'translate(' + n.x + ',' + n.y + ')' });
     g.dataset.id = n.id;
 
@@ -693,13 +655,13 @@
 
     const color = nodeColor(n);
     const isLeaf = n.children.length === 0;
-    const maxTextW = NODE_W - PAD_X * 2;
+    const contentW = NODE_W - PAD_X * 2;
 
     // body
     g.appendChild(el('rect', {
       class: 'box',
       width: NODE_W,
-      height: h,
+      height: NODE_H,
       rx: 9,
       fill: color,
       filter: (isSel || isMatch) ? 'url(#glow)' : 'url(#shadow)'
@@ -708,7 +670,7 @@
     if (isSel || isMatch) {
       g.appendChild(el('rect', {
         x: -2.5, y: -2.5,
-        width: NODE_W + 5, height: h + 5,
+        width: NODE_W + 5, height: NODE_H + 5,
         rx: 11,
         fill: 'none',
         stroke: isSel ? '#f59e0b' : '#facc15',
@@ -717,56 +679,42 @@
     }
 
     /* ---------------- title line ---------------- */
-    const titleText = fitText(n._title || '', maxTextW, FONT_LBL);
-    const t1 = el('text', { class: 'lbl', x: PAD_X, y: 21 });
-    if (isRTL(titleText)) {
-      t1.setAttribute('direction', 'rtl');
-      t1.setAttribute('text-anchor', 'end');
-      t1.setAttribute('x', NODE_W - PAD_X);
-    }
-    t1.textContent = titleText;
-    g.appendChild(t1);
-
-    /* ---------------- second line(s) ---------------- */
+    let title, subTitle;
     if (isLeaf) {
-      // description wrapped over several lines, never overflowing the box
-      (n._lines || []).forEach(function (line, i) {
-        const y = 21 + 15 + i * LINE_H;
-        const attrs = { class: 'sub', x: PAD_X, y: y };
-        if (isRTL(line)) {
-          attrs.direction = 'rtl';
-          attrs.x = NODE_W - PAD_X;
-          attrs['text-anchor'] = 'end';
-        }
-        const t = el('text', attrs);
-        t.textContent = line;
-        g.appendChild(t);
-      });
+      // Title = material code (if present) else the description itself.
+      title = (n.material && n.material.trim()) ? n.material : (n.description || n.name || '');
+      // Sub = the description, but only when we already used the code as title.
+      subTitle = (n.material && n.material.trim()) ? (n.description || '') : '';
     } else {
-      // summary line for branch nodes
+      title = n.name;
       const cnt = countMaterials(n);
-      let sub = cnt + ' material' + (cnt === 1 ? '' : 's');
+      let s = cnt + ' material' + (cnt === 1 ? '' : 's');
       if (n._managers && n._managers.size === 1) {
-        sub += ' · ' + Array.from(n._managers)[0];
+        s += ' · ' + Array.from(n._managers)[0];
       } else if (n._managers && n._managers.size > 1) {
-        sub += ' · ' + n._managers.size + ' managers';
+        s += ' · ' + n._managers.size + ' managers';
       }
-      sub = fitText(sub, maxTextW, FONT_SUB);
+      subTitle = s;
+    }
 
-      const attrs = { class: 'sub', x: PAD_X, y: 37 };
-      if (isRTL(sub)) {
-        attrs.direction = 'rtl';
-        attrs.x = NODE_W - PAD_X;
-        attrs['text-anchor'] = 'end';
-      }
-      const t2 = el('text', attrs);
-      t2.textContent = sub;
-      g.appendChild(t2);
+    // Measured truncation, with a safety margin for RTL (canvas and SVG
+    // font fallbacks for Persian can differ slightly between platforms).
+    const rtlTitle = isRTL(title);
+    const rtlSub   = isRTL(subTitle);
+    const titleMax = contentW - (rtlTitle ? 16 : 6);
+    const subMax   = contentW - (rtlSub   ? 22 : 8);
+
+    const titleFit = fitText(title, titleMax, FONT_LBL);
+    g.appendChild(makeText(0, LINE_1_Y, titleFit, 'lbl', FONT_LBL, true));
+
+    if (subTitle) {
+      const subFit = fitText(subTitle, subMax, FONT_SUB);
+      g.appendChild(makeText(0, LINE_2_Y, subFit, 'sub', FONT_SUB, false));
     }
 
     /* ---------------- collapse toggle ---------------- */
     if (!isLeaf) {
-      const cy = h / 2;
+      const cy = NODE_H / 2;
       const tg = el('g', { class: 'toggle' });
       tg.appendChild(el('circle', {
         cx: NODE_W, cy: cy, r: 10,
@@ -845,7 +793,6 @@
       return;
     }
 
-    // breadcrumb
     const crumbs = [];
     let p = n;
     while (p) { crumbs.unshift(p); p = p.parent; }
@@ -854,7 +801,6 @@
       return '<span class="crumb">' + esc(c.name) + '</span>';
     }).join('<span class="sep">›</span>');
 
-    /* ---- one row per hierarchy layer ---- */
     let rows = '';
 
     crumbs.forEach(function (c) {
@@ -867,7 +813,6 @@
       }
     });
 
-    /* ---- leaf-specific rows ---- */
     if (n.level === 5) {
       if (n.material) {
         rows += '<dt>Material</dt><dd><code>' + esc(n.material) + '</code></dd>';
@@ -877,7 +822,6 @@
       }
     }
 
-    /* ---- Business Manager ---- */
     if (n._managers && n._managers.size === 1) {
       const name = Array.from(n._managers)[0];
       const col = managerColor(name);
@@ -1055,7 +999,6 @@
 
     treeRoot = buildTree(rows);
     computeManagers(treeRoot);
-    computeNodeMetrics(treeRoot);   // wraps leaf text + assigns heights
 
     selected = null;
     searchTerm = '';
@@ -1063,7 +1006,7 @@
     searchInfo = null;
     searchInput.value = '';
 
-    // default gesture after new data: collapse everything below the root
+    // default gesture: collapse everything below the root
     collapseAllExceptRoot();
 
     render();
