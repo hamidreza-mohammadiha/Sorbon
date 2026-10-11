@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Band Data Histogram</title>
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    margin: 0; padding: 20px;
+    background: #f9f9fb; color: #1e1e2f;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 { font-weight: 500; margin-top: 0; }
+  h2 { font-weight: 500; font-size: 1.15rem; margin-top: 0; }
+  .card {
+    background: white; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 20px; margin-bottom: 20px;
+  }
+  .info { font-size: 0.9rem; color: #555; }
+  .status { font-size: 0.9rem; color: #2563eb; margin-left: 12px; }
+  .error { color: #dc2626 !important; }
+
+  .table-wrapper {
+    max-height: 400px; overflow: auto;
+    border: 1px solid #e5e7eb; border-radius: 8px;
+    font-size: 0.85rem;
+  }
+  table { border-collapse: collapse; width: 100%; white-space: nowrap; }
+  th, td { padding: 5px 10px; text-align: right; border-bottom: 1px solid #f0f0f0; }
+  th { background: #f1f3f5; position: sticky; top: 0; z-index: 1;
+       text-align: center; font-weight: 500; }
+  td:first-child, th:first-child {
+    text-align: left; background: #fafafa;
+    position: sticky; left: 0; z-index: 2;
+  }
+  th:first-child { z-index: 3; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; margin-bottom: 12px; }
+  .month-selector {
+    display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center;
+    padding: 10px 12px; background: #f8fafc; border-radius: 8px;
+  }
+  .month-selector label {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 0.9rem; cursor: pointer;
+  }
+  .bin-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .bin-controls input[type="number"] {
+    width: 90px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 6px;
+  }
+  button {
+    padding: 8px 16px; border: none; border-radius: 6px;
+    background: #3b82f6; color: white; font-weight: 500;
+    cursor: pointer; font-size: 0.95rem;
+  }
+  button:hover { background: #2563eb; }
+  button.secondary { background: #e5e7eb; color: #1e1e2f; }
+  button.secondary:hover { background: #d1d5db; }
+
+  textarea {
+    width: 100%; min-height: 280px; padding: 12px;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 0.82rem; line-height: 1.5;
+    border: 1px solid #d1d5db; border-radius: 8px;
+    resize: vertical; white-space: pre;
+  }
+  #bandChart { width: 100%; height: 560px; margin-top: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Band Data Histogram</h1>
+
+  <!-- ============ INPUT ============ -->
+  <div class="card">
+    <h2>Paste band data</h2>
+    <p class="info">
+      Paste the table body (tab‑separated). Each line: a bin label like
+      <code>[0,1%)</code> or <code>[30%, +∞)</code>, followed by the counts.
+      Month names are generated automatically (<b>Jan…Dec</b> for 12 columns).
+      You may also include an optional header line with month names.
+    </p>
+    <textarea id="bandInput" spellcheck="false"></textarea>
+    <div style="margin-top: 12px;">
+      <button id="parseBtn">Parse &amp; Plot</button>
+      <button id="exampleBtn" class="secondary">Load Example</button>
+      <button id="clearBtn" class="secondary">Clear</button>
+      <span id="status" class="status"></span>
+    </div>
+  </div>
+
+  <!-- ============ CHART ============ -->
+  <div class="card">
+    <h2>Histogram</h2>
+    <div class="controls">
+      <div class="month-selector" id="monthSelector"></div>
+      <div class="bin-controls">
+        <label><input type="radio" name="mode" value="sum" checked> Total (sum)</label>
+        <label><input type="radio" name="mode" value="group"> Grouped by month</label>
+        <label><input type="radio" name="mode" value="overlay"> Overlaid</label>
+        <label style="margin-left: 8px;">
+          Re‑bin width (%):
+          <input type="number" id="rebinSize" step="0.5" min="0.5" placeholder="original">
+        </label>
+      </div>
+    </div>
+    <div id="bandChart"></div>
+    <div class="info" id="chartInfo"></div>
+  </div>
+
+  <!-- ============ TABLE ============ -->
+  <div class="card">
+    <h2>Parsed Data</h2>
+    <div class="table-wrapper">
+      <table id="bandTable"><thead></thead><tbody></tbody></table>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+let bandData = null;                  // { months: [...], rows: [{label, bounds, counts}] }
+let selectedMonths = new Set();
+
+const bandInput     = document.getElementById('bandInput');
+const statusEl      = document.getElementById('status');
+const monthSelector = document.getElementById('monthSelector');
+const chartDiv      = document.getElementById('bandChart');
+const chartInfo     = document.getElementById('chartInfo');
+const tableHead     = document.querySelector('#bandTable thead');
+const tableBody     = document.querySelector('#bandTable tbody');
+const rebinInput    = document.getElementById('rebinSize');
+
+const EXAMPLE = [
+'[0,1%)\t10,119\t15,368\t11,714\t12,040\t13,162\t11,107\t12,295\t9,036\t8,544\t8,223\t7,300\t9,077',
+'[1,2%)\t198\t234\t166\t180\t193\t148\t198\t153\t120\t120\t110\t145',
+'[2,3%)\t324\t531\t373\t370\t614\t442\t555\t440\t383\t330\t327\t348',
+'[3,4%)\t975\t710\t588\t653\t739\t607\t904\t626\t577\t522\t572\t441',
+'[4,5%)\t3,762\t6,470\t10,428\t10,382\t9,450\t7,781\t8,334\t6,374\t7,220\t6,830\t3,676\t4,203',
+'[5,6%)\t9,569\t5,439\t4,462\t4,976\t5,331\t4,198\t4,279\t4,385\t3,982\t4,227\t6,096\t6,229',
+'[6,7%)\t1,157\t1,247\t1,027\t1,230\t1,102\t964\t1,075\t696\t829\t918\t1,476\t1,078',
+'[7,8%)\t1,831\t2,321\t2,730\t2,770\t4,513\t3,852\t5,922\t4,433\t4,634\t4,691\t4,697\t4,475',
+'[8,9%)\t6,634\t7,161\t8,261\t12,450\t10,091\t4,765\t3,843\t2,394\t2,850\t3,373\t3,319\t4,130',
+'[9,10%)\t6,729\t4,748\t4,217\t3,783\t3,791\t3,023\t3,372\t2,600\t3,045\t3,252\t3,414\t3,944',
+'[10,15%)\t14,744\t11,678\t11,227\t14,541\t14,044\t11,363\t11,722\t8,334\t9,437\t10,377\t9,797\t8,853',
+'[15,20%)\t7,245\t4,916\t4,663\t5,123\t3,595\t3,199\t3,600\t2,768\t3,753\t4,083\t3,599\t3,143',
+'[20,25%)\t2,192\t1,765\t1,659\t1,842\t366\t257\t311\t286\t312\t372\t359\t392',
+'[25,30%)\t242\t359\t301\t555\t437\t170\t211\t64\t57\t85\t89\t95',
+'[30%, +∞)\t13\t14\t6.0\t7.0\t6.0\t6.0\t7.0\t5.0\t10\t14\t9.0\t19'
+].join('\n');
+
+/* ============================================================
+   PARSING
+   ============================================================ */
+
+/** Parse a bin label like "[0,1%)", "[10,15%]", "(20,25)", "[30%, +∞)" */
+function parseBinLabel(label) {
+  if (!label) return null;
+  // strip quotes & whitespace
+  const s = String(label).trim().replace(/^["'\s]+|["'\s]+$/g, '');
+
+  // accept [ or ( opener, ] or ) closer
+  const m = s.match(/[\[\(]\s*([\d.]+)\s*%?\s*,\s*([^\]\)]+?)\s*%?\s*[\]\)]/);
+  if (!m) return null;
+
+  const start = parseFloat(m[1]);
+  const endStr = m[2].trim().replace(/%$/, '').trim();
+
+  let end;
+  if (/∞|inf|max/i.test(endStr)) {
+    end = Infinity;
+  } else {
+    const em = endStr.match(/([\d.]+)/);
+    end = em ? parseFloat(em[1]) : null;
+  }
+  if (isNaN(start) || end === null || end < start) return null;
+  return { start, end };
+}
+
+/** Split a line on tabs, or on 2+ spaces, or single spaces as last resort */
+function splitLine(line) {
+  if (line.includes('\t')) return line.split('\t').map(s => s.trim());
+  if (/\s{2,}/.test(line)) return line.split(/\s{2,}/).map(s => s.trim());
+  return line.split(/\s+/).map(s => s.trim());
+}
+
+/** Parse the pasted text. Accepts optional header line with month names. */
+function parseBinsText(text) {
+  const normalised = text
+    .replace(/\u00A0/g, ' ')          // non-breaking space
+    .replace(/[\u2013\u2014]/g, '-')  // en/em dash
+    .replace(/\u221E/g, '∞');         // ∞ symbol
+
+  const lines = normalised.split(/\r?\n/).filter(l => l.trim() !== '');
+  if (!lines.length) throw new Error('No data to parse.');
+
+  let monthLabels = null;
+  const rows = [];
+
+  for (const line of lines) {
+    const cells = splitLine(line);
+    const first = cells[0] || '';
+    const bounds = parseBinLabel(first);
+
+    if (!bounds) {
+      // Treat as optional header (use remaining cells as month labels)
+      const labels = cells.slice(1).map(c => c.trim()).filter(c => c !== '');
+      if (labels.length > 0 && !monthLabels) monthLabels = labels;
+      continue;
+    }
+
+    const counts = cells.slice(1).map(c => {
+      const cleaned = String(c).replace(/,/g, '').trim();
+      if (cleaned === '') return 0;
+      const n = parseFloat(cleaned);
+      return isNaN(n) ? 0 : n;
+    });
+    rows.push({ label: first, bounds, counts });
+  }
+
+  if (rows.length === 0) {
+    const preview = lines[0].slice(0, 110);
+    throw new Error(
+      `No bin rows found. First line was: "${preview}${lines[0].length > 110 ? '…' : ''}". ` +
+      `Labels should look like [0,1%), [10,15%) or [30%, +∞).`
+    );
+  }
+
+  const nMonths = Math.max(...rows.map(r => r.counts.length));
+  if (!monthLabels || monthLabels.length !== nMonths) {
+    const def = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    monthLabels = nMonths <= 12
+      ? def.slice(0, nMonths)
+      : Array.from({ length: nMonths }, (_, i) => 'M' + (i + 1));
+  }
+  rows.forEach(r => { while (r.counts.length < nMonths) r.counts.push(0); });
+
+  return { months: monthLabels, rows };
+}
+
+/* ============================================================
+   MAIN FLOW
+   ============================================================ */
+document.getElementById('parseBtn').addEventListener('click', parseAndPlot);
+document.getElementById('exampleBtn').addEventListener('click', () => {
+  bandInput.value = EXAMPLE;
+  parseAndPlot();
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+  bandInput.value = '';
+  bandData = null;
+  selectedMonths.clear();
+  statusEl.textContent = '';
+  statusEl.classList.remove('error');
+  monthSelector.innerHTML = '';
+  tableHead.innerHTML = '';
+  tableBody.innerHTML = '';
+  chartInfo.textContent = '';
+  Plotly.purge(chartDiv);
+});
+
+function parseAndPlot() {
+  statusEl.classList.remove('error');
+  statusEl.textContent = 'Parsing…';
+  try {
+    bandData = parseBinsText(bandInput.value);
+    statusEl.textContent =
+      `✓ Parsed ${bandData.rows.length} bins × ${bandData.months.length} months`;
+    selectedMonths = new Set(bandData.months);
+    buildMonthSelector();
+    renderTable();
+    plotData();
+  } catch (err) {
+    console.error(err);
+    bandData = null;
+    statusEl.classList.add('error');
+    statusEl.textContent = '✗ ' + err.message;
+    monthSelector.innerHTML = '';
+    tableHead.innerHTML = '';
+    tableBody.innerHTML = '';
+    chartInfo.textContent = '';
+    Plotly.purge(chartDiv);
+  }
+}
+
+/* ============================================================
+   MONTH SELECTOR
+   ============================================================ */
+function buildMonthSelector() {
+  monthSelector.innerHTML = '';
+  bandData.months.forEach(m => {
+    const label = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.value = m; cb.checked = true;
+    cb.addEventListener('change', () => {
+      cb.checked ? selectedMonths.add(m) : selectedMonths.delete(m);
+      plotData();
+    });
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(' ' + m));
+    monthSelector.appendChild(label);
+  });
+
+  const bAll = document.createElement('button');
+  bAll.textContent = 'All'; bAll.className = 'secondary';
+  bAll.addEventListener('click', () => {
+    bandData.months.forEach(m => selectedMonths.add(m));
+    syncCheckboxes(); plotData();
+  });
+
+  const bNone = document.createElement('button');
+  bNone.textContent = 'None'; bNone.className = 'secondary';
+  bNone.addEventListener('click', () => {
+    selectedMonths.clear();
+    syncCheckboxes(); plotData();
+  });
+
+  monthSelector.appendChild(bAll);
+  monthSelector.appendChild(bNone);
+}
+
+function syncCheckboxes() {
+  monthSelector.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = selectedMonths.has(cb.value);
+  });
+}
+
+/* ============================================================
+   DATA TABLE
+   ============================================================ */
+function renderTable() {
+  tableHead.innerHTML = '';
+  const tr = document.createElement('tr');
+  const th0 = document.createElement('th'); th0.textContent = 'Discount Band'; tr.appendChild(th0);
+  bandData.months.forEach(m => {
+    const th = document.createElement('th'); th.textContent = m; tr.appendChild(th);
+  });
+  tableHead.appendChild(tr);
+
+  tableBody.innerHTML = '';
+  bandData.rows.forEach(row => {
+    const tr = document.createElement('tr');
+    const td0 = document.createElement('td'); td0.textContent = row.label; tr.appendChild(td0);
+    bandData.months.forEach((m, i) => {
+      const td = document.createElement('td');
+      td.textContent = (row.counts[i] || 0).toLocaleString();
+      tr.appendChild(td);
+    });
+    tableBody.appendChild(tr);
+  });
+}
+
+/* ============================================================
+   CHART CONTROLS
+   ============================================================ */
+document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener('change', plotData));
+rebinInput.addEventListener('input', plotData);
+
+/* ============================================================
+   PLOTTING
+   ============================================================ */
+
+/** Bar widths for each original bin. +∞ bin inherits previous finite width. */
+function binWidths(rows) {
+  const raw = rows.map(r => {
+    if (!r.bounds) return null;
+    if (r.bounds.end === Infinity) return null;
+    const w = r.bounds.end - r.bounds.start;
+    return w > 0 ? w : null;
+  });
+  return raw.map((w, idx) => {
+    if (w !== null) return w;
+    for (let i = idx - 1; i >= 0; i--) if (raw[i] !== null) return raw[i];
+    for (let i = idx + 1; i < raw.length; i++) if (raw[i] !== null) return raw[i];
+    return 5;
+  });
+}
+
+const PALETTE = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#ec4899',
+                 '#06b6d4','#84cc16','#f97316','#6366f1','#14b8a6','#eab308'];
+
+function plotData() {
+  if (!bandData) { Plotly.purge(chartDiv); chartInfo.textContent = ''; return; }
+  if (selectedMonths.size === 0) {
+    Plotly.purge(chartDiv);
+    chartInfo.textContent = 'Select at least one month.';
+    return;
+  }
+
+  const rb = parseFloat(rebinInput.value);
+  if (!isNaN(rb) && rb > 0) return plotRebinned(rb);
+
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+  const widths = binWidths(bandData.rows);
+  const sel = Array.from(selectedMonths);
+
+  if (mode === 'sum') {
+    const x = [], y = [], w = [];
+    bandData.rows.forEach((r, i) => {
+      if (!r.bounds) return;
+      w.push(widths[i]);
+      x.push(r.bounds.start + widths[i] / 2);
+      let total = 0;
+      bandData.months.forEach((m, mi) => {
+        if (selectedMonths.has(m)) total += r.counts[mi] || 0;
+      });
+      y.push(total);
+    });
+
+    Plotly.react(chartDiv, [{
+      x, y, width: w, type: 'bar',
+      marker: { color: '#3b82f6', line: { color: '#1e3a8a', width: 1 } },
+      name: 'Total',
+      hovertemplate: 'Discount ~%{x:.2f}%<br>Count: %{y:,}<extra></extra>'
+    }], {
+      title: { text: `Total customer count by discount band (${sel.length} month${sel.length>1?'s':''})`, font: { size: 15 } },
+      xaxis: { title: 'Discount (%)', zeroline: false },
+      yaxis: { title: 'Customer Count', zeroline: false },
+      bargap: 0.02,
+      margin: { t: 50, b: 50, l: 80, r: 30 }
+    }, { responsive: true });
+
+    const total = y.reduce((a, b) => a + b, 0);
+    chartInfo.textContent = `Total: ${total.toLocaleString()} customers | Months: ${sel.join(', ')}`;
+    return;
+  }
+
+  // Grouped / Overlaid
+  const traces = [];
+  sel.forEach((m, mi) => {
+    const mIdx = bandData.months.indexOf(m);
+    if (mIdx === -1) return;
+    const x = [], y = [], w = [];
+    bandData.rows.forEach((r, i) => {
+      if (!r.bounds) return;
+      w.push(widths[i]);
+      x.push(r.bounds.start + widths[i] / 2);
+      y.push(r.counts[mIdx] || 0);
+    });
+    traces.push({
+      x, y, width: w, type: 'bar', name: m,
+      marker: { color: PALETTE[mi % PALETTE.length], line: { color: '#333', width: 0.4 } },
+      opacity: 0.9,
+      hovertemplate: `${m}<br>Discount ~%{x:.2f}%<br>Count: %{y:,}<extra></extra>`
+    });
+  });
+
+  Plotly.react(chartDiv, traces, {
+    title: { text: 'Customer count by discount band', font: { size: 15 } },
+    xaxis: { title: 'Discount (%)', zeroline: false },
+    yaxis: { title: 'Customer Count', zeroline: false },
+    barmode: mode === 'overlay' ? 'overlay' : 'group',
+    bargap: 0.06, bargroupgap: 0.04,
+    margin: { t: 50, b: 50, l: 80, r: 30 }
+  }, { responsive: true });
+
+  chartInfo.textContent = `Showing ${traces.length} month(s): ${sel.join(', ')}`;
+}
+
+function plotRebinned(binSize) {
+  const sel = Array.from(selectedMonths);
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+
+  // Determine finite max end for target range
+  let maxEnd = 0;
+  bandData.rows.forEach(r => {
+    if (r.bounds && r.bounds.end !== Infinity) maxEnd = Math.max(maxEnd, r.bounds.end);
+  });
+  const infCap = maxEnd + binSize * 2;
+
+  const targets = [];
+  for (let s = 0; s < infCap; s += binSize) targets.push([s, s + binSize]);
+
+  // Helper: distribute one original bin's count into uniform targets
+  function distribute(counts, mIdx) {
+    const result = new Array(targets.length).fill(0);
+    bandData.rows.forEach(r => {
+      if (!r.bounds) return;
+      const N = r.counts[mIdx] || 0;
+      const a = r.bounds.start;
+      const b = r.bounds.end === Infinity ? infCap : r.bounds.end;
+      const origW = b - a;
+      if (origW <= 0) return;
+      targets.forEach((t, ti) => {
+        const overlap = Math.max(0, Math.min(b, t[1]) - Math.max(a, t[0]));
+        if (overlap > 0) result[ti] += N * overlap / origW;
+      });
+    });
+    return result;
+  }
+
+  if (mode === 'sum') {
+    const totals = new Array(targets.length).fill(0);
+    sel.forEach(m => {
+      const mIdx = bandData.months.indexOf(m);
+      if (mIdx === -1) return;
+      const d = distribute(null, mIdx);
+      for (let i = 0; i < totals.length; i++) totals[i] += d[i];
+    });
+
+    Plotly.react(chartDiv, [{
+      x: targets.map(t => (t[0] + t[1]) / 2),
+      y: totals,
+      width: targets.map(t => t[1] - t[0]),
+      type: 'bar',
+      marker: { color: '#3b82f6', line: { color: '#1e3a8a', width: 1 } },
+      name: 'Total',
+      hovertemplate: 'Discount ~%{x:.2f}%<br>Count: %{y:,.0f}<extra></extra>'
+    }], {
+      title: { text: `Re-binned total (width = ${binSize}%)`, font: { size: 15 } },
+      xaxis: { title: 'Discount (%)', zeroline: false },
+      yaxis: { title: 'Customer Count', zeroline: false },
+      bargap: 0.02,
+      margin: { t: 50, b: 50, l: 80, r: 30 }
+    }, { responsive: true });
+
+    chartInfo.textContent =
+      `Re-binned to ${binSize}% uniform bins (uniform-within-bin assumption). Months: ${sel.join(', ')}`;
+    return;
+  }
+
+  const traces = [];
+  sel.forEach((m, mi) => {
+    const mIdx = bandData.months.indexOf(m);
+    if (mIdx === -1) return;
+    const counts = distribute(null, mIdx);
+    traces.push({
+      x: targets.map(t => (t[0] + t[1]) / 2),
+      y: counts,
+      width: targets.map(t => t[1] - t[0]),
+      type: 'bar', name: m,
+      marker: { color: PALETTE[mi % PALETTE.length], line: { color: '#333', width: 0.4 } },
+      opacity: 0.9,
+      hovertemplate: `${m}<br>Discount ~%{x:.2f}%<br>Count: %{y:,.0f}<extra></extra>`
+    });
+  });
+
+  Plotly.react(chartDiv, traces, {
+    title: { text: `Re-binned customer count (width = ${binSize}%)`, font: { size: 15 } },
+    xaxis: { title: 'Discount (%)', zeroline: false },
+    yaxis: { title: 'Customer Count', zeroline: false },
+    barmode: mode === 'overlay' ? 'overlay' : 'group',
+    bargap: 0.06, bargroupgap: 0.04,
+    margin: { t: 50, b: 50, l: 80, r: 30 }
+  }, { responsive: true });
+
+  chartInfo.textContent =
+    `Re-binned to ${binSize}% uniform bins (uniform-within-bin assumption). Months: ${sel.join(', ')}`;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+bandInput.value = EXAMPLE;
+Plotly.newPlot(chartDiv, [], { title: 'Click "Parse & Plot" to render' });
+</script>
+</body>
+</html>
