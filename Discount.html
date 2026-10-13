@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Band Data Analysis — Hist1 &amp; Hist2</title>
+<title>Customer Count &amp; Gross Value — Histogram &amp; Sales/Discounts</title>
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 <style>
   * { box-sizing: border-box; }
@@ -30,6 +30,7 @@
     border-radius: 10px;
     overflow: hidden;
     background: #fcfcfd;
+    margin-bottom: 20px;
   }
   details.accordion > summary {
     cursor: pointer;
@@ -90,6 +91,7 @@
     cursor: pointer; font-size: 0.95rem;
   }
   button:hover { background: #2563eb; }
+  button:disabled { cursor: not-allowed; }
   button.secondary { background: #e5e7eb; color: #1e1e2f; }
   button.secondary:hover { background: #d1d5db; }
   button.download {
@@ -102,13 +104,14 @@
   }
 
   textarea {
-    width: 100%; min-height: 280px; padding: 12px;
+    width: 100%; min-height: 260px; padding: 12px;
     font-family: 'SF Mono', Monaco, Consolas, monospace;
     font-size: 0.82rem; line-height: 1.5;
     border: 1px solid #d1d5db; border-radius: 8px;
     resize: vertical; white-space: pre;
   }
-  #bandChart, #salesChart { width: 100%; height: 560px; margin-top: 12px; }
+  #bandChart { width: 100%; height: 560px; margin-top: 12px; }
+  #salesChart { width: 100%; height: 580px; margin-top: 12px; }
 
   .section-divider {
     margin: 36px 0 24px;
@@ -120,8 +123,8 @@
     font-weight: 500;
     letter-spacing: 0.02em;
   }
+  .section-divider:first-of-type { margin-top: 0; }
 
-  /* ---------- CHART HEADER (title input + download) ---------- */
   .chart-header {
     display: flex; flex-wrap: wrap; gap: 12px;
     align-items: center; justify-content: space-between;
@@ -152,7 +155,7 @@
     border-radius: 8px;
     font-size: 0.88rem;
     color: #78350f;
-    margin-top: 8px;
+    margin-top: 12px;
     line-height: 1.6;
   }
   .calc-note code {
@@ -161,11 +164,16 @@
     border-radius: 4px;
     font-size: 0.85em;
   }
+  .calc-note .legend-chip {
+    display: inline-block;
+    width: 10px; height: 10px; border-radius: 2px;
+    margin-right: 4px; vertical-align: middle;
+  }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>Band Data Analysis</h1>
+  <h1>Customer Count &amp; Gross Value Analysis</h1>
 
   <!-- ================================================================
        HIST 1 — Customer Count
@@ -177,8 +185,8 @@
     <p class="info">
       Paste the table body (tab‑separated). Each line: a bin label like
       <code>[0,1%)</code> or <code>[30%, +∞)</code>, followed by the counts.
-      Month names are generated automatically (<b>Jan…Dec</b> for 12 columns).
-      You may also include an optional header line with month names.
+      Month names are auto‑generated (<b>Jan…Dec</b> for 12 columns).
+      An optional header line with month names is also accepted.
     </p>
     <textarea id="bandInput" spellcheck="false"></textarea>
     <div style="margin-top: 12px;">
@@ -196,9 +204,7 @@
         <input type="text" id="hist1Subtitle" placeholder="e.g. Channel X — 2026">
       </div>
       <div class="chart-actions">
-        <button id="downloadHist1" class="download" disabled>
-          ⬇ Download PNG
-        </button>
+        <button id="downloadHist1" class="download" disabled>⬇ Download PNG</button>
       </div>
     </div>
     <div class="controls">
@@ -227,25 +233,25 @@
   </details>
 
   <!-- ================================================================
-       HIST 2 — Drop Size + Sales/Discounts
+       HIST 2 — Gross Value + Sales / Discounts
        ================================================================ -->
-  <div class="section-divider" style="margin-top: 40px;">
-    Hist 2 — Average Drop Size &amp; Monthly Sales / Discounts
+  <div class="section-divider">
+    Hist 2 — Gross Value &amp; Monthly Sales / Discounts
   </div>
 
   <div class="card">
-    <h2>Paste band data (average drop size / basket value)</h2>
+    <h2>Paste Gross Value table</h2>
     <p class="info">
-      Same format as Hist 1 but the values are the <b>average drop size</b> (basket value) for each
-      discount band. Bin labels must match the customer‑count table so rows can be joined.
-      Month labels are auto‑generated the same way (Jan…Dec for 12 columns).
+      Same format as the customer count table, but values are <b>gross values</b>
+      (monetary amounts) per discount band. Bin labels must match the customer count
+      table so the two tables can be combined for the weighted average discount.
     </p>
-    <textarea id="dropSizeInput" spellcheck="false"></textarea>
+    <textarea id="grossInput" spellcheck="false"></textarea>
     <div style="margin-top: 12px;">
-      <button id="dropSizeParseBtn">Parse Drop Sizes</button>
-      <button id="dropSizeExampleBtn" class="secondary">Load Example</button>
-      <button id="dropSizeClearBtn" class="secondary">Clear</button>
-      <span id="dropSizeStatus" class="status"></span>
+      <button id="grossParseBtn">Parse Gross Values</button>
+      <button id="grossExampleBtn" class="secondary">Load Example</button>
+      <button id="grossClearBtn" class="secondary">Clear</button>
+      <span id="grossStatus" class="status"></span>
     </div>
   </div>
 
@@ -256,30 +262,45 @@
         <input type="text" id="hist2Subtitle" placeholder="e.g. Channel X — 2026">
       </div>
       <div class="chart-actions">
-        <button id="downloadHist2" class="download" disabled>
-          ⬇ Download PNG
-        </button>
+        <button id="downloadHist2" class="download" disabled>⬇ Download PNG</button>
       </div>
     </div>
+
+    <div class="controls">
+      <div class="month-selector" id="grossMonthSelector"></div>
+    </div>
+
     <div id="salesChart"></div>
     <div class="info" id="salesChartInfo"></div>
 
     <div class="calc-note">
       <b>Calculation summary</b> (per month, summed over every band):
       <ul style="margin: 6px 0 0 0; padding-left: 20px;">
-        <li><b>Sales</b> = <code>Σ (customer_count × drop_size)</code></li>
-        <li><b>Discounts</b> = <code>Σ (customer_count × drop_size × midpoint%)</code></li>
+        <li>
+          <span class="legend-chip" style="background:#16a34a"></span>
+          <b>Sales</b> = <code>Σ gross_value</code> across all bands
+        </li>
+        <li>
+          <span class="legend-chip" style="background:#dc2626"></span>
+          <b>Discounts</b> = <code>Sales × weighted_avg_discount% / 100</code>
+        </li>
+        <li>
+          <span class="legend-chip" style="background:#b45309"></span>
+          <b>Weighted avg discount %</b> =
+          <code>Σ (customer_count × midpoint%) / Σ customer_count</code>
+        </li>
         <li><code>midpoint%</code> = <code>(start + end) / 2</code>; for <code>[30%, +∞)</code> the midpoint is fixed at <b>33.3 %</b>.</li>
+        <li>Both currency lines share the <b>left</b> axis so they are directly comparable; the percentage line uses the right axis.</li>
         <li>Bands are joined on their <code>(start, end)</code> values, so bracket style (<code>[ ]</code> vs <code>( )</code>) doesn’t matter.</li>
       </ul>
     </div>
   </div>
 
   <details class="accordion">
-    <summary>Parsed Drop Size Data</summary>
+    <summary>Parsed Gross Value Data</summary>
     <div class="accordion-body">
       <div class="table-wrapper">
-        <table id="dropSizeTable"><thead></thead><tbody></tbody></table>
+        <table id="grossTable"><thead></thead><tbody></tbody></table>
       </div>
     </div>
   </details>
@@ -364,11 +385,16 @@ function parseBinsText(text) {
   return { months: monthLabels, rows };
 }
 
-/** Key used to join bands between the two tables. */
 function bandKey(bounds) {
   if (!bounds) return null;
   const e = bounds.end === Infinity ? 'inf' : bounds.end;
   return bounds.start + '|' + e;
+}
+
+function bandMidpoint(bounds) {
+  if (!bounds) return null;
+  if (bounds.end === Infinity) return 33.3;
+  return (bounds.start + bounds.end) / 2;
 }
 
 /* ============================================================
@@ -392,15 +418,27 @@ const EXAMPLE = [
 '[30%, +∞)\t13\t14\t6.0\t7.0\t6.0\t6.0\t7.0\t5.0\t10\t14\t9.0\t19'
 ].join('\n');
 
-const dropBase = [
-  ['[0,1%)', 85.20], ['[1,2%)', 92.40], ['[2,3%)', 105.80], ['[3,4%)', 118.50],
-  ['[4,5%)', 125.30], ['[5,6%)', 135.60], ['[6,7%)', 142.10], ['[7,8%)', 148.70],
-  ['[8,9%)', 155.40], ['[9,10%)', 160.80], ['[10,15%)', 175.20], ['[15,20%)', 195.50],
-  ['[20,25%)', 215.90], ['[25,30%)', 230.40], ['[30%, +∞)', 250.00]
+/* Gross value example — plausible monetary amounts per band, consistent with counts. */
+const EXAMPLE_BIN_LABELS = [
+  '[0,1%)','[1,2%)','[2,3%)','[3,4%)','[4,5%)','[5,6%)','[6,7%)',
+  '[7,8%)','[8,9%)','[9,10%)','[10,15%)','[15,20%)','[20,25%)',
+  '[25,30%)','[30%, +∞)'
 ];
-const monthOffsets = [0, 1.5, -0.8, 0.6, 2.1, -1.2, 0.4, 0.8, -0.5, 1.4, -1.0, 0.5];
-const DROP_EXAMPLE = dropBase.map(([label, base]) => {
-  const vals = monthOffsets.map(o => (base + o).toFixed(2));
+const EXAMPLE_PER_CUST = [
+  520, 780, 1050, 1320, 1680, 2050, 2480, 2950, 3500, 4100, 5200, 6800, 8800, 11200, 15500
+];
+const EXAMPLE_COUNT_BASE = [
+  10500, 170, 380, 620, 6800, 5200, 1100, 3500, 5700, 4000, 11500, 4200, 500, 200, 10
+];
+const MONTH_WAVE = [1.00, 1.08, 0.97, 1.04, 1.12, 0.94, 1.06, 1.02, 0.98, 1.07, 0.96, 1.05];
+
+const EXAMPLE_GROSS = EXAMPLE_BIN_LABELS.map((label, bi) => {
+  const pc = EXAMPLE_PER_CUST[bi];
+  const bc = EXAMPLE_COUNT_BASE[bi];
+  const vals = MONTH_WAVE.map(w => {
+    const v = Math.round(bc * pc * w);
+    return v.toLocaleString('en-US');
+  });
   return label + '\t' + vals.join('\t');
 }).join('\n');
 
@@ -713,82 +751,116 @@ function plotRebinned(binSize) {
 }
 
 /* ============================================================
-   HIST 2 — DROP SIZE + SALES / DISCOUNTS
+   HIST 2 — GROSS VALUE + SALES / DISCOUNTS
    ============================================================ */
-let dropSizeData = null;
+let grossData = null;
+let selectedGrossMonths = new Set();
 
-const dropSizeInput     = document.getElementById('dropSizeInput');
-const dropSizeStatus    = document.getElementById('dropSizeStatus');
-const dropSizeTableHead = document.querySelector('#dropSizeTable thead');
-const dropSizeTableBody = document.querySelector('#dropSizeTable tbody');
-const salesChartDiv     = document.getElementById('salesChart');
-const salesChartInfo    = document.getElementById('salesChartInfo');
-const hist2Subtitle     = document.getElementById('hist2Subtitle');
-const downloadHist2     = document.getElementById('downloadHist2');
+const grossInput         = document.getElementById('grossInput');
+const grossStatus        = document.getElementById('grossStatus');
+const grossMonthSelector = document.getElementById('grossMonthSelector');
+const grossTableHead     = document.querySelector('#grossTable thead');
+const grossTableBody     = document.querySelector('#grossTable tbody');
+const salesChartDiv      = document.getElementById('salesChart');
+const salesChartInfo     = document.getElementById('salesChartInfo');
+const hist2Subtitle      = document.getElementById('hist2Subtitle');
+const downloadHist2      = document.getElementById('downloadHist2');
 
-document.getElementById('dropSizeParseBtn').addEventListener('click', parseAndPlotDropSize);
-document.getElementById('dropSizeExampleBtn').addEventListener('click', () => {
-  dropSizeInput.value = DROP_EXAMPLE;
-  parseAndPlotDropSize();
+document.getElementById('grossParseBtn').addEventListener('click', parseAndPlotGross);
+document.getElementById('grossExampleBtn').addEventListener('click', () => {
+  grossInput.value = EXAMPLE_GROSS;
+  parseAndPlotGross();
 });
-document.getElementById('dropSizeClearBtn').addEventListener('click', () => {
-  dropSizeInput.value = '';
-  dropSizeData = null;
-  dropSizeStatus.textContent = '';
-  dropSizeStatus.classList.remove('error');
-  dropSizeTableHead.innerHTML = '';
-  dropSizeTableBody.innerHTML = '';
+document.getElementById('grossClearBtn').addEventListener('click', () => {
+  grossInput.value = '';
+  grossData = null;
+  selectedGrossMonths.clear();
+  grossStatus.textContent = '';
+  grossStatus.classList.remove('error');
+  grossMonthSelector.innerHTML = '';
+  grossTableHead.innerHTML = '';
+  grossTableBody.innerHTML = '';
   updateSalesChart();
 });
 
-function parseAndPlotDropSize() {
-  dropSizeStatus.classList.remove('error');
-  dropSizeStatus.textContent = 'Parsing…';
+function parseAndPlotGross() {
+  grossStatus.classList.remove('error');
+  grossStatus.textContent = 'Parsing…';
   try {
-    dropSizeData = parseBinsText(dropSizeInput.value);
-    dropSizeStatus.textContent =
-      `✓ Parsed ${dropSizeData.rows.length} bins × ${dropSizeData.months.length} months`;
-    renderDropSizeTable();
+    grossData = parseBinsText(grossInput.value);
+    grossStatus.textContent =
+      `✓ Parsed ${grossData.rows.length} bins × ${grossData.months.length} months`;
+    selectedGrossMonths = new Set(grossData.months);
+    buildGrossMonthSelector();
+    renderGrossTable();
     updateSalesChart();
   } catch (err) {
     console.error(err);
-    dropSizeData = null;
-    dropSizeStatus.classList.add('error');
-    dropSizeStatus.textContent = '✗ ' + err.message;
-    dropSizeTableHead.innerHTML = '';
-    dropSizeTableBody.innerHTML = '';
+    grossData = null;
+    grossStatus.classList.add('error');
+    grossStatus.textContent = '✗ ' + err.message;
+    grossMonthSelector.innerHTML = '';
+    grossTableHead.innerHTML = '';
+    grossTableBody.innerHTML = '';
     updateSalesChart();
   }
 }
 
-function renderDropSizeTable() {
-  dropSizeTableHead.innerHTML = '';
-  const tr = document.createElement('tr');
-  const th0 = document.createElement('th'); th0.textContent = 'Discount Band'; tr.appendChild(th0);
-  dropSizeData.months.forEach(m => {
-    const th = document.createElement('th'); th.textContent = m; tr.appendChild(th);
-  });
-  dropSizeTableHead.appendChild(tr);
-
-  dropSizeTableBody.innerHTML = '';
-  dropSizeData.rows.forEach(row => {
-    const tr = document.createElement('tr');
-    const td0 = document.createElement('td'); td0.textContent = row.label; tr.appendChild(td0);
-    dropSizeData.months.forEach((m, i) => {
-      const td = document.createElement('td');
-      const v = row.counts[i] || 0;
-      td.textContent = v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      tr.appendChild(td);
+function buildGrossMonthSelector() {
+  grossMonthSelector.innerHTML = '';
+  grossData.months.forEach(m => {
+    const label = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.value = m; cb.checked = true;
+    cb.addEventListener('change', () => {
+      cb.checked ? selectedGrossMonths.add(m) : selectedGrossMonths.delete(m);
+      updateSalesChart();
     });
-    dropSizeTableBody.appendChild(tr);
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(' ' + m));
+    grossMonthSelector.appendChild(label);
+  });
+  const bAll = document.createElement('button');
+  bAll.textContent = 'All'; bAll.className = 'secondary';
+  bAll.addEventListener('click', () => {
+    grossData.months.forEach(m => selectedGrossMonths.add(m));
+    syncGrossCheckboxes(); updateSalesChart();
+  });
+  const bNone = document.createElement('button');
+  bNone.textContent = 'None'; bNone.className = 'secondary';
+  bNone.addEventListener('click', () => {
+    selectedGrossMonths.clear();
+    syncGrossCheckboxes(); updateSalesChart();
+  });
+  grossMonthSelector.appendChild(bAll);
+  grossMonthSelector.appendChild(bNone);
+}
+function syncGrossCheckboxes() {
+  grossMonthSelector.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = selectedGrossMonths.has(cb.value);
   });
 }
 
-/** Midpoint % for a band. Special case: [start, +∞) → 33.3 % */
-function bandMidpoint(bounds) {
-  if (!bounds) return null;
-  if (bounds.end === Infinity) return 33.3;
-  return (bounds.start + bounds.end) / 2;
+function renderGrossTable() {
+  grossTableHead.innerHTML = '';
+  const tr = document.createElement('tr');
+  const th0 = document.createElement('th'); th0.textContent = 'Discount Band'; tr.appendChild(th0);
+  grossData.months.forEach(m => {
+    const th = document.createElement('th'); th.textContent = m; tr.appendChild(th);
+  });
+  grossTableHead.appendChild(tr);
+
+  grossTableBody.innerHTML = '';
+  grossData.rows.forEach(row => {
+    const tr = document.createElement('tr');
+    const td0 = document.createElement('td'); td0.textContent = row.label; tr.appendChild(td0);
+    grossData.months.forEach((m, i) => {
+      const td = document.createElement('td');
+      td.textContent = (row.counts[i] || 0).toLocaleString();
+      tr.appendChild(td);
+    });
+    grossTableBody.appendChild(tr);
+  });
 }
 
 function buildSalesTitle(mainText) {
@@ -797,50 +869,76 @@ function buildSalesTitle(mainText) {
 }
 
 function updateSalesChart() {
-  if (!bandData || !dropSizeData) {
+  if (!grossData) {
     Plotly.purge(salesChartDiv);
-    salesChartInfo.textContent = 'Both customer count (Hist 1) and drop size (Hist 2) data are required.';
+    salesChartInfo.textContent = 'Parse the Gross Value table (Hist 2) to render.';
+    downloadHist2.disabled = true;
+    return;
+  }
+  if (!bandData) {
+    Plotly.purge(salesChartDiv);
+    salesChartInfo.textContent = 'Parse the Customer Count table (Hist 1) to compute the weighted average discount.';
+    downloadHist2.disabled = true;
+    return;
+  }
+  if (selectedGrossMonths.size === 0) {
+    Plotly.purge(salesChartDiv);
+    salesChartInfo.textContent = 'Select at least one month.';
     downloadHist2.disabled = true;
     return;
   }
 
-  const months = bandData.months;   // reference timeline
+  // Reference timeline & ordering from gross table
+  const months = grossData.months.filter(m => selectedGrossMonths.has(m));
 
-  // Index drop-size rows by band key for O(1) lookup
-  const sizeByKey = {};
-  dropSizeData.rows.forEach(r => {
+  // Index customer count rows by band key
+  const countByKey = {};
+  bandData.rows.forEach(r => {
     const k = bandKey(r.bounds);
-    if (k) sizeByKey[k] = r;
+    if (k) countByKey[k] = r;
   });
 
-  const sales = [];
-  const discounts = [];
+  const salesArr = [];
+  const discountArr = [];
+  const avgPctArr = [];
 
-  for (let mi = 0; mi < months.length; mi++) {
-    let monthSales = 0;
-    let monthDiscounts = 0;
+  months.forEach(m => {
+    const gi = grossData.months.indexOf(m);
+    const ci = bandData.months.indexOf(m);
 
-    bandData.rows.forEach(countRow => {
-      const k = bandKey(countRow.bounds);
-      const sizeRow = sizeByKey[k];
-      if (!sizeRow) return;
+    let totalGross = 0;
+    let weightedSum = 0;    // Σ (count × midpoint%)
+    let totalCount = 0;
 
-      const count = countRow.counts[mi] || 0;
-      const size  = sizeRow.counts[mi] || 0;
-      const mid   = bandMidpoint(countRow.bounds);
+    grossData.rows.forEach(gr => {
+      const g = gr.counts[gi] || 0;
+      totalGross += g;
 
-      const bandSales = count * size;
-      monthSales += bandSales;
-      if (mid !== null) monthDiscounts += bandSales * (mid / 100);
+      // Weighted average uses customer counts for the same band
+      const k = bandKey(gr.bounds);
+      const cr = countByKey[k];
+      if (!cr || ci === -1) return;
+
+      const cnt = cr.counts[ci] || 0;
+      const mid = bandMidpoint(cr.bounds);
+      if (mid === null) return;
+
+      weightedSum += cnt * mid;
+      totalCount += cnt;
     });
 
-    sales.push(monthSales);
-    discounts.push(monthDiscounts);
-  }
+    const avgPct = totalCount > 0 ? weightedSum / totalCount : 0;
+    const discount = totalGross * avgPct / 100;
 
+    salesArr.push(totalGross);
+    avgPctArr.push(avgPct);
+    discountArr.push(discount);
+  });
+
+  // -------- Traces --------
   const traceSales = {
     x: months,
-    y: sales,
+    y: salesArr,
     name: 'Sales',
     type: 'scatter',
     mode: 'lines+markers',
@@ -852,18 +950,30 @@ function updateSalesChart() {
 
   const traceDiscounts = {
     x: months,
-    y: discounts,
+    y: discountArr,
     name: 'Discounts',
     type: 'scatter',
     mode: 'lines+markers',
     line: { color: '#dc2626', width: 3 },
     marker: { size: 9, color: '#dc2626', line: { color: '#fff', width: 1.5 } },
-    yaxis: 'y2',
+    yaxis: 'y',                 // same left axis → same scale as Sales
     hovertemplate: '<b>%{x}</b><br>Discounts: %{y:,.0f}<extra></extra>'
   };
 
+  const traceAvgPct = {
+    x: months,
+    y: avgPctArr,
+    name: 'Weighted Avg Discount %',
+    type: 'scatter',
+    mode: 'lines+markers',
+    line: { color: '#b45309', width: 3, dash: 'dot' },
+    marker: { size: 9, color: '#b45309', symbol: 'diamond', line: { color: '#fff', width: 1.5 } },
+    yaxis: 'y2',                // right axis
+    hovertemplate: '<b>%{x}</b><br>Weighted Avg Discount: %{y:.2f}%<extra></extra>'
+  };
+
   const layout = {
-    title: { text: buildSalesTitle('Monthly Sales and Discounts'), font: { size: 15 } },
+    title: { text: buildSalesTitle('Monthly Sales, Discounts &amp; Weighted Average Discount'), font: { size: 15 } },
     xaxis: {
       title: 'Month',
       type: 'category',
@@ -872,34 +982,36 @@ function updateSalesChart() {
       tickangle: -30
     },
     yaxis: {
-      title: { text: 'Sales', font: { color: '#16a34a', size: 13 } },
+      title: { text: 'Amount', font: { color: '#16a34a', size: 13 } },
       tickfont: { color: '#16a34a' },
       zeroline: false,
       tickformat: ',.0f'
     },
     yaxis2: {
-      title: { text: 'Discounts', font: { color: '#dc2626', size: 13 } },
-      tickfont: { color: '#dc2626' },
+      title: { text: 'Weighted Avg Discount', font: { color: '#b45309', size: 13 } },
+      tickfont: { color: '#b45309' },
       overlaying: 'y',
       side: 'right',
       zeroline: false,
-      tickformat: ',.0f'
+      ticksuffix: '%'
     },
     legend: { x: 0.5, y: -0.22, xanchor: 'center', orientation: 'h' },
-    margin: { t: 70, b: 100, l: 90, r: 90 },
+    margin: { t: 70, b: 100, l: 100, r: 90 },
     hovermode: 'x unified',
     plot_bgcolor: '#fafafa'
   };
 
-  Plotly.react(salesChartDiv, [traceSales, traceDiscounts], layout, { responsive: true });
+  Plotly.react(salesChartDiv, [traceSales, traceDiscounts, traceAvgPct], layout, { responsive: true });
 
-  const totalSales = sales.reduce((a, b) => a + b, 0);
-  const totalDiscounts = discounts.reduce((a, b) => a + b, 0);
-  const rate = totalSales > 0 ? (totalDiscounts / totalSales) * 100 : 0;
+  const totalSales = salesArr.reduce((a, b) => a + b, 0);
+  const totalDiscounts = discountArr.reduce((a, b) => a + b, 0);
+  const effectiveRate = totalSales > 0 ? (totalDiscounts / totalSales) * 100 : 0;
+
   salesChartInfo.textContent =
     `Total Sales: ${totalSales.toLocaleString(undefined, { maximumFractionDigits: 0 })} | ` +
     `Total Discounts: ${totalDiscounts.toLocaleString(undefined, { maximumFractionDigits: 0 })} | ` +
-    `Effective Discount Rate: ${rate.toFixed(2)}%`;
+    `Effective Discount Rate: ${effectiveRate.toFixed(2)}%  |  ` +
+    `Months: ${months.length}`;
 
   downloadHist2.disabled = false;
 }
@@ -907,37 +1019,56 @@ function updateSalesChart() {
 hist2Subtitle.addEventListener('input', updateSalesChart);
 
 /* ============================================================
-   PNG DOWNLOAD
+   PNG DOWNLOAD — user‑gesture safe
    ============================================================ */
 function safeFilename(name) {
   return name.replace(/[^\w\-]+/g, '_').replace(/_+/g, '_').slice(0, 60);
 }
 
-function downloadChart(div, defaultName, subtitleInput) {
+async function downloadChart(div, defaultName, subtitleEl, buttonEl) {
   if (!div.data || div.data.length === 0) return;
-  const sub = subtitleInput.value.trim();
+  const originalLabel = buttonEl.textContent;
+  buttonEl.disabled = true;
+  buttonEl.textContent = '⏳ Exporting…';
+
+  const sub = subtitleEl.value.trim();
   const baseName = sub ? `${defaultName}_${safeFilename(sub)}` : defaultName;
-  Plotly.downloadImage(div, {
-    format: 'png',
-    width: 1400,
-    height: 720,
-    scale: 2,
-    filename: baseName
-  });
+
+  try {
+    const dataUrl = await Plotly.toImage(div, {
+      format: 'png',
+      width: 1400,
+      height: 720,
+      scale: 1
+    });
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = baseName + '.png';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (err) {
+    console.error('Chart export failed:', err);
+    alert('Could not export chart:\n' + (err && err.message ? err.message : err));
+  } finally {
+    buttonEl.disabled = false;
+    buttonEl.textContent = originalLabel;
+  }
 }
 
 downloadHist1.addEventListener('click', () =>
-  downloadChart(chartDiv, 'customer_count_histogram', hist1Subtitle)
+  downloadChart(chartDiv, 'customer_count_histogram', hist1Subtitle, downloadHist1)
 );
 downloadHist2.addEventListener('click', () =>
-  downloadChart(salesChartDiv, 'sales_discounts', hist2Subtitle)
+  downloadChart(salesChartDiv, 'sales_discounts_avg', hist2Subtitle, downloadHist2)
 );
 
 /* ============================================================
    INIT
    ============================================================ */
 bandInput.value = EXAMPLE;
-dropSizeInput.value = DROP_EXAMPLE;
+grossInput.value = EXAMPLE_GROSS;
 Plotly.newPlot(chartDiv, [], { title: 'Click "Parse & Plot" to render' });
 Plotly.newPlot(salesChartDiv, [], { title: 'Parse both tables to render' });
 </script>
