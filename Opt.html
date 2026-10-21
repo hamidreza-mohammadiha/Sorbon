@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سیمپلکس</title>
+  <style>
+    /* ---------- حداقل استایل سیاه و سفید ---------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #fff;
+      color: #000;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      border-bottom: 2px solid #000;
+      padding-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      margin: 2rem 0 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 0.4rem 0.5rem;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th {
+      background: #000;
+      color: #fff;
+      font-weight: 500;
+    }
+    tr:nth-child(even) {
+      background: #f5f5f5;
+    }
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 0.25rem;
+      border: 1px solid #000;
+      background: #fff;
+      color: #000;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+    input:focus {
+      outline: 2px solid #000;
+    }
+    button {
+      background: #000;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    button:hover {
+      background: #333;
+    }
+    .delete-btn {
+      background: #000;
+      color: #fff;
+      border: 1px solid #000;
+      padding: 0.1rem 0.5rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background: #333;
+    }
+    /* ستون زرد رنگ سیاست بهینه */
+    .optimal-cell {
+      background: #000;
+      color: #FFD700;
+      font-weight: bold;
+      text-align: center;
+      border: 1px solid #FFD700;
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #444;
+      margin-top: 0.5rem;
+    }
+    .flex-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+      align-items: center;
+    }
+    .flex-row label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.95rem;
+    }
+    .flex-row input {
+      width: 100px;
+    }
+    .summary {
+      margin-top: 1.5rem;
+      padding: 0.8rem;
+      border: 2px solid #000;
+      font-size: 1rem;
+      display: none;
+    }
+    .btn-group {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>سیمپلکس</h1>
+  <p class="note">
+    مدل کوله‌پشتی با هدف حداکثرسازی ارزش (ارزش) و محدودیت‌های وزن و هزینه.
+    حداقل و حداکثر تعداد هر آیتم را وارد کنید. پس از محاسبه، ستون زرد رنگ «تعداد بهینه» نمایش داده می‌شود.
+  </p>
+
+  <div class="btn-group">
+    <button id="add-row-btn">افزودن ردیف جدید</button>
+  </div>
+
+  <!-- جدول پارامترها و سیاست بهینه -->
+  <h2>پارامترهای مدل و سیاست بهینه</h2>
+  <table id="input-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>نام آیتم</th>
+        <th>وزن (kg)</th>
+        <th>ارزش (امتیاز)</th>
+        <th>هزینه (تومان)</th>
+        <th>حداقل تعداد</th>
+        <th>حداکثر تعداد</th>
+        <th>عملیات</th>
+        <th>تعداد بهینه</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ردیف‌ها توسط JavaScript ساخته می‌شوند -->
+    </tbody>
+  </table>
+
+  <div class="flex-row">
+    <label>حداکثر وزن کل (kg): <input type="number" id="max-weight" value="30" min="0" step="1"></label>
+    <label>حداکثر هزینه کل (تومان): <input type="number" id="max-cost" value="60000" min="0" step="1000"></label>
+    <button id="solve-btn">محاسبه سیاست بهینه</button>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <script>
+    // ---------- داده‌های اولیه ----------
+    let items = [
+      { name: 'کوله‌پشتی', weight: 2, value: 10, cost: 5000, min: 0, max: 1 },
+      { name: 'چادر', weight: 5, value: 25, cost: 20000, min: 0, max: 1 },
+      { name: 'کیسه خواب', weight: 3, value: 15, cost: 10000, min: 0, max: 1 },
+      { name: 'غذا', weight: 4, value: 20, cost: 8000, min: 0, max: 2 },
+      { name: 'آب', weight: 2, value: 12, cost: 3000, min: 0, max: 3 },
+    ];
+
+    // ---------- رندر جدول ----------
+    function renderTable() {
+      const tbody = document.querySelector('#input-table tbody');
+      tbody.innerHTML = '';
+      items.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td><input type="text" value="${item.name}" data-field="name"></td>
+          <td><input type="number" value="${item.weight}" min="0" step="1" data-field="weight"></td>
+          <td><input type="number" value="${item.value}" min="0" step="1" data-field="value"></td>
+          <td><input type="number" value="${item.cost}" min="0" step="1000" data-field="cost"></td>
+          <td><input type="number" value="${item.min}" min="0" step="1" data-field="min"></td>
+          <td><input type="number" value="${item.max}" min="0" step="1" data-field="max"></td>
+          <td><button class="delete-btn" data-index="${idx}">×</button></td>
+          <td class="optimal-cell" data-index="${idx}">—</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      // اتصال رویداد حذف
+      tbody.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = Number(e.target.dataset.index);
+          readTableIntoItems();
+          items.splice(idx, 1);
+          renderTable();
+        });
+      });
+    }
+
+    // ---------- خواندن مقادیر از جدول ----------
+    function readTableIntoItems() {
+      const rows = document.querySelectorAll('#input-table tbody tr');
+      rows.forEach((row, idx) => {
+        const inputs = row.querySelectorAll('input');
+        items[idx] = {
+          name: inputs[0].value.trim(),
+          weight: Math.max(0, Number(inputs[1].value)),
+          value: Math.max(0, Number(inputs[2].value)),
+          cost: Math.max(0, Number(inputs[3].value)),
+          min: Math.max(0, Number(inputs[4].value)),
+          max: Math.max(0, Number(inputs[5].value)),
+        };
+      });
+    }
+
+    // ---------- افزودن ردیف ----------
+    document.getElementById('add-row-btn').addEventListener('click', () => {
+      readTableIntoItems();
+      items.push({ name: '', weight: 0, value: 0, cost: 0, min: 0, max: 1 });
+      renderTable();
+    });
+
+    // ---------- حل مسئله (بازه‌بندی‌شده و دقیق) ----------
+    function solve() {
+      readTableIntoItems();
+      const maxWeight = Number(document.getElementById('max-weight').value);
+      const maxCost = Number(document.getElementById('max-cost').value);
+
+      // اعتبارسنجی
+      for (let item of items) {
+        if (item.min > item.max) {
+          alert('حداقل تعداد نمی‌تواند بیشتر از حداکثر باشد.');
+          return;
+        }
+      }
+
+      // محاسبه مقادیر اجباری (حداقل‌ها)
+      let sumMinWeight = 0, sumMinCost = 0, sumMinValue = 0;
+      for (let item of items) {
+        sumMinWeight += item.min * item.weight;
+        sumMinCost += item.min * item.cost;
+        sumMinValue += item.min * item.value;
+      }
+
+      if (sumMinWeight > maxWeight || sumMinCost > maxCost) {
+        alert('با احتساب حداقل تعداد، محدودیت وزن یا هزینه نقض می‌شود.');
+        return;
+      }
+
+      let remWeight = maxWeight - sumMinWeight;
+      let remCost = maxCost - sumMinCost;
+
+      // ساخت آیتم‌های تقسیم‌شده برای مقادیر اضافی (binary splitting)
+      let splitItems = [];
+      items.forEach((item, idx) => {
+        let r = item.max - item.min;
+        if (r <= 0) return;
+        let k = 1;
+        while (r > 0) {
+          let take = Math.min(k, r);
+          splitItems.push({
+            w: take * item.weight,
+            v: take * item.value,
+            c: take * item.cost,
+            originalIndex: idx,
+            qty: take
+          });
+          r -= take;
+          k *= 2;
+        }
+      });
+
+      // DP دو بعدی
+      const W = remWeight;
+      const C = remCost;
+
+      // بررسی حجم حافظه
+      if ((W + 1) * (C + 1) > 10_000_000) {
+        alert('حجم جدول DP بسیار بزرگ است. لطفاً محدودیت وزن یا هزینه را کاهش دهید.');
+        return;
+      }
+
+      let dp = new Array(W + 1);
+      for (let w = 0; w <= W; w++) {
+        dp[w] = new Int32Array(C + 1).fill(-1);
+      }
+      dp[0][0] = 0;
+
+      for (let item of splitItems) {
+        for (let w = W; w >= item.w; w--) {
+          for (let c = C; c >= item.c; c--) {
+            if (dp[w - item.w][c - item.c] !== -1) {
+              let newVal = dp[w - item.w][c - item.c] + item.v;
+              if (newVal > dp[w][c]) {
+                dp[w][c] = newVal;
+              }
+            }
+          }
+        }
+      }
+
+      // یافتن بهترین حالت
+      let bestVal = -1;
+      let bestW = 0, bestC = 0;
+      for (let w = 0; w <= W; w++) {
+        for (let c = 0; c <= C; c++) {
+          if (dp[w][c] > bestVal) {
+            bestVal = dp[w][c];
+            bestW = w;
+            bestC = c;
+          }
+        }
+      }
+
+      if (bestVal === -1) {
+        alert('هیچ راه‌حل ممکنی یافت نشد.');
+        return;
+      }
+
+      // بازسازی جواب
+      let selectedQty = new Array(items.length).fill(0);
+      let w = bestW, c = bestC;
+      for (let i = splitItems.length - 1; i >= 0; i--) {
+        let item = splitItems[i];
+        if (w >= item.w && c >= item.c &&
+            dp[w - item.w][c - item.c] !== -1 &&
+            dp[w][c] === dp[w - item.w][c - item.c] + item.v) {
+          selectedQty[item.originalIndex] += item.qty;
+          w -= item.w;
+          c -= item.c;
+        }
+      }
+
+      // افزودن حداقل‌ها
+      let finalQty = items.map((item, idx) => item.min + selectedQty[idx]);
+      let totalValue = sumMinValue + bestVal;
+      let totalWeight = sumMinWeight + bestW;
+      let totalCost = sumMinCost + bestC;
+
+      // به‌روزرسانی ستون بهینه
+      const optimalCells = document.querySelectorAll('.optimal-cell');
+      optimalCells.forEach(cell => {
+        const idx = Number(cell.dataset.index);
+        cell.textContent = finalQty[idx];
+      });
+
+      // نمایش خلاصه
+      const summary = document.getElementById('summary');
+      summary.innerHTML = `
+        <strong>ارزش کل:</strong> ${totalValue} &nbsp;|&nbsp;
+        <strong>وزن کل:</strong> ${totalWeight} &nbsp;|&nbsp;
+        <strong>هزینه کل:</strong> ${totalCost.toLocaleString('fa-IR')}
+      `;
+      summary.style.display = 'block';
+    }
+
+    document.getElementById('solve-btn').addEventListener('click', solve);
+
+    // ---------- راه‌اندازی اولیه ----------
+    renderTable();
+  </script>
+</body>
+</html>
