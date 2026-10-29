@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFI Tiered Discount Simulator · D1</title>
+<style>
+:root{
+  --bg:#eef2f7; --panel:#fff; --line:#e2e8f0; --ink:#0f172a; --muted:#64748b;
+  --accent:#2563eb; --accent-soft:#eff6ff; --good:#059669; --bad:#dc2626;
+  --amber:#b45309; --amber-bg:#fffbeb; --amber-line:#fde68a;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+.app{max-width:1440px;margin:0 auto;padding:22px 22px 60px}
+header{margin-bottom:18px}
+h1{font-size:19px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:12.5px;margin:0}
+.tag{display:inline-block;background:var(--accent-soft);color:var(--accent);
+  border:1px solid #dbeafe;border-radius:999px;padding:1px 8px;font-size:11px;
+  font-weight:700;vertical-align:2px;margin-left:6px;letter-spacing:.03em}
+
+.layout{display:grid;grid-template-columns:400px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:1100px){.layout{grid-template-columns:1fr}}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:16px;box-shadow:0 1px 2px rgba(15,23,42,.05);margin-bottom:18px}
+.panel h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--muted);margin:0 0 12px;font-weight:700}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.panel-head h2{margin:0}
+.hint{font-size:11.5px;color:var(--muted);margin:8px 0 0;line-height:1.5}
+
+.field{display:grid;grid-template-columns:1fr 120px;align-items:center;gap:10px;margin-bottom:9px}
+.field.full{grid-template-columns:1fr;gap:6px}
+.field label{font-size:12.5px;color:#334155}
+input[type=number],input[type=text]{
+  width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;
+  font:inherit;font-size:13px;background:#fff;text-align:right;color:var(--ink)
+}
+input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.14)}
+
+.seg{display:flex;border:1px solid #cbd5e1;border-radius:8px;overflow:hidden;background:#fff}
+.seg button{flex:1;border:0;background:#fff;padding:7px 8px;font:inherit;
+  font-size:12.5px;cursor:pointer;color:#475569}
+.seg button + button{border-left:1px solid #e2e8f0}
+.seg button.active{background:var(--accent);color:#fff;font-weight:600}
+.seg button:not(.active):hover{background:#f8fafc}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;
+  letter-spacing:.05em;text-align:right;padding:8px 8px;border-bottom:1px solid var(--line);
+  background:#f8fafc;position:sticky;top:0;z-index:2}
+th:first-child,td:first-child{text-align:left}
+td{padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right;
+  font-variant-numeric:tabular-nums}
+tbody tr:hover{background:#f8fbff}
+
+.tier-table input{padding:5px 7px;font-size:12.5px;border-radius:6px}
+.icon-btn{border:1px solid var(--line);background:#fff;color:var(--muted);
+  width:24px;height:24px;border-radius:6px;cursor:pointer;line-height:1;font-size:14px}
+.icon-btn:hover{color:var(--bad);border-color:#fecaca;background:#fef2f2}
+
+.btn{background:var(--accent);color:#fff;border:0;border-radius:9px;
+  padding:10px 16px;font-weight:600;font-size:13px;cursor:pointer}
+.btn:hover{background:#1d4ed8}
+.btn.ghost{background:#f1f5f9;color:#334155}
+.btn.ghost:hover{background:#e2e8f0}
+.btn-row{display:flex;gap:8px;margin-top:12px}
+.btn-row .btn{flex:1}
+
+.dirty-note{background:var(--amber-bg);border:1px solid var(--amber-line);
+  color:var(--amber);border-radius:8px;padding:7px 10px;font-size:12px;margin:10px 0 0}
+
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.k-label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.k-val{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-top:3px;font-variant-numeric:tabular-nums}
+.k-unit{font-size:12px;font-weight:600;color:var(--muted)}
+.k-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.k-val.good{color:var(--good)} .k-val.bad{color:var(--bad)}
+
+.table-wrap{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.chip{display:inline-block;background:var(--accent-soft);color:var(--accent);
+  border-radius:999px;padding:1px 7px;font-size:11px;font-weight:700}
+.chip-muted{background:#f1f5f9;color:#94a3b8}
+.badge{display:inline-block;font-weight:600;font-size:12px}
+.badge.muted{color:var(--muted)}
+.neg{color:var(--bad)}
+.mutedc{color:var(--muted)}
+
+.bar{display:inline-block;width:90px;height:7px;background:#eef2f7;border-radius:99px;
+  overflow:hidden;vertical-align:middle;margin-right:8px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.barcell{white-space:nowrap}
+
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:11.5px;color:var(--muted);margin-top:6px}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{width:16px;height:3px;border-radius:2px;display:inline-block}
+.dot-sw{width:8px;height:8px;border-radius:50%;display:inline-block;background:#2563eb;opacity:.6}
+.note{font-size:11.5px;color:var(--muted);margin:8px 0 0}
+#chart{width:100%;height:210px;display:block}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <h1>SFI Tiered Discount Simulator <span class="tag">D1 PROTOTYPE</span></h1>
+    <p class="sub">Tiered discount plan → seeded Poisson / Normal daily demand → row-level profit calculation. Results refresh only when you press <b>Run simulation</b>.</p>
+  </header>
+
+  <div class="layout">
+
+    <!-- ============ INPUT COLUMN ============ -->
+    <div>
+      <section class="panel">
+        <h2>Tiered discount plan</h2>
+        <table class="tier-table">
+          <thead>
+            <tr>
+              <th style="text-align:left">Min weight (kg)</th>
+              <th>Discount %</th>
+              <th>Profit margin %</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tierBody"></tbody>
+        </table>
+        <div class="btn-row">
+          <button class="btn ghost" id="addTier" type="button">+ Add tier</button>
+        </div>
+        <p class="hint">Tiers are matched per simulated day: the day's purchased weight
+          activates the highest tier whose <em>min weight</em> is reached. Profit margin %
+          is applied to <b>net revenue</b> (after discount) and should shrink as the
+          discount deepens — that is the economies-of-scale assumption.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Economy &amp; simulation settings</h2>
+
+        <div class="field"><label for="price">List price per kg</label>
+          <input type="number" id="price" step="0.01" min="0"></div>
+        <div class="field"><label for="baseMargin">Base margin % (below tier 1)</label>
+          <input type="number" id="baseMargin" step="0.1" min="0" max="100"></div>
+        <div class="field"><label for="seed">Simulation seed</label>
+          <input type="number" id="seed" step="1"></div>
+        <div class="field"><label for="days">Duration (days)</label>
+          <input type="number" id="days" step="1" min="1" max="3650"></div>
+
+        <div class="field full">
+          <label>Demand distribution</label>
+          <div class="seg" id="distSeg" role="group" aria-label="Demand distribution">
+            <button type="button" data-dist="poisson">Poisson</button>
+            <button type="button" data-dist="normal">Normal</button>
+          </div>
+        </div>
+
+        <div id="poissonGroup">
+          <div class="field"><label for="lambda">Poisson λ (mean kg / day)</label>
+            <input type="number" id="lambda" step="1" min="0"></div>
+        </div>
+
+        <div id="normalGroup" style="display:none">
+          <div class="field"><label for="normalMean">Normal mean (kg / day)</label>
+            <input type="number" id="normalMean" step="1" min="0"></div>
+          <div class="field"><label for="normalSd">Normal std dev (kg)</label>
+            <input type="number" id="normalSd" step="1" min="0"></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn" id="runBtn" type="button">Run simulation</button>
+          <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+          <button class="btn ghost" id="csvBtn" type="button">Export CSV</button>
+        </div>
+
+        <div class="dirty-note" id="dirtyHint" style="display:none">
+          Settings changed — press <b>Run simulation</b> to refresh the results.
+        </div>
+
+        <p class="hint">Same seed + same settings = identical output (reproducible runs).
+          Normal demand is rounded to the nearest kg and clamped at 0 (no negative demand).
+          The chart animates one dot every 0.1 s — use <b>Skip animation</b> to jump to the end.</p>
+      </section>
+    </div>
+
+    <!-- ============ OUTPUT COLUMN ============ -->
+    <div>
+      <section class="panel">
+        <h2>Headline results</h2>
+        <div class="kpis" id="kpis"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Cumulative profit vs. baseline · daily realized profit</h2>
+          <button class="btn ghost" id="skipBtn" type="button"
+                  style="display:none;padding:4px 10px;font-size:11.5px">Skip animation</button>
+        </div>
+        <svg id="chart" role="img" aria-label="Cumulative profit and daily realized profit chart"></svg>
+        <div class="legend">
+          <span><i class="sw" style="background:#2563eb"></i> Simulated cumulative profit</span>
+          <span><i class="sw" style="background:#94a3b8"></i> Baseline (no discount, base margin)</span>
+          <span><i class="dot-sw"></i> Daily realized profit (dot = 1 day)</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Tier performance summary</h2>
+        <div class="table-wrap" style="max-height:none">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left">Tier</th>
+                <th>Discount</th><th>Margin</th><th>Days</th><th>% days</th>
+                <th>Weight (kg)</th><th>Net revenue</th><th>Profit</th><th>Profit share</th>
+              </tr>
+            </thead>
+            <tbody id="tierSummary"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Row-level simulation output (per day)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left">Day</th>
+                <th>Demand (kg)</th>
+                <th style="text-align:center">Tier</th>
+                <th>Disc %</th><th>Margin %</th>
+                <th>Gross revenue</th><th>Discount</th><th>Net revenue</th>
+                <th>Profit</th><th>Cum. profit</th>
+              </tr>
+            </thead>
+            <tbody id="rowsBody"></tbody>
+          </table>
+        </div>
+        <p class="note" id="rowNote"></p>
+        <p class="note">Model: <code>gross = W × price</code> ·
+          <code>net = gross × (1 − disc)</code> · <code>profit = net × margin</code> ·
+          <code>cost = net − profit</code>.</p>
+      </section>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   SFI Tiered Discount Simulator — D1 prototype
+   Results update ONLY on Run. Chart animates one day every 0.1 s.
+   ===================================================================== */
+
+/* ---------- formatting helpers ---------- */
+const fmt0 = v => (v||0).toLocaleString('en-US',{maximumFractionDigits:0});
+const money0 = v => '$' + (v||0).toLocaleString('en-US',{maximumFractionDigits:0});
+const money2 = v => (v<0?'-$':'$') + Math.abs(v||0).toLocaleString('en-US',
+                    {minimumFractionDigits:2,maximumFractionDigits:2});
+const pct = v => ((v||0)*100).toFixed(1) + '%';
+const clamp = (v,lo,hi) => Math.min(hi, Math.max(lo, v));
+const clampInt = (v,lo,hi) => { v = Math.round(Number(v)); if (!isFinite(v)) v = lo; return clamp(v,lo,hi); };
+
+function moneyShort(v){
+  v = Math.round(v || 0);
+  const s = v < 0 ? '-' : '';
+  v = Math.abs(v);
+  if (v >= 1e6) return s + '$' + (v/1e6).toFixed(1).replace(/\.0$/,'') + 'M';
+  if (v >= 1e3) return s + '$' + (v/1e3).toFixed(1).replace(/\.0$/,'') + 'k';
+  return s + '$' + v;
+}
+
+/* =====================================================================
+   0) DEFAULTS + STATE
+   ===================================================================== */
+const DEFAULTS = {
+  tiers: [
+    { min:   50, disc:  2, margin: 29 },
+    { min:  150, disc:  5, margin: 27 },
+    { min:  400, disc:  9, margin: 24 },
+    { min:  800, disc: 14, margin: 21 },
+    { min: 1500, disc: 20, margin: 17 }
+  ],
+  price: 12.5,
+  baseMargin: 30,
+  seed: 20240607,
+  days: 90,
+  distribution: 'poisson',   // 'poisson' | 'normal'
+  lambda: 600,
+  normalMean: 600,
+  normalSd: 90
+};
+
+const defaultState = () => JSON.parse(JSON.stringify(DEFAULTS));
+let state = defaultState();
+let dirty = false;
+let lastResult = null;
+let anim = null;
+
+/* =====================================================================
+   1) SEEDED RNG — mulberry32
+   ===================================================================== */
+function mulberry32(a){
+  a = a >>> 0;
+  return function(){
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), 1 | t);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* =====================================================================
+   2) DEMAND SAMPLERS
+   ===================================================================== */
+function knuthPoisson(lambda, rng){
+  const L = Math.exp(-lambda);
+  let k = 0, p = 1;
+  do { k++; p *= rng(); } while (p > L);
+  return k - 1;
+}
+function poissonSample(lambda, rng){
+  if (!(lambda > 0)) return 0;
+  if (lambda < 30) return knuthPoisson(lambda, rng);
+  const chunks = Math.ceil(lambda / 25);
+  const sub = lambda / chunks;
+  let s = 0;
+  for (let i = 0; i < chunks; i++) s += knuthPoisson(sub, rng);
+  return s;
+}
+function normalSample(mean, sd, rng){
+  if (sd === 0) return Math.round(mean);
+  let u1 = rng(); if (u1 < 1e-12) u1 = 1e-12;
+  const u2 = rng();
+  const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  return Math.max(0, Math.round(mean + sd * z));
+}
+function sampleDemand(rng){
+  if (state.distribution === 'normal'){
+    return normalSample(Math.max(0, Number(state.normalMean) || 0),
+                        Math.max(0, Number(state.normalSd) || 0), rng);
+  }
+  return poissonSample(Math.max(0, Number(state.lambda) || 0), rng);
+}
+
+/* =====================================================================
+   3) SIMULATION CORE — one row per simulated day
+   ===================================================================== */
+function simulate(){
+  const days       = clampInt(state.days, 1, 3650);
+  const price      = Math.max(0, Number(state.price) || 0);
+  const baseMargin = clamp((Number(state.baseMargin) || 0) / 100, 0, 1);
+  const seed       = Math.floor(Number(state.seed) || 0);
+
+  const tiers = state.tiers.map(t => ({
+    min:    Math.max(0, Number(t.min) || 0),
+    disc:   clamp((Number(t.disc)   || 0) / 100, 0, 1),
+    margin: clamp((Number(t.margin) || 0) / 100, 0, 1)
+  })).sort((a,b) => a.min - b.min);
+
+  const rng = mulberry32(seed);
+  const rows = [];
+  const stats = new Map();                      // key: tier index (-1 = below tier 1)
+  const tot = { weight:0, gross:0, disc:0, net:0, profit:0, base:0 };
+
+  for (let d = 1; d <= days; d++){
+    const w = sampleDemand(rng);
+
+    let ti = -1;
+    for (let i = 0; i < tiers.length; i++) if (w >= tiers[i].min) ti = i;
+    const t = ti >= 0 ? tiers[ti] : null;
+
+    const disc   = t ? t.disc   : 0;
+    const margin = t ? t.margin : baseMargin;
+
+    const gross      = w * price;
+    const discAmt    = gross * disc;
+    const net        = gross - discAmt;
+    const profit     = net * margin;
+    const cost       = net - profit;
+    const baseProfit = gross * baseMargin;
+
+    tot.weight += w;  tot.gross += gross; tot.disc += discAmt;
+    tot.net += net;   tot.profit += profit; tot.base += baseProfit;
+
+    if (!stats.has(ti)) stats.set(ti, {days:0, weight:0, gross:0, disc:0, net:0, profit:0});
+    const s = stats.get(ti);
+    s.days++; s.weight += w; s.gross += gross; s.disc += discAmt;
+    s.net += net; s.profit += profit;
+
+    rows.push({
+      day: d, w, ti, disc, margin,
+      gross, discAmt, net, profit, cost,
+      cumProfit: tot.profit, cumBase: tot.base
+    });
+  }
+
+  return {
+    rows, tot, tiers, stats, days, baseMargin, seed,
+    distribution: state.distribution,
+    lambda: Math.max(0, Number(state.lambda) || 0),
+    normalMean: Math.max(0, Number(state.normalMean) || 0),
+    normalSd: Math.max(0, Number(state.normalSd) || 0)
+  };
+}
+
+/* =====================================================================
+   4) INPUT SYNC + DIRTY TRACKING
+   ===================================================================== */
+function setDirty(v){
+  dirty = v;
+  const el = document.getElementById('dirtyHint');
+  if (el) el.style.display = v ? '' : 'none';
+}
+
+function normalizeState(){
+  state.price      = Math.max(0, Number(state.price) || 0);
+  state.baseMargin = clamp(Number(state.baseMargin) || 0, 0, 100);
+  state.seed       = Math.floor(Number(state.seed) || 0);
+  state.days       = clampInt(state.days, 1, 3650);
+  state.lambda     = Math.max(0, Number(state.lambda) || 0);
+  state.normalMean = Math.max(0, Number(state.normalMean) || 0);
+  state.normalSd   = Math.max(0, Number(state.normalSd) || 0);
+  state.tiers = state.tiers.map(t => ({
+    min:    Math.max(0, Number(t.min) || 0),
+    disc:   clamp(Number(t.disc)   || 0, 0, 100),
+    margin: clamp(Number(t.margin) || 0, 0, 100)
+  }));
+  if (!state.tiers.length) state.tiers = defaultState().tiers;
+}
+
+function renderTierInputs(){
+  const tb = document.getElementById('tierBody');
+  tb.innerHTML = state.tiers.map((t,i) => `
+    <tr>
+      <td style="text-align:left"><input type="number" min="0" step="1"
+            value="${t.min}" data-i="${i}" data-k="min"></td>
+      <td><input type="number" min="0" max="100" step="0.1"
+            value="${t.disc}" data-i="${i}" data-k="disc"></td>
+      <td><input type="number" min="0" max="100" step="0.1"
+            value="${t.margin}" data-i="${i}" data-k="margin"></td>
+      <td><button class="icon-btn" data-del="${i}" title="Remove tier" type="button">×</button></td>
+    </tr>`).join('');
+}
+
+function syncInputs(){
+  document.getElementById('price').value = state.price;
+  document.getElementById('baseMargin').value = state.baseMargin;
+  document.getElementById('seed').value = state.seed;
+  document.getElementById('days').value = state.days;
+  document.getElementById('lambda').value = state.lambda;
+  document.getElementById('normalMean').value = state.normalMean;
+  document.getElementById('normalSd').value = state.normalSd;
+
+  document.querySelectorAll('#distSeg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.dist === state.distribution);
+  });
+  document.getElementById('poissonGroup').style.display = state.distribution === 'poisson' ? '' : 'none';
+  document.getElementById('normalGroup').style.display  = state.distribution === 'normal'  ? '' : 'none';
+
+  renderTierInputs();
+}
+
+/* =====================================================================
+   5) OUTPUT RENDERING (all rendered on Run, not while editing)
+   ===================================================================== */
+function renderKPIs(res){
+  const {tot, days, baseMargin} = res;
+  const avgDay   = days ? tot.weight / days : 0;
+  const realDisc = tot.gross ? tot.disc / tot.gross : 0;
+  const realMarg = tot.net   ? tot.profit / tot.net : 0;
+  const delta    = tot.profit - tot.base;
+  const deltaPct = tot.base ? delta / tot.base : 0;
+  const dCls     = delta >= 0 ? 'good' : 'bad';
+  const sign     = delta >= 0 ? '+' : '−';
+
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi">
+      <div class="k-label">Total demand</div>
+      <div class="k-val">${fmt0(tot.weight)} <span class="k-unit">kg</span></div>
+      <div class="k-sub">${fmt0(avgDay)} kg/day average</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Net revenue</div>
+      <div class="k-val">${money0(tot.net)}</div>
+      <div class="k-sub">gross ${money0(tot.gross)} − discounts ${money0(tot.disc)}</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Total profit</div>
+      <div class="k-val">${money0(tot.profit)}</div>
+      <div class="k-sub">over ${days} simulated days</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Realized discount</div>
+      <div class="k-val">${pct(realDisc)}</div>
+      <div class="k-sub">weighted by gross revenue</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Realized margin</div>
+      <div class="k-val">${pct(realMarg)}</div>
+      <div class="k-sub">profit ÷ net revenue</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Δ vs. no-discount baseline</div>
+      <div class="k-val ${dCls}">${sign}${money0(Math.abs(delta))}</div>
+      <div class="k-sub">${sign}${pct(Math.abs(deltaPct))} vs. base margin ${pct(baseMargin)}</div>
+    </div>`;
+}
+
+function renderTierSummary(res){
+  const {tiers, stats, tot, days, baseMargin} = res;
+  const keys = [...stats.keys()].sort((a,b) => a - b);
+
+  document.getElementById('tierSummary').innerHTML = keys.map(k => {
+    const s = stats.get(k);
+    const label = k >= 0
+      ? `Tier ${k+1} · ≥ ${fmt0(tiers[k].min)} kg`
+      : `Below tier 1 (< ${fmt0(tiers[0] ? tiers[0].min : 0)} kg)`;
+    const disc  = k >= 0 ? pct(tiers[k].disc)   : '0.0%';
+    const marg  = k >= 0 ? pct(tiers[k].margin) : pct(baseMargin);
+    const share = tot.profit ? s.profit / tot.profit : 0;
+
+    return `<tr>
+      <td style="text-align:left"><span class="badge ${k>=0?'':'muted'}">${label}</span></td>
+      <td>${disc}</td>
+      <td>${marg}</td>
+      <td>${s.days}</td>
+      <td>${pct(days ? s.days/days : 0)}</td>
+      <td>${fmt0(s.weight)}</td>
+      <td>${money0(s.net)}</td>
+      <td><b>${money0(s.profit)}</b></td>
+      <td class="barcell">
+        <div class="bar"><i style="width:${Math.max(0,Math.min(100,share*100)).toFixed(1)}%"></i></div>${pct(share)}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderRows(res){
+  const MAX = 800;
+  const rows = res.rows;
+  const shown = rows.slice(0, MAX);
+
+  document.getElementById('rowsBody').innerHTML = shown.map(r => {
+    const tierLabel = r.ti >= 0 ? `T${r.ti + 1}` : '—';
+    return `<tr>
+      <td style="text-align:left">${r.day}</td>
+      <td>${fmt0(r.w)}</td>
+      <td style="text-align:center"><span class="chip ${r.ti>=0?'':'chip-muted'}">${tierLabel}</span></td>
+      <td>${pct(r.disc)}</td>
+      <td>${pct(r.margin)}</td>
+      <td>${money2(r.gross)}</td>
+      <td class="neg">${r.discAmt ? '−' + money2(r.discAmt) : money2(0)}</td>
+      <td>${money2(r.net)}</td>
+      <td><b>${money2(r.profit)}</b></td>
+      <td class="mutedc">${money2(r.cumProfit)}</td>
+    </tr>`;
+  }).join('');
+
+  const distLabel = res.distribution === 'normal'
+    ? `Normal(μ = ${fmt0(res.normalMean)}, σ = ${fmt0(res.normalSd)})`
+    : `Poisson(λ = ${fmt0(res.lambda)})`;
+  const base = `${res.days} simulated day(s) · ${distLabel} · seed ${res.seed}`;
+  document.getElementById('rowNote').textContent = rows.length > MAX
+    ? `${base} — showing first ${MAX} rows; CSV export contains every row.`
+    : base;
+}
+
+/* =====================================================================
+   6) CHART + ANIMATION (one new day every 100 ms)
+   ===================================================================== */
+function stopAnimation(){
+  if (anim && anim.timer) clearInterval(anim.timer);
+  anim = null;
+  const sb = document.getElementById('skipBtn');
+  if (sb) sb.style.display = 'none';
+}
+
+function initChart(res){
+  const svg = document.getElementById('chart');
+  const n = res.rows.length;
+  if (!n){ svg.innerHTML = ''; return false; }
+
+  const W = Math.max(640, svg.clientWidth || 1000);
+  const H = 210;
+  const L = 52, R = 58, T = 18, B = 22;
+  const plotW = W - L - R;
+  const plotH = H - T - B;
+
+  const maxCum   = Math.max(1, res.rows.reduce((m,r) => Math.max(m, r.cumProfit, r.cumBase), 0));
+  const maxDaily = Math.max(1, res.rows.reduce((m,r) => Math.max(m, r.profit), 0));
+
+  const xs     = i => n === 1 ? L + plotW / 2 : L + plotW * (i - 1) / (n - 1);
+  const yCum   = v => T + plotH - plotH * (v / maxCum);
+  const yDaily = v => T + plotH - plotH * (v / maxDaily);
+
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  let grid = '';
+  const ticks = 4;
+  for (let i = 0; i <= ticks; i++){
+    const y = T + plotH * i / ticks;
+    grid += `<line x1="${L}" y1="${y.toFixed(1)}" x2="${W-R}" y2="${y.toFixed(1)}" stroke="#eef2f7"/>`;
+    grid += `<text x="${L-7}" y="${(y+3).toFixed(1)}" font-size="9.5" fill="#94a3b8"
+                   text-anchor="end">${moneyShort(maxCum*(1-i/ticks))}</text>`;
+    grid += `<text x="${W-R+7}" y="${(y+3).toFixed(1)}" font-size="9.5" fill="#93c5fd"
+                   text-anchor="start">${moneyShort(maxDaily*(1-i/ticks))}</text>`;
+  }
+
+  svg.innerHTML = `
+    ${grid}
+    <line x1="${L}" y1="${T+plotH}" x2="${W-R}" y2="${T+plotH}" stroke="#cbd5e1"/>
+    <text x="${L}" y="${T-5}" font-size="10" fill="#94a3b8">cumulative profit ($)</text>
+    <text x="${W-R}" y="${T-5}" font-size="10" fill="#60a5fa" text-anchor="end">daily realized profit ($)</text>
+    <path id="cumBasePath" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 4"/>
+    <path id="cumProfitPath" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+    <g id="dots"></g>
+  `;
+
+  anim = {
+    res, n, xs, yCum, yDaily,
+    k: 0, profitD: '', baseD: '', timer: null,
+    profitPath: svg.querySelector('#cumProfitPath'),
+    basePath:   svg.querySelector('#cumBasePath'),
+    dots:       svg.querySelector('#dots')
+  };
+  return true;
+}
+
+function animStep(){
+  if (!anim) return;
+  const a = anim;
+  if (a.k >= a.n){ finishAnim(a); return; }
+
+  a.k++;
+  const r = a.res.rows[a.k - 1];
+  const x = a.xs(a.k).toFixed(1);
+  const yp = a.yCum(r.cumProfit).toFixed(1);
+  const yb = a.yCum(r.cumBase).toFixed(1);
+
+  a.profitD += (a.k === 1 ? 'M' : 'L') + x + ',' + yp;
+  a.baseD   += (a.k === 1 ? 'M' : 'L') + x + ',' + yb;
+  a.profitPath.setAttribute('d', a.profitD);
+  a.basePath.setAttribute('d', a.baseD);
+
+  a.dots.insertAdjacentHTML('beforeend',
+    `<circle cx="${x}" cy="${a.yDaily(r.profit).toFixed(1)}" r="2.6"
+             fill="#2563eb" fill-opacity="0.55">
+       <title>Day ${r.day}: ${money2(r.profit)} realized</title>
+     </circle>`);
+
+  if (a.k >= a.n) finishAnim(a);
+}
+
+function finishAnim(a){
+  if (a.timer){ clearInterval(a.timer); a.timer = null; }
+  const sb = document.getElementById('skipBtn');
+  if (sb) sb.style.display = 'none';
+}
+
+function skipAnimation(){
+  if (!anim) return;
+  const a = anim;
+  if (a.timer){ clearInterval(a.timer); a.timer = null; }
+
+  let html = '';
+  while (a.k < a.n){
+    a.k++;
+    const r = a.res.rows[a.k - 1];
+    const x = a.xs(a.k).toFixed(1);
+    a.profitD += (a.k === 1 ? 'M' : 'L') + x + ',' + a.yCum(r.cumProfit).toFixed(1);
+    a.baseD   += (a.k === 1 ? 'M' : 'L') + x + ',' + a.yCum(r.cumBase).toFixed(1);
+    html += `<circle cx="${x}" cy="${a.yDaily(r.profit).toFixed(1)}" r="2.6"
+                      fill="#2563eb" fill-opacity="0.55">
+               <title>Day ${r.day}: ${money2(r.profit)} realized</title>
+             </circle>`;
+  }
+  a.profitPath.setAttribute('d', a.profitD);
+  a.basePath.setAttribute('d', a.baseD);
+  if (html) a.dots.insertAdjacentHTML('beforeend', html);
+  finishAnim(a);
+}
+
+function drawChart(res, animate){
+  stopAnimation();
+  if (!initChart(res)) return;
+
+  if (!animate){            // draw everything instantly (used on first load)
+    skipAnimation();
+    return;
+  }
+
+  document.getElementById('skipBtn').style.display = '';
+  animStep();               // day 1 appears immediately
+  if (anim && anim.k < anim.n){
+    anim.timer = setInterval(animStep, 100);   // 0.1 s per realized day
+  }
+}
+
+/* =====================================================================
+   7) RUN / RESET / EXPORT
+   ===================================================================== */
+function run(animate = true){
+  normalizeState();
+  syncInputs();
+  setDirty(false);
+
+  const res = simulate();
+  lastResult = res;
+
+  renderKPIs(res);
+  renderTierSummary(res);
+  renderRows(res);
+  drawChart(res, animate);
+}
+
+function resetAll(){
+  stopAnimation();
+  state = defaultState();
+  syncInputs();
+  setDirty(false);
+  run(false);               // show default results immediately
+}
+
+document.getElementById('runBtn').addEventListener('click', () => run(true));
+document.getElementById('resetBtn').addEventListener('click', resetAll);
+document.getElementById('skipBtn').addEventListener('click', skipAnimation);
+
+document.getElementById('csvBtn').addEventListener('click', () => {
+  if (!lastResult) return;
+  const head = ['day','demand_kg','tier','discount_pct','margin_pct',
+                'gross_revenue','discount_amount','net_revenue','profit','cost',
+                'cumulative_profit'];
+  const lines = [head.join(',')];
+  for (const r of lastResult.rows){
+    lines.push([
+      r.day, r.w, r.ti >= 0 ? r.ti + 1 : 'below_tier_1',
+      (r.disc*100).toFixed(2), (r.margin*100).toFixed(2),
+      r.gross.toFixed(2), r.discAmt.toFixed(2), r.net.toFixed(2),
+      r.profit.toFixed(2), r.cost.toFixed(2), r.cumProfit.toFixed(2)
+    ].join(','));
+  }
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `sfi_simulation_${lastResult.distribution}_seed${lastResult.seed}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+/* =====================================================================
+   8) INPUT BINDINGS — they only mark the page dirty, never re-run
+   ===================================================================== */
+function bindNumber(id, key, transform){
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+    const v = Number(el.value);
+    if (isFinite(v)) state[key] = transform ? transform(v) : v;
+    setDirty(true);
+  });
+}
+bindNumber('price',      'price',      v => Math.max(0, v));
+bindNumber('baseMargin', 'baseMargin', v => clamp(v, 0, 100));
+bindNumber('seed',       'seed',       v => Math.floor(v));
+bindNumber('days',       'days',       v => clampInt(v, 1, 3650));
+bindNumber('lambda',     'lambda',     v => Math.max(0, v));
+bindNumber('normalMean', 'normalMean', v => Math.max(0, v));
+bindNumber('normalSd',   'normalSd',   v => Math.max(0, v));
+
+document.getElementById('distSeg').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-dist]');
+  if (!btn) return;
+  state.distribution = btn.dataset.dist;
+  document.querySelectorAll('#distSeg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.dist === state.distribution);
+  });
+  document.getElementById('poissonGroup').style.display = state.distribution === 'poisson' ? '' : 'none';
+  document.getElementById('normalGroup').style.display  = state.distribution === 'normal'  ? '' : 'none';
+  setDirty(true);
+});
+
+/* tier table editing */
+document.getElementById('tierBody').addEventListener('input', e => {
+  const inp = e.target;
+  if (inp.tagName !== 'INPUT') return;
+  const i = +inp.dataset.i, k = inp.dataset.k;
+  const v = Number(inp.value);
+  if (isFinite(v)) state.tiers[i][k] = v;
+  setDirty(true);
+});
+
+document.getElementById('tierBody').addEventListener('click', e => {
+  const btn = e.target.closest('[data-del]');
+  if (!btn) return;
+  if (state.tiers.length <= 1) return;          // keep at least one tier
+  state.tiers.splice(+btn.dataset.del, 1);
+  renderTierInputs();
+  setDirty(true);
+});
+
+document.getElementById('addTier').addEventListener('click', () => {
+  const last = state.tiers[state.tiers.length - 1];
+  const nextMin  = last ? Math.max(1, Math.round(last.min * 2)) : 100;
+  const nextDisc = last ? Math.min(95, Math.round((last.disc + 4) * 10) / 10) : 5;
+  const nextMarg = last ? Math.max(1, Math.round((last.margin - 3) * 10) / 10) : 25;
+  state.tiers.push({ min: nextMin, disc: nextDisc, margin: nextMarg });
+  renderTierInputs();
+  setDirty(true);
+});
+
+/* =====================================================================
+   9) BOOT — show default results instantly (no animation on load)
+   ===================================================================== */
+syncInputs();
+run(false);
+</script>
+</body>
+</html>
