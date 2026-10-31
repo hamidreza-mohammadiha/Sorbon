@@ -465,16 +465,40 @@
         <!-- ─── top bar ─── -->
         <header class="top">
             <div class="brand">
-                <a href="https://hamidreza-mohammadiha.github.io/Sorbon/Discountss"><div class="mark">S</div></a>
+                <a href="#"><div class="mark">S</div></a>
                 <div class="brand-text">
                 <h3>داشبورد مدیریت کسب‌وکار</h3>
                     <!-- <strong>مرکز مدیریت یکپارچه</strong> -->
                 </div>
             </div>
             <div style="font: 10px var(--en); color: var(--mut); letter-spacing: .5px; direction: ltr;">
-               <!-- <a href="https://hamidreza-mohammadiha.github.io/Sorbon/Coins" target="_blank" class="arrow">Go to Lab ← </a> -->
-                <!-- v3 · Sep-2026 -->
+              <span id="live-clock"></span>
             </div>
+            
+            <script>
+            (function () {
+              const el = document.getElementById('live-clock');
+              if (!el) return;
+            
+              const fmt = new Intl.DateTimeFormat('en-GB', {
+                weekday: 'short',
+                day:     '2-digit',
+                month:   'short',
+                year:    'numeric',
+                hour:    '2-digit',
+                minute:  '2-digit',
+                second:  '2-digit',
+                hour12:  false
+              });
+            
+              function tick() {
+                el.textContent = fmt.format(new Date()); // e.g. "Mon, 03 Nov 2025, 14:07:42"
+              }
+            
+              tick();                    // paint immediately
+              setInterval(tick, 1000);   // then update every second
+            })();
+            </script>
         </header>
 
         <!-- ─── hero ─── -->
@@ -496,7 +520,7 @@
             </a>
 
                         <!-- 1. Roadmap -->
-            <a href="https://hamidreza-mohammadiha.github.io/Sorbon/S-Club" target="_blank" class="nav-card gold">
+            <a href="https://sb-panel.boomerangapp.ir/" target="_blank" class="nav-card gold">
                 <span class="icon">⛳</span>
                 <h3>پنل مدیریت باشگاه فروشندگان</h3>
                 <p>ادمین پنل</p>
@@ -521,25 +545,9 @@
             </a>
 
 
-             <!-- 3. Customer Club App -->
-            <a href="https://hamidreza-mohammadiha.github.io/Sorbon/Opt" target="_blank" class="nav-card purple">
-                <span class="icon">⭐</span>
-                <h3>آزمایشگاه بهینه سازی</h3>
-                <p>ابزار پشتیبان تصمیم گیری</p>
-                <span class="arrow">← مشاهده پروتوتایپ</span>
-            </a>
-
-                                    <!-- 3. Customer Club App -->
-            <a href="https://hamidreza-mohammadiha.github.io/Sorbon/Discountss" target="_blank" class="nav-card purple">
-                <span class="icon">🛒</span>
-                <h3>هیستوگرام تعاملی تعداد مشتریان</h3>
-                <p>نمایش پویای پله خرید مشتریان </p>
-                <span class="arrow">← مشاهده هیستوگرام</span>
-            </a>
-
             <!-- 5. English Website -->
             <a href="https://sorbon.base44.app/" target="_blank" class="nav-card purple">
-                <span class="icon">🎮</span>
+                <span class="icon">🎁</span>
                 <h3>پروتوتایپ بازیوارسازی</h3>
                 <p> جعبه های جادویی سوربن</p>
                 <span class="arrow">← اجرای بازی</span>
@@ -553,15 +561,6 @@
                 <span class="arrow">← مشاهده </span>
             </a>
             
-
-                        <!-- 2. Marketing & Sales -->
-            <a href="https://hamidreza-mohammadiha.github.io/Sorbon/whiteboard" target="_blank" class="nav-card purple">
-                <span class="icon">⚙️</span>
-                <h3>مکانیزم‌های بازاریابی و فروش</h3>
-                <p>دسته بندی استراتژی‌های فروش و بازاریابی</p>
-                <span class="arrow">← مشاهده مکانیزم‌ها</span>
-            </a>
-
             
             <!-- 1. Roadmap -->
             <a href="https://hamidreza-mohammadiha.github.io/Sorbon/CBE" target="_blank" class="nav-card purple">
@@ -574,16 +573,33 @@
             <!-- 2. Marketing & Sales -->
             <a href="https://hamidreza-mohammadiha.github.io/Sorbon/Real" target="_blank" class="nav-card purple">
                 <span class="icon">🍫</span>
-                <h3>تحقیقات بازار شکلات های پروتئینی</h3>
+                <h3>تحقیقات بازار شکلات های ممتاز</h3>
                 <p>دسته بندی برندهای بین المللی</p>
                 <span class="arrow">← مشاهده </span>
+            </a>
+
+            
+             <!-- 3. Customer Club App -->
+            <a href="https://hamidreza-mohammadiha.github.io/Sorbon/Opt" target="_blank" class="nav-card purple">
+                <span class="icon">⭐</span>
+                <h3>آزمایشگاه بهینه سازی</h3>
+                <p>ابزار پشتیبان تصمیم گیری</p>
+                <span class="arrow">← مشاهده پروتوتایپ</span>
+            </a>
+
+                                    <!-- 3. Customer Club App -->
+            <a href="https://hamidreza-mohammadiha.github.io/Sorbon/Discountss" target="_blank" class="nav-card purple">
+                <span class="icon">⭐</span>
+                <h3>هیستوگرام تعاملی تعداد مشتریان</h3>
+                <p>نمایش پویای پله خرید مشتریان </p>
+                <span class="arrow">← مشاهده هیستوگرام</span>
             </a>
 
 
            <!-- 4. Pricing Evaluation -->
 
             <a href="https://hamidreza-mohammadiha.github.io/Sorbon/S1" target="_blank" class="nav-card purple">
-                <span class="icon">🧪</span>
+                <span class="icon">🏀</span>
                 <h3>اصول تغذیه ورزشی</h3>
                 <p>راهنمای جامع</p>
                 <span class="arrow">← مشاهده</span>
@@ -592,19 +608,27 @@
 
             <!-- 5. English Website -->
             <a href="https://hamidreza-mohammadiha.github.io/Sorbon/Clubs" target="_blank" class="nav-card purple">
-                <span class="icon">💪</span>
+                <span class="icon">🏀</span>
                 <h3>پایگاه داده باشگاه های ورزشی</h3>
                 <p> اسم، آدرس و امکانات</p>
                 <span class="arrow">← مشاهده</span>
             </a>
 
+                                                <!-- 2. Marketing & Sales -->
+            <a href="https://hamidreza-mohammadiha.github.io/Sorbon/whiteboard" target="_blank" class="nav-card purple">
+                <span class="icon">🛒</span>
+                <h3>مکانیزم‌های بازاریابی و فروش</h3>
+                <p>دسته بندی استراتژی‌های فروش و بازاریابی</p>
+                <span class="arrow">← مشاهده مکانیزم‌ها</span>
+            </a>
+
              <!-- 6. English Website -->
-            <!-- <a href="https://sorbonsweet.com/" target="_blank" class="nav-card blue">
-                <span class="icon">🌐</span>
+            <a href="https://sorbonsweet.com/" target="_blank" class="nav-card blue">
+                <span class="icon">🛒</span>
                 <h3>وبسایت انگلیسی</h3>
                 <p> https://sorbonsweet.com</p>
                 <span class="arrow">← بازدید از وبسایت</span>
-            </a> -->
+            </a>
 
         </div>
 
