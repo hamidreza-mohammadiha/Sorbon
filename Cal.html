@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e0477f">
+<title>قنادی تایم | تقویم فرصت‌های فروش شیرینی و شکلات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fdf7f2;
+    --card:#ffffff;
+    --text:#3b2a20;
+    --muted:#8a7566;
+    --brand:#e0477f;
+    --brand2:#f08a3c;
+    --line:#f0e2d8;
+    --shadow:0 6px 20px rgba(140,80,45,.08);
+    --shadow-lg:0 12px 32px rgba(140,80,45,.14);
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+
+  body{
+    margin:0;
+    font-family:'Vazirmatn', Tahoma, system-ui, -apple-system, sans-serif;
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 0%, #ffe6ef 0%, transparent 42%),
+      radial-gradient(circle at 92% 6%, #fff1dc 0%, transparent 38%);
+    background-repeat:no-repeat;
+    color:var(--text);
+    line-height:1.75;
+    min-height:100vh;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:linear-gradient(135deg,#e0477f 0%, #ef7a55 55%, #f08a3c 100%);
+    color:#fff;
+    text-align:center;
+    padding:24px 16px 42px;
+    border-radius:0 0 32px 32px;
+    box-shadow:0 10px 30px rgba(224,71,127,.25);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at 20% 10%, rgba(255,255,255,.18), transparent 40%);
+    pointer-events:none;
+  }
+  .hero-logo{
+    width:92px;
+    height:88px;
+    display:block;
+    margin:0 auto 6px;
+    filter:drop-shadow(0 10px 18px rgba(0,0,0,.28));
+    position:relative;
+    z-index:2;
+  }
+  .hero h1{
+    margin:6px 0 4px;
+    font-size:clamp(1.7rem, 5.5vw, 2.4rem);
+    font-weight:800;
+    letter-spacing:.5px;
+    position:relative;
+    z-index:2;
+  }
+  .hero p{
+    margin:0 auto;
+    max-width:680px;
+    font-size:clamp(.78rem, 2.7vw, .96rem);
+    font-weight:300;
+    opacity:.95;
+    position:relative;
+    z-index:2;
+  }
+
+  /* ---------- Layout ---------- */
+  .container{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 14px 60px;
+  }
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:16px;
+    box-shadow:var(--shadow);
+    margin-top:-26px;
+    position:relative;
+    z-index:3;
+  }
+
+  /* ---------- Search ---------- */
+  .search-box{position:relative;display:flex;align-items:center;}
+  .search-box input{
+    width:100%;
+    padding:13px 46px 13px 46px;
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    background:#fffdfb;
+    font-family:inherit;
+    font-size:1rem;
+    color:var(--text);
+    outline:none;
+    transition:border-color .18s, box-shadow .18s, background .18s;
+    appearance:none;
+  }
+  .search-box input::-webkit-search-cancel-button{display:none;}
+  .search-box input::placeholder{color:#b7a496;font-weight:300;}
+  .search-box input:focus{
+    border-color:var(--brand);
+    background:#fff;
+    box-shadow:0 0 0 4px rgba(224,71,127,.12);
+  }
+  .search-icon{
+    position:absolute;
+    right:15px;
+    font-size:1.05rem;
+    opacity:.75;
+    pointer-events:none;
+  }
+  .clear-btn{
+    position:absolute;
+    left:9px;
+    width:30px;height:30px;
+    display:none;
+    align-items:center;justify-content:center;
+    border:none;border-radius:50%;
+    background:#f5e9e1;
+    color:#8a7566;
+    font-size:.85rem;
+    cursor:pointer;
+    transition:.18s;
+  }
+  .clear-btn:hover{background:#eed9cd;color:var(--brand);}
+  .clear-btn.show{display:flex;}
+
+  /* ---------- Filters ---------- */
+  .filter-group{margin-top:15px;}
+  .filter-title{
+    display:block;
+    font-size:.78rem;
+    font-weight:700;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+
+  .chip{
+    border:1.5px solid var(--line);
+    background:#fff;
+    color:var(--muted);
+    border-radius:999px;
+    padding:7px 14px;
+    font-family:inherit;
+    font-size:.84rem;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:transform .15s, background .18s, color .18s, border-color .18s, box-shadow .18s;
+  }
+  .chip:hover{
+    border-color:#f3c3d3;
+    color:var(--brand);
+    transform:translateY(-1px);
+  }
+  .chip.active{
+    background:linear-gradient(135deg,var(--brand),var(--brand2));
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 5px 14px rgba(224,71,127,.32);
+  }
+
+  /* ---------- Result bar ---------- */
+  .result-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+    font-size:.85rem;
+    color:var(--muted);
+  }
+  .result-bar strong{color:var(--brand);font-weight:800;}
+
+  .bar-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+  .reset-btn{
+    background:#fff;
+    border:1.5px solid var(--line);
+    color:var(--muted);
+    border-radius:999px;
+    padding:6px 15px;
+    font-family:inherit;
+    font-size:.79rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:.18s;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+  }
+  .reset-btn:hover{color:var(--brand);border-color:#f3c3d3;background:#fffaf7;}
+
+  .fav-filter-btn{
+    background:#fff;
+    border:1.5px solid var(--line);
+    color:var(--muted);
+    border-radius:999px;
+    padding:6px 15px;
+    font-family:inherit;
+    font-size:.79rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:.18s;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .fav-filter-btn .star-icon{font-size:1rem;line-height:1;}
+  .fav-filter-btn .fav-count{
+    background:#f5e9e1;
+    color:#8a7566;
+    border-radius:999px;
+    padding:0 7px;
+    font-size:.72rem;
+    min-width:20px;
+    text-align:center;
+  }
+  .fav-filter-btn:hover{border-color:#f3c3d3;color:var(--brand);}
+  .fav-filter-btn.active{
+    background:linear-gradient(135deg,#ffb400,#f08a3c);
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 5px 14px rgba(240,138,60,.35);
+  }
+  .fav-filter-btn.active .fav-count{
+    background:rgba(255,255,255,.28);
+    color:#fff;
+  }
+
+  /* ---------- Table ---------- */
+  .table-wrap{
+    margin-top:18px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:22px;
+    box-shadow:var(--shadow-lg);
+    overflow:hidden;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.9rem;
+  }
+  thead th{
+    background:#fff4f8;
+    color:#a2446a;
+    font-size:.8rem;
+    font-weight:700;
+    text-align:right;
+    padding:13px 14px;
+    white-space:nowrap;
+    border-bottom:1.5px solid var(--line);
+  }
+  tbody td{
+    padding:12px 14px;
+    border-bottom:1px solid #f8efe8;
+    text-align:right;
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr{transition:background .15s;}
+  tbody tr:hover{background:#fffaf6;}
+
+  .cell-date{
+    white-space:nowrap;
+    font-size:.84rem;
+    color:#6b5a4e;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .event-inner{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+    min-width:0;
+  }
+  .cell-event{min-width:180px;}
+  .cell-event .emoji{font-size:1.18rem;line-height:1;}
+  .cell-event .ev-name{font-weight:700;}
+  .badge-proj{
+    display:inline-block;
+    padding:1px 8px;
+    font-size:.65rem;
+    font-weight:700;
+    border-radius:999px;
+    background:#fff3d6;
+    color:#a86f00;
+    border:1px solid #ffe1a3;
+    vertical-align:2px;
+  }
+
+  .star-btn{
+    margin-left:auto;
+    width:32px;height:32px;
+    flex:0 0 32px;
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    border:1.5px solid var(--line);
+    border-radius:50%;
+    background:#fff;
+    color:#c7b6a8;
+    font-size:1.15rem;
+    line-height:1;
+    cursor:pointer;
+    transition:transform .16s, background .18s, color .18s, border-color .18s, box-shadow .18s;
+  }
+  .star-btn:hover{
+    border-color:#ffd27a;
+    color:#f0a800;
+    transform:scale(1.1);
+  }
+  .star-btn.active{
+    background:linear-gradient(135deg,#ffc233,#f08a3c);
+    border-color:transparent;
+    color:#fff;
+    box-shadow:0 4px 12px rgba(240,138,60,.4);
+  }
+  .star-btn.pop{animation:pop .3s ease;}
+  @keyframes pop{
+    0%{transform:scale(1);}
+    45%{transform:scale(1.35);}
+    100%{transform:scale(1);}
+  }
+
+  .chip-cat{
+    display:inline-block;
+    padding:3px 11px;
+    border-radius:999px;
+    font-size:.74rem;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .chip-cat.irani{background:#e8f7f0;color:#127a5a;}
+  .chip-cat.jahani{background:#e8f1fe;color:#1f5fb0;}
+  .chip-cat.varzeshi{background:#ffe9e3;color:#c0392b;}
+  .chip-cat.tajari{background:#f1ecfd;color:#6b46c1;}
+  .chip-cat.forush{background:#fff1e3;color:#b45f10;}
+
+  .season-tag{font-size:.8rem;color:var(--muted);white-space:nowrap;}
+  .cell-note{font-size:.83rem;color:#7c6a5c;line-height:1.7;}
+
+  .empty-row td{
+    text-align:center;
+    padding:56px 20px;
+    color:var(--muted);
+    line-height:2.2;
+    font-size:.98rem;
+  }
+  .empty-row td span{display:block;font-size:.83rem;opacity:.8;margin-top:4px;}
+
+  /* ---------- Footer ---------- */
+  .footer{
+    margin-top:26px;
+    padding:16px 18px;
+    background:#fff8f2;
+    border:1px dashed #f0d9c7;
+    border-radius:18px;
+    font-size:.82rem;
+    color:#8a7566;
+    line-height:1.95;
+  }
+  .footer p{margin:0 0 6px;}
+  .footer p:last-child{margin-bottom:0;}
+  .footer .tiny{font-size:.75rem;opacity:.8;}
+
+  /* ---------- Mobile: table -> cards ---------- */
+  @media (max-width:860px){
+    .hero{padding:22px 14px 38px;border-radius:0 0 26px 26px;}
+    .hero-logo{width:80px;height:76px;}
+    .panel{padding:14px;border-radius:20px;}
+
+    .table-wrap{
+      background:transparent;
+      border:none;
+      box-shadow:none;
+      border-radius:0;
+      margin-top:14px;
+      overflow:visible;
+    }
+    table, tbody, tr, td{display:block;width:100%;}
+    thead{display:none;}
+
+    tbody tr{
+      display:flex;
+      flex-direction:column;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:13px 15px;
+      margin-bottom:12px;
+      gap:2px;
+    }
+    tbody tr:hover{background:#fff;}
+
+    tbody td{
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      padding:4px 0;
+      border:none;
+      font-size:.85rem;
+      text-align:right;
+      min-width:0;
+    }
+    tbody td::before{
+      content:attr(data-label);
+      flex:0 0 74px;
+      color:#a89a8e;
+      font-size:.73rem;
+      font-weight:700;
+    }
+
+    .cell-event{
+      order:-1;
+      display:block;
+      padding:0 0 9px;
+      margin-bottom:7px;
+      border-bottom:1px dashed var(--line);
+      min-width:0;
+    }
+    .cell-event::before{content:none !important;}
+    .event-inner{width:100%;}
+    .cell-event .ev-name{font-size:1.02rem;}
+
+    .cell-date{font-size:.82rem;}
+    .cell-note{color:#7c6a5c;}
+
+    .empty-row td{display:block;padding:38px 16px;}
+    .empty-row td::before{content:none !important;}
+  }
+
+  @media (max-width:440px){
+    .chip{padding:6px 12px;font-size:.79rem;}
+    tbody td::before{flex:0 0 66px;font-size:.71rem;}
+    .footer{font-size:.78rem;}
+    .bar-actions{width:100%;}
+    .reset-btn, .fav-filter-btn{flex:1;justify-content:center;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <svg class="hero-logo" viewBox="0 0 220 210" aria-hidden="true" role="img">
+    <!-- shadow -->
+    <ellipse cx="110" cy="198" rx="78" ry="7" fill="rgba(0,0,0,.22)"/>
+    <!-- box body -->
+    <rect x="42" y="92" width="136" height="96" rx="10" fill="#e3443a" stroke="#1a1a1a" stroke-width="4.5"/>
+    <!-- box lid -->
+    <rect x="30" y="66" width="160" height="36" rx="9" fill="#f05648" stroke="#1a1a1a" stroke-width="4.5"/>
+    <!-- vertical ribbon on body -->
+    <rect x="100" y="92" width="20" height="96" fill="#f5c842" stroke="#1a1a1a" stroke-width="3.5"/>
+    <!-- vertical ribbon on lid -->
+    <rect x="100" y="66" width="20" height="36" fill="#f5c842" stroke="#1a1a1a" stroke-width="3.5"/>
+    <!-- horizontal ribbon on lid -->
+    <rect x="30" y="76" width="160" height="14" fill="#f5c842" stroke="#1a1a1a" stroke-width="3.5"/>
+    <!-- bow left loop -->
+    <path d="M110 70 C82 32, 48 40, 55 63 C59 79, 92 80, 110 70 Z" fill="#f5c842" stroke="#1a1a1a" stroke-width="4" stroke-linejoin="round"/>
+    <!-- bow right loop -->
+    <path d="M110 70 C138 32, 172 40, 165 63 C161 79, 128 80, 110 70 Z" fill="#f5c842" stroke="#1a1a1a" stroke-width="4" stroke-linejoin="round"/>
+    <!-- bow knot -->
+    <ellipse cx="110" cy="72" rx="13" ry="15" fill="#e8b82e" stroke="#1a1a1a" stroke-width="4"/>
+    <!-- ribbon tails -->
+    <path d="M102 85 L88 122 L101 122 L109 98 Z" fill="#f5c842" stroke="#1a1a1a" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M118 85 L132 122 L119 122 L111 98 Z" fill="#f5c842" stroke="#1a1a1a" stroke-width="3.5" stroke-linejoin="round"/>
+  </svg>
+  <h1>قنادی تایم</h1>
+  <p>تقویم ۱۰۰ فرصت فروش شیرینی و شکلات &nbsp;·&nbsp; ۱ نوامبر ۲۰۲۶ تا ۳۱ دسامبر ۲۰۲۸</p>
+</header>
+
+<main class="container">
+
+  <section class="panel" aria-label="فیلترها">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input id="search" type="search" placeholder="جستجو در مناسبت‌ها، تاریخ‌ها و توضیحات…" autocomplete="off" aria-label="جستجو">
+      <button id="clearBtn" class="clear-btn" type="button" aria-label="پاک کردن جستجو">✕</button>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-title">🏷️ دسته‌بندی</span>
+      <div class="chips" id="catChips"></div>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-title">🍃 فصل</span>
+      <div class="chips" id="seasonChips"></div>
+    </div>
+
+    <div class="result-bar">
+      <span id="resultCount"></span>
+      <div class="bar-actions">
+        <button id="favFilterBtn" class="fav-filter-btn" type="button" aria-pressed="false">
+          <span class="star-icon">★</span>
+          <span>علاقه‌مندی‌ها</span>
+          <span id="favCountBadge" class="fav-count">۰</span>
+        </button>
+        <button id="resetBtn" class="reset-btn" type="button">↺ حذف فیلترها</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>تاریخ میلادی</th>
+          <th>تاریخ شمسی</th>
+          <th>مناسبت</th>
+          <th>دسته‌بندی</th>
+          <th>فصل</th>
+          <th>فرصت قنادی</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <footer class="footer">
+    <p>⚠️ تاریخ‌های بر پایه تقویم قمری <strong>تقریبی</strong> هستند و ممکن است یک روز جابه‌جا شوند. پیش از تولید و اجرای کمپین، تاریخ‌های رسمی را تأیید کنید.</p>
+    <p class="tiny">🍫 این تقویم یک ابزار برنامه‌ریزی فرصت‌های بازاریابی است، نه پیش‌بینی اندازه‌گیری‌شده فروش.</p>
+  </footer>
+
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     Helpers
+  ============================================================ */
+  const FA_DIGITS = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  const toFa = v => String(v).replace(/\d/g, d => FA_DIGITS[+d]);
+
+  const SMONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const GMONTHS = ['ژانویه','فوریه','مارس','آوریل','مه','ژوئن','ژوئیه','اوت','سپتامبر','اکتبر','نوامبر','دسامبر'];
+
+  const SEASONS = { 'بهار':'🌸', 'تابستان':'☀️', 'پاییز':'🍁', 'زمستان':'❄️' };
+
+  const CATS = {
+    irani:    { label:'مناسبت‌های ایرانی', emoji:'🎊' },
+    jahani:   { label:'مناسبت‌های جهانی',  emoji:'🌍' },
+    varzeshi: { label:'رویدادهای ورزشی',   emoji:'🏆' },
+    tajari:   { label:'نمایشگاه و تجارت',  emoji:'🏢' },
+    forush:   { label:'فروش و تخفیف',      emoji:'🛒' }
+  };
+
+  function seasonOf(sm) {
+    if (sm <= 3) return 'بهار';
+    if (sm <= 6) return 'تابستان';
+    if (sm <= 9) return 'پاییز';
+    return 'زمستان';
+  }
+
+  function gregText(g, sunset) {
+    const p = g.split('-').map(Number);
+    return toFa(p[2]) + ' ' + GMONTHS[p[1] - 1] + ' ' + toFa(p[0]) + (sunset ? ' (غروب)' : '');
+  }
+
+  function shamsiText(sd, sm, sy, sunset) {
+    return toFa(sd) + ' ' + SMONTHS[sm - 1] + ' ' + toFa(sy) + (sunset ? ' (غروب)' : '');
+  }
+
+  function dateRange(ev) {
+    if (ev.g2) return gregText(ev.g) + ' تا ' + gregText(ev.g2);
+    return gregText(ev.g, ev.sunset);
+  }
+
+  function shamsiRange(ev) {
+    if (ev.sd2) return shamsiText(ev.sd, ev.sm, ev.sy) + ' تا ' + shamsiText(ev.sd2, ev.sm2, ev.sy2);
+    return shamsiText(ev.sd, ev.sm, ev.sy, ev.sunset);
+  }
+
+  function normalize(s) {
+    return String(s)
+      .replace(/[\u064A\u0649]/g, 'ی')
+      .replace(/\u0643/g, 'ک')
+      .replace(/[\u0623\u0625\u0622]/g, 'ا')
+      .replace(/\u0629/g, 'ه')
+      .replace(/[\u200c\u200e\u200f]/g, '')
+      .replace(/[\u06F0-\u06F9]/g, d => String(d.charCodeAt(0) - 0x06F0))
+      .replace(/[\u0660-\u0669]/g, d => String(d.charCodeAt(0) - 0x0660))
+      .toLowerCase()
+      .trim();
+  }
+
+  /* ============================================================
+     Event data – 100 items
+  ============================================================ */
+  function E(g, sd, sm, sy, e, emoji, cat, note, opts) {
+    return Object.assign({ g, sd, sm, sy, e, emoji, cat, note }, opts || {});
+  }
+
+  const EVENTS = [
+
+    /* ================= 2026 ================= */
+    E('2026-11-11', 20, 8, 1405, 'روز مجردها (۱۱.۱۱)', '🛍️', 'forush', 'کمپین‌های فروش آنلاین و خرید تنقلات کوچک'),
+    E('2026-11-27', 6, 9, 1405, 'بلک فرایدی', '🏷️', 'forush', 'تخفیف‌های گسترده آنلاین و حضوری'),
+    E('2026-11-30', 9, 9, 1405, 'دوشنبه سایبری', '💻', 'forush', 'ادامه تخفیف‌های آنلاین و بسته‌های هدیه'),
+    E('2026-12-04', 13, 9, 1405, 'آغاز جشن حنوکا', '🕎', 'jahani', 'شیرینی و هدیه برای خانه‌های یهودی؛ بازار محدود', { sunset: true }),
+    E('2026-12-21', 30, 9, 1405, 'شب یلدا', '🍉', 'irani', 'بزرگ‌ترین دورهمی خانوادگی؛ شیرینی، آجیل و میوه'),
+    E('2026-12-25', 4, 10, 1405, 'کریسمس', '🎄', 'jahani', 'هدیه و شیرینی فصلی برای خانواده‌های مسیحی'),
+    E('2026-12-31', 10, 10, 1405, 'شب سال نو میلادی', '🎆', 'jahani', 'دورهمی پایان سال و کمپین‌های فصلی'),
+
+    /* ================= 2027 ================= */
+    E('2027-01-01', 11, 10, 1405, 'سال نو میلادی', '🎊', 'jahani', 'ادامه هدیه‌دهی و دورهمی‌های پایان سال'),
+    E('2027-01-31', 11, 11, 1405, 'نمایشگاه ISM تنقلات و شیرینی (کلن)', '🍫', 'tajari', 'نمایشگاه پیشرو صنعت شیرینی و شکلات؛ منبع‌یابی و روندشناسی', { g2: '2027-02-03', sd2: 14, sm2: 11, sy2: 1405 }),
+    E('2027-02-06', 17, 11, 1405, 'سال نو قمری', '🧧', 'jahani', 'دورهمی خانوادگی و هدیه‌دهی در شرق آسیا؛ صادرات و دیاسپورا'),
+    E('2027-02-08', 19, 11, 1405, 'آغاز ماه رمضان (تقریبی)', '🌙', 'irani', 'وعده‌های افطار؛ خرما، شیرینی و دسر', { proj: true }),
+    E('2027-02-14', 25, 11, 1405, 'روز ولنتاین', '💝', 'jahani', 'شکلات و جعبه‌های هدیه کوچک؛ قوی در مخاطب جوان'),
+    E('2027-02-14', 25, 11, 1405, 'سوپر بول ۶۱', '🏈', 'varzeshi', 'فینال ورزشی آمریکا؛ تنقلات مهمانی و تبلیغات خاص'),
+    E('2027-02-20', 1, 12, 1405, 'جشن فانوس', '🏮', 'jahani', 'پایان جشن سال نو قمری؛ دورهمی و شیرینی در شرق آسیا'),
+    E('2027-03-08', 17, 12, 1405, 'روز جهانی زن', '🌷', 'jahani', 'قدردانی و هدیه‌دهی برای بخشی از مخاطبان'),
+    E('2027-03-09', 18, 12, 1405, 'عید فطر (تقریبی)', '🎈', 'irani', 'دیدوبازدید پس از رمضان؛ شیرینی و سبد هدیه', { proj: true }),
+    E('2027-03-16', 25, 12, 1405, 'چهارشنبه‌سوری', '🔥', 'irani', 'خرید و دورهمی پیش از نوروز'),
+    E('2027-03-21', 1, 1, 1406, 'نوروز', '🌸', 'irani', 'فصل اصلی پذیرایی، هدیه و دیدوبازدید'),
+    E('2027-03-22', 2, 1, 1406, 'جشن هولی', '🎨', 'jahani', 'جشن بهاره هند؛ دورهمی و شیرینی؛ فرصت دیاسپورا/صادرات'),
+    E('2027-03-28', 8, 1, 1406, 'عید پاک', '🐣', 'jahani', 'شیرینی فصلی برای خانواده‌های مسیحی؛ بازار محدود'),
+    E('2027-04-02', 13, 1, 1406, 'سیزده‌بدر', '🌿', 'irani', 'پیکنیک و تنقلات بسته‌بندی‌شده'),
+    E('2027-04-09', 20, 1, 1406, 'روز دختر (تقریبی)', '🎀', 'irani', 'هدیه خانوادگی؛ تاریخ تقریبی قمری', { proj: true }),
+    E('2027-04-19', 30, 1, 1406, 'ماراتن بوستون', '🏃', 'varzeshi', 'رویداد استقامتی؛ تغذیه ورزشی و محتوای دوندگان'),
+    E('2027-05-02', 12, 2, 1406, 'روز معلم', '📚', 'irani', 'هدیه قدردانی؛ شکلات و جعبه‌های کوچک'),
+    E('2027-05-09', 19, 2, 1406, 'روز مادر (جهانی)', '💐', 'jahani', 'فرصت ثانویه هدیه برای مخاطبان تاریخ جهانی'),
+    E('2027-05-15', 25, 2, 1406, 'اکسپو ۲۰۲۷ بلگراد', '🌐', 'tajari', 'نمایشگاه فرهنگ و نوآوری؛ روایت برند و شبکه‌سازی', { g2: '2027-08-15', sd2: 24, sm2: 5, sy2: 1406 }),
+    E('2027-05-17', 27, 2, 1406, 'عید قربان (تقریبی)', '🐑', 'irani', 'دیدوبازدید خانوادگی؛ شیرینی و سبد هدیه', { proj: true }),
+    E('2027-06-01', 11, 3, 1406, 'روز جهانی کودک', '🧒', 'jahani', 'تنقلات کودکانه و بسته‌های کوچک'),
+    E('2027-06-05', 15, 3, 1406, 'فینال لیگ قهرمانان اروپا', '⚽', 'varzeshi', 'فینال فوتبال؛ تنقلات مهمانی و تبلیغات ورزشی'),
+    E('2027-06-20', 30, 3, 1406, 'روز پدر (جهانی)', '👔', 'jahani', 'فرصت ثانویه هدیه'),
+    E('2027-06-24', 3, 4, 1406, 'جام جهانی فوتبال زنان (برزیل)', '⚽', 'varzeshi', 'تورنمنت جهانی فوتبال؛ موقعیت‌های تماشا و تبلیغات ورزشی', { g2: '2027-07-25', sd2: 3, sm2: 5, sy2: 1406 }),
+    E('2027-07-07', 16, 4, 1406, 'روز جهانی شکلات', '🍫', 'jahani', 'تبلیغ مستقیم شکلات، نمونه‌برداری و آموزش محصول'),
+    E('2027-09-10', 19, 6, 1406, 'مسابقات جهانی دو و میدانی (پکن)', '🏅', 'varzeshi', 'تماشای ورزشی؛ تبلیغات خاص و تغذیه ورزشی', { g2: '2027-09-19', sd2: 28, sm2: 6, sy2: 1406 }),
+    E('2027-09-13', 22, 6, 1406, 'رایدر کاپ', '⛳', 'varzeshi', 'رویداد گلف؛ هدیه‌دهی ممتاز و پذیرایی', { g2: '2027-09-19', sd2: 28, sm2: 6, sy2: 1406 }),
+    E('2027-09-15', 24, 6, 1406, 'جشن میانه پاییز', '🥮', 'jahani', 'فصل کیک ماه و هدیه در شرق آسیا؛ صادرات و دیاسپورا'),
+    E('2027-09-23', 1, 7, 1406, 'آغاز سال تحصیلی', '🎒', 'irani', 'تنقلات جعبه غذای مدرسه و کمپین بازگشت به مدرسه'),
+    E('2027-10-01', 9, 7, 1406, 'جام جهانی راگبی مردان (استرالیا)', '🏉', 'varzeshi', 'تورنمنت بین‌المللی؛ تنقلات تماشا و خرده‌فروشی', { g2: '2027-11-13', sd2: 22, sm2: 8, sy2: 1406 }),
+    E('2027-10-01', 9, 7, 1406, 'روز جهانی قهوه', '☕', 'jahani', 'ترکیب قهوه و شکلات؛ همکاری با کافه‌ها'),
+    E('2027-10-08', 16, 7, 1406, 'مهرگان', '🍂', 'irani', 'جشن سنتی؛ محصولات با هویت فرهنگی'),
+    E('2027-10-09', 17, 7, 1406, 'نمایشگاه آنوگا (کلن)', '🏢', 'tajari', 'نمایشگاه بزرگ غذا؛ منبع‌یابی و روندشناسی شیرینی', { g2: '2027-10-13', sd2: 21, sm2: 7, sy2: 1406 }),
+    E('2027-10-29', 7, 8, 1406, 'جشن دیوالی', '🪔', 'jahani', 'جشن نور؛ شیرینی و هدیه؛ فرصت خاص در ایران'),
+    E('2027-10-31', 9, 8, 1406, 'هالووین', '🎃', 'jahani', 'شیرینی مضمون‌دار برای بازار کوچک'),
+    E('2027-11-07', 16, 8, 1406, 'ماراتن نیویورک', '🏃', 'varzeshi', 'رویداد استقامتی؛ تغذیه ورزشی و محتوای دوندگان'),
+    E('2027-11-11', 20, 8, 1406, 'روز مجردها (۱۱.۱۱)', '🛍️', 'forush', 'کمپین آنلاین و تنقلات کوچک'),
+    E('2027-11-19', 28, 8, 1406, 'روز جهانی مرد', '👨', 'jahani', 'کمپین قدردانی اختیاری؛ پذیرش محلی متفاوت'),
+    E('2027-11-20', 29, 8, 1406, 'روز مادر و روز زن', '🌹', 'irani', 'مناسبت هدیه‌دهی اصلی داخلی؛ تقویم قمری'),
+    E('2027-11-25', 4, 9, 1406, 'روز شکرگزاری (آمریکا)', '🦃', 'jahani', 'وعده خانوادگی و دسر؛ مخاطب بین‌المللی'),
+    E('2027-11-26', 5, 9, 1406, 'بلک فرایدی', '🏷️', 'forush', 'تخفیف‌های آنلاین و حضوری'),
+    E('2027-11-29', 8, 9, 1406, 'دوشنبه سایبری', '💻', 'forush', 'ادامه تخفیف و بسته‌های هدیه'),
+    E('2027-12-12', 21, 9, 1406, 'روز پدر', '👨‍👧', 'irani', 'هدیه داخلی؛ شکلات و هدایای کوچک'),
+    E('2027-12-21', 30, 9, 1406, 'شب یلدا', '🍉', 'irani', 'دورهمی خانوادگی و پذیرایی گسترده'),
+    E('2027-12-23', 2, 10, 1406, 'جام ملت‌های آسیا ۲۰۲۷ (عربستان)', '⚽', 'varzeshi', 'اهمیت بالا برای ایران؛ تماشا و تنقلات', { g2: '2028-01-21', sd2: 1, sm2: 11, sy2: 1406, proj: true }),
+    E('2027-12-24', 3, 10, 1406, 'آغاز جشن حنوکا', '🕎', 'jahani', 'شیرینی و هدیه برای خانه‌های یهودی؛ بازار محدود', { sunset: true }),
+    E('2027-12-25', 4, 10, 1406, 'کریسمس', '🎄', 'jahani', 'هدیه و شیرینی فصلی برای خانواده‌های مسیحی'),
+    E('2027-12-31', 10, 10, 1406, 'شب سال نو میلادی', '🎆', 'jahani', 'دورهمی پایان سال و کمپین فصلی'),
+
+    /* ================= 2028 ================= */
+    E('2028-01-01', 11, 10, 1406, 'سال نو میلادی', '🎊', 'jahani', 'ادامه هدیه‌دهی و دورهمی پایان سال'),
+    E('2028-01-21', 1, 11, 1406, 'فینال جام ملت‌های آسیا', '🏆', 'varzeshi', 'فینال تورنمنت؛ موقعیت متمرکز تماشا و تنقلات', { proj: true }),
+    E('2028-01-26', 6, 11, 1406, 'سال نو قمری', '🧧', 'jahani', 'دورهمی و هدیه در شرق آسیا؛ صادرات و دیاسپورا'),
+    E('2028-01-28', 8, 11, 1406, 'آغاز ماه رمضان (تقریبی)', '🌙', 'irani', 'افطار؛ خرما، شیرینی و دسر', { proj: true }),
+    E('2028-02-09', 20, 11, 1406, 'جشن فانوس', '🏮', 'jahani', 'پایان سال نو قمری؛ دورهمی و شیرینی'),
+    E('2028-02-13', 24, 11, 1406, 'سوپر بول ۶۲', '🏈', 'varzeshi', 'فینال ورزشی آمریکا؛ تنقلات مهمانی'),
+    E('2028-02-14', 25, 11, 1406, 'روز ولنتاین', '💝', 'jahani', 'شکلات و جعبه‌های هدیه کوچک'),
+    E('2028-02-26', 7, 12, 1406, 'عید فطر (تقریبی)', '🎈', 'irani', 'دیدوبازدید و شیرینی و سبد هدیه', { proj: true }),
+    E('2028-03-08', 18, 12, 1406, 'روز جهانی زن', '🌷', 'jahani', 'قدردانی و هدیه‌دهی'),
+    E('2028-03-11', 21, 12, 1406, 'جشن هولی', '🎨', 'jahani', 'جشن بهاره هند؛ دورهمی و شیرینی؛ فرصت دیاسپورا'),
+    E('2028-03-14', 24, 12, 1406, 'چهارشنبه‌سوری', '🔥', 'irani', 'خرید پیش از نوروز و دورهمی شبانه'),
+    E('2028-03-20', 1, 1, 1407, 'نوروز', '🌸', 'irani', 'فصل اصلی پذیرایی، هدیه و دیدوبازدید'),
+    E('2028-03-28', 9, 1, 1407, 'روز دختر', '🎀', 'irani', 'هدیه خانوادگی؛ تاریخ قمری'),
+    E('2028-04-01', 13, 1, 1407, 'سیزده‌بدر', '🌿', 'irani', 'پیکنیک و تنقلات بسته‌بندی‌شده'),
+    E('2028-04-16', 28, 1, 1407, 'عید پاک', '🐣', 'jahani', 'شیرینی فصلی برای خانواده‌های مسیحی؛ بازار محدود'),
+    E('2028-04-17', 29, 1, 1407, 'ماراتن بوستون', '🏃', 'varzeshi', 'رویداد استقامتی؛ تغذیه ورزشی'),
+    E('2028-05-01', 12, 2, 1407, 'روز معلم', '📚', 'irani', 'هدیه قدردانی؛ شکلات و جعبه کوچک'),
+    E('2028-05-06', 17, 2, 1407, 'عید قربان (تقریبی)', '🐑', 'irani', 'دیدوبازدید خانوادگی؛ شیرینی و سبد هدیه', { proj: true }),
+    E('2028-05-14', 25, 2, 1407, 'روز مادر (جهانی)', '💐', 'jahani', 'فرصت ثانویه هدیه'),
+    E('2028-06-01', 12, 3, 1407, 'روز جهانی کودک', '🧒', 'jahani', 'تنقلات کودکانه و بسته‌های کوچک'),
+    E('2028-06-09', 20, 3, 1407, 'یورو ۲۰۲۸', '⚽', 'varzeshi', 'تورنمنت بزرگ فوتبال؛ تماشا و تبلیغات تیمی', { g2: '2028-07-09', sd2: 19, sm2: 4, sy2: 1407 }),
+    E('2028-06-18', 29, 3, 1407, 'روز پدر (جهانی)', '👔', 'jahani', 'فرصت ثانویه هدیه'),
+    E('2028-07-07', 17, 4, 1407, 'روز جهانی شکلات', '🍫', 'jahani', 'تبلیغ مستقیم شکلات، نمونه‌برداری و آموزش محصول'),
+    E('2028-07-14', 24, 4, 1407, 'بازی‌های المپیک لس‌آنجلس', '🏅', 'varzeshi', 'بزرگ‌ترین رویداد ورزشی جهان؛ تماشا و تنقلات مضمون‌دار', { g2: '2028-07-30', sd2: 9, sm2: 5, sy2: 1407 }),
+    E('2028-08-15', 25, 5, 1407, 'بازی‌های پارالمپیک لس‌آنجلس', '🏅', 'varzeshi', 'ورزش و شمول؛ کمپین محترمانه و مخاطب‌محور', { g2: '2028-08-27', sd2: 6, sm2: 6, sy2: 1407 }),
+    E('2028-09-16', 26, 6, 1407, 'جشن اکتبرفست (مونیخ)', '🍻', 'jahani', 'جشن بین‌المللی؛ پذیرایی و تبلیغات شیرینی در بازارهای مرتبط', { g2: '2028-10-03', sd2: 12, sm2: 7, sy2: 1407 }),
+    E('2028-09-23', 2, 7, 1407, 'آغاز سال تحصیلی', '🎒', 'irani', 'تنقلات جعبه غذای مدرسه'),
+    E('2028-10-01', 10, 7, 1407, 'روز جهانی قهوه', '☕', 'jahani', 'ترکیب قهوه و شکلات؛ همکاری با کافه‌ها'),
+    E('2028-10-03', 12, 7, 1407, 'جشن میانه پاییز', '🥮', 'jahani', 'کیک ماه و هدیه در شرق آسیا؛ صادرات و دیاسپورا'),
+    E('2028-10-08', 17, 7, 1407, 'مهرگان', '🍂', 'irani', 'جشن سنتی ایرانی؛ محصولات با هویت فرهنگی'),
+    E('2028-10-17', 26, 7, 1407, 'جشن دیوالی (تقریبی)', '🪔', 'jahani', 'شیرینی و هدیه برای جامعه هندی؛ بازار کوچک', { proj: true }),
+    E('2028-10-22', 1, 8, 1407, 'نمایشگاه SIAL پاریس', '🏢', 'tajari', 'نمایشگاه نوآوری غذایی؛ روندشناسی و منبع‌یابی شیرینی', { g2: '2028-10-26', sd2: 5, sm2: 8, sy2: 1407 }),
+    E('2028-10-31', 10, 8, 1407, 'هالووین', '🎃', 'jahani', 'شیرینی مضمون‌دار برای بازار کوچک'),
+    E('2028-11-05', 15, 8, 1407, 'ماراتن نیویورک', '🏃', 'varzeshi', 'رویداد استقامتی؛ تغذیه ورزشی'),
+    E('2028-11-08', 18, 8, 1407, 'روز مادر و روز زن (تقریبی)', '🌹', 'irani', 'هدیه‌دهی اصلی داخلی؛ تأیید با تقویم رسمی', { proj: true }),
+    E('2028-11-11', 21, 8, 1407, 'روز مجردها (۱۱.۱۱)', '🛍️', 'forush', 'کمپین آنلاین و تنقلات کوچک'),
+    E('2028-11-19', 29, 8, 1407, 'روز جهانی مرد', '👨', 'jahani', 'قدردانی اختیاری؛ پذیرش محلی متفاوت'),
+    E('2028-11-23', 3, 9, 1407, 'روز شکرگزاری (آمریکا)', '🦃', 'jahani', 'وعده خانوادگی و دسر؛ مخاطب بین‌المللی'),
+    E('2028-11-24', 4, 9, 1407, 'بلک فرایدی', '🏷️', 'forush', 'تخفیف‌های آنلاین و حضوری'),
+    E('2028-11-27', 7, 9, 1407, 'دوشنبه سایبری', '💻', 'forush', 'ادامه تخفیف و بسته‌های هدیه'),
+    E('2028-12-01', 11, 9, 1407, 'روز پدر (تقریبی)', '👨‍👧', 'irani', 'هدیه‌دهی داخلی؛ تأیید با تقویم رسمی', { proj: true }),
+    E('2028-12-12', 22, 9, 1407, 'آغاز جشن حنوکا', '🕎', 'jahani', 'شیرینی و هدیه برای خانه‌های یهودی؛ بازار محدود', { sunset: true }),
+    E('2028-12-21', 1, 10, 1407, 'شب یلدا', '🍉', 'irani', 'دورهمی خانوادگی و پذیرایی گسترده'),
+    E('2028-12-25', 5, 10, 1407, 'کریسمس', '🎄', 'jahani', 'هدیه و شیرینی فصلی برای خانواده‌های مسیحی'),
+    E('2028-12-31', 11, 10, 1407, 'شب سال نو میلادی', '🎆', 'jahani', 'دورهمی پایان سال و کمپین فصلی')
+  ];
+
+  /* Stable IDs + chronological sort */
+  EVENTS.forEach(ev => { ev.id = ev.g + '|' + ev.e; });
+  EVENTS.sort((a, b) => a.g.localeCompare(b.g));
+
+  /* ============================================================
+     Favorites (localStorage)
+  ============================================================ */
+  const FAV_KEY = 'qanadi_favs_v3';
+  let favorites = new Set();
+  try {
+    const saved = JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+    if (Array.isArray(saved)) favorites = new Set(saved);
+  } catch (e) { /* ignore */ }
+
+  function saveFavorites() {
+    try { localStorage.setItem(FAV_KEY, JSON.stringify([...favorites])); } catch (e) { /* ignore */ }
+  }
+
+  /* ============================================================
+     DOM references
+  ============================================================ */
+  const tbody       = document.getElementById('tbody');
+  const searchInput = document.getElementById('search');
+  const clearBtn    = document.getElementById('clearBtn');
+  const catChips    = document.getElementById('catChips');
+  const seasonChips = document.getElementById('seasonChips');
+  const resultCount = document.getElementById('resultCount');
+  const resetBtn    = document.getElementById('resetBtn');
+  const favFilterBtn = document.getElementById('favFilterBtn');
+  const favCountBadge = document.getElementById('favCountBadge');
+
+  const state = { q: '', cat: '', season: '', favOnly: false };
+
+  /* ============================================================
+     Build filter chips
+  ============================================================ */
+  catChips.innerHTML =
+    '<button class="chip active" data-cat="" type="button">✨ همه</button>' +
+    Object.keys(CATS).map(k =>
+      '<button class="chip" data-cat="' + k + '" type="button">' + CATS[k].emoji + ' ' + CATS[k].label + '</button>'
+    ).join('');
+
+  seasonChips.innerHTML =
+    '<button class="chip active" data-season="" type="button">✨ همه</button>' +
+    Object.keys(SEASONS).map(s =>
+      '<button class="chip" data-season="' + s + '" type="button">' + SEASONS[s] + ' ' + s + '</button>'
+    ).join('');
+
+  /* ============================================================
+     Render
+  ============================================================ */
+  function starButtonHTML(ev) {
+    const active = favorites.has(ev.id);
+    return '<button class="star-btn' + (active ? ' active' : '') + '"' +
+      ' data-id="' + ev.id + '"' +
+      ' aria-label="' + (active ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها') + '"' +
+      ' aria-pressed="' + active + '"' +
+      ' title="' + (active ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها') + '">' +
+      (active ? '★' : '☆') + '</button>';
+  }
+
+  function render() {
+    const q = normalize(state.q);
+
+    const rows = EVENTS.filter(ev => {
+      if (state.favOnly && !favorites.has(ev.id)) return false;
+      if (state.cat && ev.cat !== state.cat) return false;
+      if (state.season && seasonOf(ev.sm) !== state.season) return false;
+      if (!q) return true;
+
+      const haystack = normalize([
+        ev.e, ev.note, ev.g,
+        dateRange(ev), shamsiRange(ev),
+        CATS[ev.cat].label, seasonOf(ev.sm), ev.emoji
+      ].join(' '));
+
+      return q.split(/\s+/).filter(Boolean).every(w => haystack.includes(w));
+    });
+
+    if (!rows.length) {
+      tbody.innerHTML =
+        '<tr class="empty-row"><td colspan="6">🔍 مناسبتی با این فیلترها پیدا نشد' +
+        '<span>عبارت جستجو را تغییر دهید یا فیلترها را حذف کنید.</span></td></tr>';
+    } else {
+      tbody.innerHTML = rows.map(ev => {
+        const season = seasonOf(ev.sm);
+        return '<tr>' +
+          '<td class="cell-date" data-label="میلادی">' + dateRange(ev) + '</td>' +
+          '<td class="cell-date" data-label="شمسی">' + shamsiRange(ev) + '</td>' +
+          '<td class="cell-event" data-label="مناسبت">' +
+            '<div class="event-inner">' +
+              '<span class="emoji">' + ev.emoji + '</span>' +
+              '<span class="ev-name">' + ev.e + '</span>' +
+              (ev.proj ? '<span class="badge-proj">تقریبی</span>' : '') +
+              starButtonHTML(ev) +
+            '</div>' +
+          '</td>' +
+          '<td data-label="دسته"><span class="chip-cat ' + ev.cat + '">' + CATS[ev.cat].emoji + ' ' + CATS[ev.cat].label + '</span></td>' +
+          '<td data-label="فصل"><span class="season-tag">' + SEASONS[season] + ' ' + season + '</span></td>' +
+          '<td class="cell-note" data-label="فرصت">' + ev.note + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    resultCount.innerHTML =
+      'نمایش <strong>' + toFa(rows.length) + '</strong> مناسبت از مجموع ' + toFa(EVENTS.length);
+
+    clearBtn.classList.toggle('show', state.q.length > 0);
+    favFilterBtn.classList.toggle('active', state.favOnly);
+    favFilterBtn.setAttribute('aria-pressed', state.favOnly);
+    favCountBadge.textContent = toFa(favorites.size);
+  }
+
+  /* ============================================================
+     Star toggle (event delegation)
+  ============================================================ */
+  tbody.addEventListener('click', function (e) {
+    const btn = e.target.closest('.star-btn');
+    if (!btn) return;
+
+    const id = btn.dataset.id;
+    const nowActive = !favorites.has(id);
+
+    if (nowActive) favorites.add(id);
+    else favorites.delete(id);
+
+    saveFavorites();
+
+    /* Update button in place */
+    btn.textContent = nowActive ? '★' : '☆';
+    btn.classList.toggle('active', nowActive);
+    btn.setAttribute('aria-pressed', nowActive);
+    btn.setAttribute('aria-label', nowActive ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها');
+    btn.setAttribute('title', nowActive ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها');
+    btn.classList.add('pop');
+    setTimeout(() => btn.classList.remove('pop'), 320);
+
+    favCountBadge.textContent = toFa(favorites.size);
+
+    /* If favourites-only view and item was removed, re-render */
+    if (state.favOnly && !nowActive) render();
+  });
+
+  /* ============================================================
+     Search
+  ============================================================ */
+  searchInput.addEventListener('input', function (e) {
+    state.q = e.target.value;
+    render();
+  });
+
+  searchInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      searchInput.value = '';
+      state.q = '';
+      render();
+    }
+  });
+
+  clearBtn.addEventListener('click', function () {
+    searchInput.value = '';
+    state.q = '';
+    searchInput.focus();
+    render();
+  });
+
+  /* ============================================================
+     Category chips
+  ============================================================ */
+  catChips.addEventListener('click', function (e) {
+    const btn = e.target.closest('.chip');
+    if (!btn) return;
+    catChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    state.cat = btn.dataset.cat;
+    render();
+  });
+
+  /* ============================================================
+     Season chips
+  ============================================================ */
+  seasonChips.addEventListener('click', function (e) {
+    const btn = e.target.closest('.chip');
+    if (!btn) return;
+    seasonChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    state.season = btn.dataset.season;
+    render();
+  });
+
+  /* ============================================================
+     Favourites-only toggle
+  ============================================================ */
+  favFilterBtn.addEventListener('click', function () {
+    state.favOnly = !state.favOnly;
+    render();
+  });
+
+  /* ============================================================
+     Reset all
+  ============================================================ */
+  resetBtn.addEventListener('click', function () {
+    state.q = '';
+    state.cat = '';
+    state.season = '';
+    state.favOnly = false;
+    searchInput.value = '';
+    catChips.querySelectorAll('.chip').forEach((c, i) => c.classList.toggle('active', i === 0));
+    seasonChips.querySelectorAll('.chip').forEach((c, i) => c.classList.toggle('active', i === 0));
+    render();
+  });
+
+  /* ============================================================
+     Init
+  ============================================================ */
+  render();
+})();
+</script>
+</body>
+</html>
