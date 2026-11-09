@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>شبیه‌ساز مقایسه دو سیاست تخفیف پله‌ای · D5</title>
+<style>
+:root{
+  --bg:#eef2f7; --panel:#fff; --line:#e2e8f0; --ink:#0f172a; --muted:#64748b;
+  --blue:#2563eb; --blue-soft:#eff6ff; --red:#dc2626; --red-soft:#fef2f2;
+  --good:#059669; --bad:#dc2626;
+  --amber:#b45309; --amber-bg:#fffbeb; --amber-line:#fde68a;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+.app{max-width:1440px;margin:0 auto;padding:22px 22px 60px}
+header{margin-bottom:18px}
+h1{font-size:19px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:12.5px;margin:0}
+.tag{display:inline-block;background:var(--blue-soft);color:var(--blue);
+  border:1px solid #dbeafe;border-radius:999px;padding:1px 8px;font-size:11px;
+  font-weight:700;vertical-align:2px;margin-left:6px;letter-spacing:.03em}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:16px;box-shadow:0 1px 2px rgba(15,23,42,.05);margin-bottom:18px}
+.panel h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--muted);margin:0 0 12px;font-weight:700}
+.hint{font-size:11.5px;color:var(--muted);margin:8px 0 0;line-height:1.5}
+
+/* ---------- shared settings: stacked, centered ---------- */
+.shared-stack{max-width:540px;margin:0 auto}
+.shared-stack .field{grid-template-columns:1fr 170px}
+.field{display:grid;grid-template-columns:1fr 120px;align-items:center;gap:10px;margin-bottom:9px}
+.field label{font-size:12.5px;color:#334155}
+input[type=number],input[type=text]{
+  width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;
+  font:inherit;font-size:13px;background:#fff;text-align:right;color:var(--ink);
+  direction:ltr;
+}
+input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.14)}
+.input-wrap{position:relative;width:100%}
+.input-wrap input{width:100%;padding-left:58px}
+.input-wrap .unit{position:absolute;top:50%;left:8px;transform:translateY(-50%);
+  font-size:10.5px;color:var(--muted);font-weight:600;pointer-events:none;
+  white-space:nowrap;unicode-bidi:isolate}
+
+/* ---------- policies (baseline left / experiment right) ---------- */
+.policies{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;
+  direction:ltr}
+.policies > *{direction:rtl}
+.policy.baseline{border-top:3px solid var(--blue)}
+.policy.experiment{border-top:3px solid var(--red)}
+.policy-head{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.policy-head h2{margin:0}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.dot.blue{background:var(--blue)} .dot.red{background:var(--red)}
+
+.sub-head{font-size:11px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--muted);margin:16px 0 8px;font-weight:700;
+  padding-top:12px;border-top:1px dashed #e2e8f0}
+.sub-head.first{margin-top:0;padding-top:0;border-top:0}
+
+.policy-settings .field{grid-template-columns:1fr 150px;margin-bottom:8px}
+.policy-settings .field label{font-size:12px}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;
+  letter-spacing:.05em;text-align:right;padding:8px 8px;border-bottom:1px solid var(--line);
+  background:#f8fafc;position:sticky;top:0;z-index:2}
+th:first-child,td:first-child{text-align:right}
+td{padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right;
+  font-variant-numeric:tabular-nums}
+tbody tr:hover{background:#f8fbff}
+.tier-table input{padding:5px 7px;font-size:12.5px;border-radius:6px}
+.icon-btn{border:1px solid var(--line);background:#fff;color:var(--muted);
+  width:24px;height:24px;border-radius:6px;cursor:pointer;line-height:1;font-size:14px}
+.icon-btn:hover{color:var(--bad);border-color:#fecaca;background:#fef2f2}
+
+/* compare table: LTR columns so baseline sits left of experiment */
+.compare-table{direction:ltr}
+.compare-table th:first-child,
+.compare-table td:first-child{
+  background:#f8fafc;font-weight:600;color:#334155;white-space:nowrap;
+}
+.compare-table td{vertical-align:top}
+.m-label{font-weight:600;color:#334155;white-space:nowrap}
+.dist-line{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;
+  padding:1.5px 0;border-bottom:1px dashed #f1f5f9}
+.dist-line:last-child{border-bottom:0}
+.dist-line .dl{color:var(--muted)}
+.dist-line .dv{font-variant-numeric:tabular-nums;color:#334155}
+.dist-line .ds{font-style:normal;color:#94a3b8;min-width:42px;text-align:left;direction:ltr}
+.dist-line .dn{color:#94a3b8;font-size:10.5px}
+.sub2{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* ---------- buttons ---------- */
+.btn{background:var(--blue);color:#fff;border:0;border-radius:9px;
+  padding:10px 16px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit}
+.btn:hover{background:#1d4ed8}
+.btn.ghost{background:#f1f5f9;color:#334155}
+.btn.ghost:hover{background:#e2e8f0}
+.btn-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn-row .btn{flex:1;min-width:120px}
+
+.dirty-note{background:var(--amber-bg);border:1px solid var(--amber-line);
+  color:var(--amber);border-radius:8px;padding:7px 10px;font-size:12px;margin:10px 0 0}
+
+/* ---------- kpis ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.k-label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.k-val{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-top:3px;font-variant-numeric:tabular-nums}
+.k-unit{font-size:12px;font-weight:600;color:var(--muted)}
+.k-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.k-val.good{color:var(--good)} .k-val.bad{color:var(--bad)}
+.k-dual{margin-top:4px;font-size:12px;color:#334155}
+.k-dual .k-row{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:2px 0;font-variant-numeric:tabular-nums}
+.k-dual .k-row .k-lbl{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11.5px}
+.k-dual .k-row b{font-size:13.5px;color:var(--ink)}
+.kpi-meta{font-size:12px;color:var(--muted);margin:12px 2px 0}
+.kpi-meta b{color:#334155}
+
+/* ---------- charts ---------- */
+.charts-toolbar{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin:0 4px 10px;flex-wrap:wrap}
+.mutedc{color:var(--muted)}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:18px}
+#profitChart{width:100%;height:240px;display:block}
+#salesChart{width:100%;height:240px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:11.5px;color:var(--muted);margin-top:8px}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{width:16px;height:3px;border-radius:2px;display:inline-block}
+.rect-sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+/* ---------- currency ---------- */
+.currency-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.seg{display:flex;border:1px solid #cbd5e1;border-radius:8px;overflow:hidden;background:#fff}
+.seg button{flex:1;border:0;background:#fff;padding:8px 14px;font:inherit;
+  font-size:12.5px;cursor:pointer;color:#475569;white-space:nowrap}
+.seg button + button{border-right:1px solid #e2e8f0}
+.seg button.active{background:var(--blue);color:#fff;font-weight:600}
+.seg button:not(.active):hover{background:#f8fafc}
+.fx-field{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fx-field label{font-size:12.5px;color:#334155}
+.fx-field .input-wrap{width:170px}
+
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}
+.neg{color:var(--bad)}
+.profit-green{color:var(--good)}
+.disc-red{color:var(--bad)}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .app{padding:16px 12px 44px}
+  .policies{grid-template-columns:1fr}
+  .charts-grid{grid-template-columns:1fr}
+  .shared-stack .field{grid-template-columns:1fr 130px}
+  .policy-settings .field{grid-template-columns:1fr 130px}
+}
+@media (max-width:520px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .btn-row .btn{flex:1 1 100%}
+  #profitChart,#salesChart{height:210px}
+  .shared-stack .field{grid-template-columns:1fr 110px}
+  .policy-settings .field{grid-template-columns:1fr 110px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <h1>شبیه‌ساز مقایسه دو سیاست تخفیف پله‌ای <span class="tag">نمونه D5</span></h1>
+    <p class="sub">
+      هر سیاست، توزیع مشتری و تقاضای مخصوص خود را دارد؛ تعداد مشتری روزانه با توزیع پواسون
+      و تقاضای هر مشتری با توزیع نرمال تولید می‌شود و تخفیف پله‌ای <b>برای هر مشتری</b>
+      بر اساس وزن خرید همان مشتری تعیین می‌شود. نتایج فقط با دکمه <b>اجرای شبیه‌سازی</b> به‌روز می‌شود.
+    </p>
+  </header>
+
+  <!-- ================= تنظیمات مشترک ================= -->
+  <section class="panel">
+    <h2>تنظیمات مشترک شبیه‌سازی</h2>
+
+    <div class="shared-stack">
+      <div class="field"><label for="price">قیمت فهرست هر کیلوگرم</label>
+        <div class="input-wrap"><input type="number" id="price" step="0.01" min="0"><span class="unit">$/kg</span></div>
+      </div>
+      <div class="field"><label for="baseMargin">حاشیه سود پایه (زیر پله ۱)</label>
+        <div class="input-wrap"><input type="number" id="baseMargin" step="0.1" min="0" max="100"><span class="unit">%</span></div>
+      </div>
+      <div class="field"><label for="seed">بذر شبیه‌سازی</label>
+        <input type="number" id="seed" step="1">
+      </div>
+      <div class="field"><label for="days">مدت</label>
+        <div class="input-wrap"><input type="number" id="days" step="1" min="1" max="3650"><span class="unit">روز</span></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" id="runBtn" type="button">اجرای شبیه‌سازی</button>
+        <button class="btn ghost" id="resetBtn" type="button">بازنشانی</button>
+        <button class="btn ghost" id="csvBtn" type="button">خروجی CSV</button>
+      </div>
+
+      <div class="dirty-note" id="dirtyHint" style="display:none">
+        تنظیمات تغییر کرده — برای به‌روزرسانی نتایج دکمه <b>اجرای شبیه‌سازی</b> را بزنید.
+      </div>
+    </div>
+
+    <p class="hint">
+      هر سیاست از <b>جریان تصادفی مستقل</b> با بذر مشترک استفاده می‌کند؛ بنابراین تغییر
+      پارامترهای مشتری/تقاضای یک سیاست، تحقق تقاضای سیاست دیگر را تغییر نمی‌دهد.
+      تقاضای هر مشتری به ۰٫۱ کیلوگرم گرد و در صفر محدود می‌شود. بذر یکسان + تنظیمات یکسان = خروجی یکسان.
+      قیمت و مبالغ ورودی به دلار هستند؛ نمایش نتایج به ریال در انتهای بخش نتایج تنظیم می‌شود.
+    </p>
+  </section>
+
+  <!-- ================= دو سیاست ================= -->
+  <div class="policies">
+
+    <!-- سیاست پایه (سمت چپ) -->
+    <section class="panel policy baseline">
+      <div class="policy-head"><i class="dot blue"></i><h2>سیاست پایه</h2></div>
+
+      <h3 class="sub-head first">توزیع مشتری و تقاضا</h3>
+      <div class="policy-settings">
+        <div class="field"><label for="custLambdaA">میانگین تعداد مشتری در روز</label>
+          <div class="input-wrap"><input type="number" id="custLambdaA" step="1" min="0"><span class="unit">نفر/روز</span></div>
+        </div>
+        <div class="field"><label for="custMeanA">میانگین تقاضای هر مشتری</label>
+          <div class="input-wrap"><input type="number" id="custMeanA" step="0.1" min="0"><span class="unit">kg</span></div>
+        </div>
+        <div class="field"><label for="custSdA">انحراف معیار تقاضای هر مشتری</label>
+          <div class="input-wrap"><input type="number" id="custSdA" step="0.1" min="0"><span class="unit">kg</span></div>
+        </div>
+      </div>
+
+      <h3 class="sub-head">طرح تخفیف پله‌ای</h3>
+      <table class="tier-table">
+        <thead>
+          <tr>
+            <th style="text-align:right">حداقل وزن هر مشتری (kg)</th>
+            <th>تخفیف %</th>
+            <th>حاشیه سود %</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tierBodyA"></tbody>
+      </table>
+      <div class="btn-row">
+        <button class="btn ghost" id="addTierA" type="button">+ افزودن پله</button>
+      </div>
+      <p class="hint">پله‌ها بر اساس وزن خرید <b>هر مشتری</b> اعمال می‌شوند؛ بالاترین پله‌ای که حداقل وزن آن تأمین شود فعال است.</p>
+    </section>
+
+    <!-- سیاست آزمایشی (سمت راست) -->
+    <section class="panel policy experiment">
+      <div class="policy-head"><i class="dot red"></i><h2>سیاست آزمایشی</h2></div>
+
+      <h3 class="sub-head first">توزیع مشتری و تقاضا</h3>
+      <div class="policy-settings">
+        <div class="field"><label for="custLambdaB">میانگین تعداد مشتری در روز</label>
+          <div class="input-wrap"><input type="number" id="custLambdaB" step="1" min="0"><span class="unit">نفر/روز</span></div>
+        </div>
+        <div class="field"><label for="custMeanB">میانگین تقاضای هر مشتری</label>
+          <div class="input-wrap"><input type="number" id="custMeanB" step="0.1" min="0"><span class="unit">kg</span></div>
+        </div>
+        <div class="field"><label for="custSdB">انحراف معیار تقاضای هر مشتری</label>
+          <div class="input-wrap"><input type="number" id="custSdB" step="0.1" min="0"><span class="unit">kg</span></div>
+        </div>
+      </div>
+
+      <h3 class="sub-head">طرح تخفیف پله‌ای</h3>
+      <table class="tier-table">
+        <thead>
+          <tr>
+            <th style="text-align:right">حداقل وزن هر مشتری (kg)</th>
+            <th>تخفیف %</th>
+            <th>حاشیه سود %</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tierBodyB"></tbody>
+      </table>
+      <div class="btn-row">
+        <button class="btn ghost" id="addTierB" type="button">+ افزودن پله</button>
+      </div>
+      <p class="hint">پله‌ها بر اساس وزن خرید <b>هر مشتری</b> اعمال می‌شوند؛ بالاترین پله‌ای که حداقل وزن آن تأمین شود فعال است.</p>
+    </section>
+
+  </div>
+
+  <!-- ================= نتایج کلی ================= -->
+  <section class="panel">
+    <h2>نتایج کلی</h2>
+    <div class="kpis" id="kpis"></div>
+    <p class="kpi-meta" id="kpiMeta"></p>
+  </section>
+
+  <!-- ================= نمودارها ================= -->
+  <div class="charts-toolbar">
+    <span class="mutedc">انیمیشن: ۰٫۱ ثانیه برای هر روز شبیه‌سازی‌شده</span>
+    <button class="btn ghost" id="skipBtn" type="button" style="display:none">رد کردن انیمیشن</button>
+  </div>
+
+  <div class="charts-grid">
+    <section class="panel">
+      <h2>سود تجمعی دو سیاست</h2>
+      <svg id="profitChart" role="img" aria-label="نمودار سود تجمعی دو سیاست"></svg>
+      <div class="legend">
+        <span><i class="sw" style="background:#2563eb"></i> سیاست پایه</span>
+        <span><i class="sw" style="background:#dc2626"></i> سیاست آزمایشی</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>فروش روزانه (کیلوگرم)</h2>
+      <svg id="salesChart" role="img" aria-label="نمودار فروش روزانه دو سیاست"></svg>
+      <div class="legend">
+        <span><i class="rect-sw" style="background:#2563eb"></i> سیاست پایه</span>
+        <span><i class="rect-sw" style="background:#dc2626"></i> سیاست آزمایشی</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= جدول مقایسه ================= -->
+  <section class="panel">
+    <h2>مقایسه تفصیلی دو سیاست</h2>
+    <div class="table-wrap" style="max-height:none">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>شاخص</th>
+            <th><i class="dot blue"></i> سیاست پایه</th>
+            <th><i class="dot red"></i> سیاست آزمایشی</th>
+          </tr>
+        </thead>
+        <tbody id="compareBody"></tbody>
+      </table>
+    </div>
+    <p class="hint">
+      محاسبه هر مشتری: ناخالص = وزن × قیمت · تخفیف = ناخالص × نرخ پله · خالص = ناخالص − تخفیف ·
+      سود = خالص × حاشیه پله. هر سیاست مشتریان و وزن‌های خودش را دارد و تنها وجه اشتراک دو سناریو،
+      قیمت فهرست، حاشیه پایه، مدت و بذر است.
+    </p>
+  </section>
+
+  <!-- ================= واحد پول ================= -->
+  <section class="panel">
+    <h2>واحد پول و نرخ تبدیل</h2>
+    <div class="currency-row">
+      <div class="seg" id="curSeg" role="group" aria-label="واحد پول">
+        <button type="button" data-cur="USD">دلار ($)</button>
+        <button type="button" data-cur="IRR">ریال</button>
+      </div>
+      <div class="fx-field" id="fxWrap">
+        <label for="fxRate">نرخ تبدیل — ۱ دلار =</label>
+        <div class="input-wrap">
+          <input type="number" id="fxRate" step="1000" min="0">
+          <span class="unit">ریال</span>
+        </div>
+      </div>
+    </div>
+    <p class="hint">
+      قیمت و مبالغ ورودی همیشه به دلار وارد می‌شوند؛ این تنظیم فقط برای نمایش نتایج است.
+      با تغییر واحد پول یا نرخ تبدیل، نتایج بدون اجرای مجدد شبیه‌سازی دوباره محاسبه و نمایش داده می‌شوند.
+    </p>
+  </section>
+
+</div>
+
+<script>
+/* =====================================================================
+   شبیه‌ساز مقایسه دو سیاست تخفیف پله‌ای — D5
+   - هر سیاست: توزیع مشتری (پواسون) و تقاضای هر مشتری (نرمال) مخصوص خود
+   - تخفیف پله‌ای برای هر مشتری جداگانه تعیین می‌شود
+   - هر سیاست جریان تصادفی مستقل با بذر مشترک دارد
+   ===================================================================== */
+
+/* ---------- قالب‌بندی ---------- */
+const fmt0 = v => (v||0).toLocaleString('en-US',{maximumFractionDigits:0});
+const fmt1 = v => (v||0).toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1});
+const pct = v => ((v||0)*100).toFixed(1) + '%';
+const clamp = (v,lo,hi) => Math.min(hi, Math.max(lo, v));
+const clampInt = (v,lo,hi) => { v = Math.round(Number(v)); if (!isFinite(v)) v = lo; return clamp(v,lo,hi); };
+
+/* =====================================================================
+   ۰) مقادیر پیش‌فرض و وضعیت
+   ===================================================================== */
+const DEFAULTS = {
+  shared: {
+    price: 12.5,
+    baseMargin: 9,
+    seed: 20240607,
+    days: 90
+  },
+  policies: {
+    A: {                                    // سیاست پایه
+      custLambda: 120, custMean: 6, custSd: 2,
+      tiers: [
+        { min:  3, disc:  2, margin: 10 },
+        { min:  6, disc:  5, margin: 11 },
+        { min: 10, disc:  9, margin: 12 },
+        { min: 15, disc: 14, margin: 13 },
+        { min: 25, disc: 20, margin: 14 }
+      ]
+    },
+    B: {                                    // سیاست آزمایشی
+      custLambda: 120, custMean: 6, custSd: 2,
+      tiers: [
+        { min:  2, disc:  3, margin: 10 },
+        { min:  5, disc:  7, margin: 11 },
+        { min:  9, disc: 12, margin: 12 },
+        { min: 14, disc: 18, margin: 13 },
+        { min: 22, disc: 25, margin: 14 }
+      ]
+    }
+  },
+  currency: 'USD',
+  fxRate: 600000
+};
+
+const defaultState = () => JSON.parse(JSON.stringify(DEFAULTS));
+let state = defaultState();
+let dirty = false;
+let lastResult = null;
+let anim = null;
+
+/* ---------- تبدیل و نمایش پول ---------- */
+function conv(v){
+  return state.currency === 'IRR' ? v * (Number(state.fxRate) || 0) : v;
+}
+function fmtMoney(v, digits = 0){
+  const x = conv(v || 0);
+  const neg = x < 0;
+  const s = Math.abs(x).toLocaleString('en-US', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits
+  });
+  if (state.currency === 'IRR') return (neg ? '−' : '') + s + ' ریال';
+  return (neg ? '−$' : '$') + s;
+}
+function moneyShort(v){
+  const x = conv(v || 0);
+  const neg = x < 0;
+  const a = Math.abs(x);
+  let s;
+  if (a >= 1e12) s = (a/1e12).toFixed(1) + 'T';
+  else if (a >= 1e9) s = (a/1e9).toFixed(1) + 'B';
+  else if (a >= 1e6) s = (a/1e6).toFixed(1) + 'M';
+  else if (a >= 1e3) s = (a/1e3).toFixed(1) + 'K';
+  else s = String(Math.round(a));
+  s = s.replace(/\.0(?=[A-Z]|$)/, '');
+  return (neg ? '-' : '') + (state.currency === 'IRR' ? s : '$' + s);
+}
+
+/* =====================================================================
+   ۱) مولد اعداد تصادفی با بذر — mulberry32
+   ===================================================================== */
+function mulberry32(a){
+  a = a >>> 0;
+  return function(){
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), 1 | t);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function deriveSeed(seed, salt){
+  /* بذر مستقل برای هر سیاست؛ تغییر یک سیاست روی دیگری اثر ندارد */
+  let x = (seed >>> 0) ^ (salt >>> 0);
+  x = Math.imul(x ^ (x >>> 16), 0x45d9f3b);
+  x = Math.imul(x ^ (x >>> 16), 0x45d9f3b);
+  x = (x ^ (x >>> 16)) >>> 0;
+  return x;
+}
+
+/* =====================================================================
+   ۲) نمونه‌گیرها
+   ===================================================================== */
+function knuthPoisson(lambda, rng){
+  const L = Math.exp(-lambda);
+  let k = 0, p = 1;
+  do { k++; p *= rng(); } while (p > L);
+  return k - 1;
+}
+function poissonSample(lambda, rng){
+  if (!(lambda > 0)) return 0;
+  if (lambda < 30) return knuthPoisson(lambda, rng);
+  const chunks = Math.ceil(lambda / 25);
+  const sub = lambda / chunks;
+  let s = 0;
+  for (let i = 0; i < chunks; i++) s += knuthPoisson(sub, rng);
+  return s;
+}
+function normalSampleRaw(mean, sd, rng){
+  if (!(sd > 0)) return mean;
+  let u1 = rng(); if (u1 < 1e-12) u1 = 1e-12;
+  const u2 = rng();
+  const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  return mean + sd * z;
+}
+
+/* =====================================================================
+   ۳) هسته شبیه‌سازی
+   ===================================================================== */
+function normTiers(tiers){
+  return tiers.map(t => ({
+    min:    Math.max(0, Number(t.min) || 0),
+    disc:   clamp((Number(t.disc)   || 0) / 100, 0, 1),
+    margin: clamp((Number(t.margin) || 0) / 100, 0, 1)
+  })).sort((a, b) => a.min - b.min);
+}
+
+/*
+ * یک مشتری را به سیاست اعمال می‌کند:
+ *  - پله بر اساس وزن همان مشتری انتخاب می‌شود (بالاترین پله‌ای که min آن تأمین شود)
+ *  - ناخالص = وزن × قیمت
+ *  - تخفیف  = ناخالص × نرخ تخفیف پله
+ *  - خالص   = ناخالص − تخفیف
+ *  - سود    = خالص × حاشیه سود پله
+ */
+function applyCustomer(w, tiers, baseMargin, price, stats, day, tot){
+  let ti = -1;
+  for (let i = 0; i < tiers.length; i++){
+    if (w >= tiers[i].min) ti = i; else break;   // tiers ascending by min
+  }
+  const disc   = ti >= 0 ? tiers[ti].disc   : 0;
+  const margin = ti >= 0 ? tiers[ti].margin : baseMargin;
+
+  const gross = w * price;
+  const dsc   = gross * disc;
+  const net   = gross - dsc;
+  const pr    = net * margin;
+
+  day.weight += w; day.gross += gross; day.disc += dsc; day.net += net; day.profit += pr;
+  tot.weight += w; tot.gross += gross; tot.disc += dsc; tot.net += net; tot.profit += pr;
+
+  let s = stats.get(ti);
+  if (!s){ s = {cust:0, weight:0, disc:0, profit:0}; stats.set(ti, s); }
+  s.cust++; s.weight += w; s.disc += dsc; s.profit += pr;
+}
+
+function simulate(){
+  const S = state.shared;
+  const days       = clampInt(S.days, 1, 3650);
+  const price      = Math.max(0, Number(S.price) || 0);
+  const baseMargin = clamp((Number(S.baseMargin) || 0) / 100, 0, 1);
+  const seed       = Math.floor(Number(S.seed) || 0);
+
+  const PA = state.policies.A;
+  const PB = state.policies.B;
+
+  const tiersA = normTiers(PA.tiers);
+  const tiersB = normTiers(PB.tiers);
+
+  const lamA = Math.max(0, Number(PA.custLambda) || 0);
+  const mA   = Math.max(0, Number(PA.custMean) || 0);
+  const sdA  = Math.max(0, Number(PA.custSd) || 0);
+  const lamB = Math.max(0, Number(PB.custLambda) || 0);
+  const mB   = Math.max(0, Number(PB.custMean) || 0);
+  const sdB  = Math.max(0, Number(PB.custSd) || 0);
+
+  /* جریان‌های مستقل — تغییر یک سیاست روی دیگری اثر ندارد */
+  const rngA = mulberry32(deriveSeed(seed, 0xA5A5A5A5));
+  const rngB = mulberry32(deriveSeed(seed, 0x5A5A5A5A));
+
+  const rows = [];
+  const totA = {cust:0, weight:0, gross:0, disc:0, net:0, profit:0};
+  const totB = {cust:0, weight:0, gross:0, disc:0, net:0, profit:0};
+  const statsA = new Map();
+  const statsB = new Map();
+
+  for (let d = 1; d <= days; d++){
+    const custA = poissonSample(lamA, rngA);
+    const custB = poissonSample(lamB, rngB);
+
+    const dayA = {cust: custA, weight:0, gross:0, disc:0, net:0, profit:0};
+    const dayB = {cust: custB, weight:0, gross:0, disc:0, net:0, profit:0};
+
+    for (let c = 0; c < custA; c++){
+      const w = Math.max(0, Math.round(normalSampleRaw(mA, sdA, rngA) * 10) / 10);
+      applyCustomer(w, tiersA, baseMargin, price, statsA, dayA, totA);
+    }
+    for (let c = 0; c < custB; c++){
+      const w = Math.max(0, Math.round(normalSampleRaw(mB, sdB, rngB) * 10) / 10);
+      applyCustomer(w, tiersB, baseMargin, price, statsB, dayB, totB);
+    }
+    totA.cust += custA;
+    totB.cust += custB;
+
+    rows.push({
+      day: d,
+      a: dayA, b: dayB,
+      cumA: totA.profit, cumB: totB.profit
+    });
+  }
+
+  return {
+    rows, totA, totB, statsA, statsB, days, baseMargin, seed,
+    tiersA, tiersB,
+    paramsA: { lam: lamA, mean: mA, sd: sdA },
+    paramsB: { lam: lamB, mean: mB, sd: sdB }
+  };
+}
+
+/* =====================================================================
+   ۴) وضعیت ورودی‌ها
+   ===================================================================== */
+function setDirty(v){
+  dirty = v;
+  const el = document.getElementById('dirtyHint');
+  if (el) el.style.display = v ? '' : 'none';
+}
+
+function normalizeState(){
+  const S = state.shared;
+  S.price      = Math.max(0, Number(S.price) || 0);
+  S.baseMargin = clamp(Number(S.baseMargin) || 0, 0, 100);
+  S.seed       = Math.floor(Number(S.seed) || 0);
+  S.days       = clampInt(S.days, 1, 3650);
+
+  ['A','B'].forEach(p => {
+    const P = state.policies[p];
+    P.custLambda = Math.max(0, Number(P.custLambda) || 0);
+    P.custMean   = Math.max(0, Number(P.custMean) || 0);
+    P.custSd     = Math.max(0, Number(P.custSd) || 0);
+
+    P.tiers = P.tiers.map(t => ({
+      min:    Math.max(0, Number(t.min) || 0),
+      disc:   clamp(Number(t.disc)   || 0, 0, 100),
+      margin: clamp(Number(t.margin) || 0, 0, 100)
+    }));
+    if (!P.tiers.length) P.tiers = defaultState().policies[p].tiers;
+  });
+
+  state.fxRate = Math.max(0, Number(state.fxRate) || 0);
+}
+
+function renderTierInputs(p){
+  const tb = document.getElementById('tierBody' + p);
+  tb.innerHTML = state.policies[p].tiers.map((t, i) => `
+    <tr>
+      <td><input type="number" min="0" step="1"
+            value="${t.min}" data-p="${p}" data-i="${i}" data-k="min"></td>
+      <td><input type="number" min="0" max="100" step="0.1"
+            value="${t.disc}" data-p="${p}" data-i="${i}" data-k="disc"></td>
+      <td><input type="number" min="0" max="100" step="0.1"
+            value="${t.margin}" data-p="${p}" data-i="${i}" data-k="margin"></td>
+      <td><button class="icon-btn" data-del="${i}" data-p="${p}" title="حذف پله" type="button">×</button></td>
+    </tr>`).join('');
+}
+
+function syncInputs(){
+  const S = state.shared;
+  document.getElementById('price').value      = S.price;
+  document.getElementById('baseMargin').value = S.baseMargin;
+  document.getElementById('seed').value       = S.seed;
+  document.getElementById('days').value       = S.days;
+
+  ['A','B'].forEach(p => {
+    document.getElementById('custLambda' + p).value = state.policies[p].custLambda;
+    document.getElementById('custMean'   + p).value = state.policies[p].custMean;
+    document.getElementById('custSd'     + p).value = state.policies[p].custSd;
+    renderTierInputs(p);
+  });
+
+  document.getElementById('fxRate').value = state.fxRate;
+  document.querySelectorAll('#curSeg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.cur === state.currency);
+  });
+  document.getElementById('fxWrap').style.display = state.currency === 'IRR' ? '' : 'none';
+}
+
+/* =====================================================================
+   ۵) رندر نتایج
+   ===================================================================== */
+function renderKPIs(res){
+  const { totA, totB, days } = res;
+  const avgCustA = days ? totA.cust / days : 0;
+  const avgCustB = days ? totB.cust / days : 0;
+  const discA = totA.gross ? totA.disc / totA.gross : 0;
+  const discB = totB.gross ? totB.disc / totB.gross : 0;
+  const delta = totB.profit - totA.profit;
+  const deltaPct = totA.profit ? delta / totA.profit : 0;
+  const cls = delta >= 0 ? 'good' : 'bad';
+  const sign = delta >= 0 ? '+' : '−';
+  const deltaPctTxt = isFinite(deltaPct) ? `${sign}${pct(Math.abs(deltaPct))}` : '—';
+
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi">
+      <div class="k-label">مشتریان کل</div>
+      <div class="k-dual">
+        <div class="k-row"><span class="k-lbl"><i class="dot blue"></i> پایه</span><b>${fmt0(totA.cust)}</b></div>
+        <div class="k-row"><span class="k-lbl"><i class="dot red"></i> آزمایشی</span><b>${fmt0(totB.cust)}</b></div>
+      </div>
+      <div class="k-sub">${fmt1(avgCustA)} / ${fmt1(avgCustB)} مشتری در روز</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">تقاضای کل</div>
+      <div class="k-dual">
+        <div class="k-row"><span class="k-lbl"><i class="dot blue"></i> پایه</span><b>${fmt1(totA.weight)} kg</b></div>
+        <div class="k-row"><span class="k-lbl"><i class="dot red"></i> آزمایشی</span><b>${fmt1(totB.weight)} kg</b></div>
+      </div>
+      <div class="k-sub">${totA.cust ? fmt1(totA.weight/totA.cust) : '—'} / ${totB.cust ? fmt1(totB.weight/totB.cust) : '—'} kg به هر مشتری</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">سود سیاست پایه</div>
+      <div class="k-val">${fmtMoney(totA.profit)}</div>
+      <div class="k-sub">تخفیف محقق‌شده ${pct(discA)}</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">سود سیاست آزمایشی</div>
+      <div class="k-val">${fmtMoney(totB.profit)}</div>
+      <div class="k-sub">تخفیف محقق‌شده ${pct(discB)}</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Δ سود (آزمایشی − پایه)</div>
+      <div class="k-val ${cls}">${sign}${fmtMoney(Math.abs(delta))}</div>
+      <div class="k-sub">${deltaPctTxt} نسبت به پایه</div>
+    </div>`;
+
+  document.getElementById('kpiMeta').innerHTML =
+    `میانگین سود به هر مشتری — پایه: <b>${fmtMoney(totA.cust ? totA.profit / totA.cust : 0, 2)}</b>` +
+    ` · آزمایشی: <b>${fmtMoney(totB.cust ? totB.profit / totB.cust : 0, 2)}</b>`;
+}
+
+function distHTML(stats, tiers, baseMargin, metric, total){
+  const parts = [];
+  const line = (label, cust, v, share) => {
+    parts.push(
+      `<div class="dist-line">
+         <span class="dl">${label} <span class="dn">${fmt0(cust)} مشتری</span></span>
+         <b class="dv">${fmtMoney(v)}</b>
+         <i class="ds">${pct(share)}</i>
+       </div>`);
+  };
+
+  const sMinus = stats.get(-1);
+  if (sMinus && sMinus.cust > 0){
+    const v = metric === 'disc' ? sMinus.disc : sMinus.profit;
+    const label = metric === 'disc'
+      ? 'زیر پله ۱'
+      : `زیر پله ۱ · حاشیه ${pct(baseMargin)}`;
+    line(label, sMinus.cust, v, total ? v / total : 0);
+  }
+
+  tiers.forEach((t, i) => {
+    const s = stats.get(i);
+    const cust = s ? s.cust : 0;
+    const v = s ? (metric === 'disc' ? s.disc : s.profit) : 0;
+    const label = metric === 'disc'
+      ? `پله ${i+1} · تخفیف ${pct(t.disc)}`
+      : `پله ${i+1} · حاشیه ${pct(t.margin)}`;
+    line(label, cust, v, total ? v / total : 0);
+  });
+
+  return parts.length ? parts.join('') : '<span class="mutedc">—</span>';
+}
+
+function renderCompareTable(res){
+  const { totA, totB, statsA, statsB, baseMargin, tiersA, tiersB } = res;
+
+  const avgKgA    = totA.cust ? totA.weight / totA.cust : 0;
+  const avgKgB    = totB.cust ? totB.weight / totB.cust : 0;
+  const avgGrossA = totA.cust ? totA.gross  / totA.cust : 0;
+  const avgGrossB = totB.cust ? totB.gross  / totB.cust : 0;
+  const avgNetA   = totA.cust ? totA.net    / totA.cust : 0;
+  const avgNetB   = totB.cust ? totB.net    / totB.cust : 0;
+
+  const row = (label, a, b) =>
+    `<tr><td class="m-label">${label}</td><td>${a}</td><td>${b}</td></tr>`;
+
+  document.getElementById('compareBody').innerHTML = [
+    row('تعداد کل مشتریان', fmt0(totA.cust), fmt0(totB.cust)),
+    row('کل تقاضا', `${fmt1(totA.weight)} kg`, `${fmt1(totB.weight)} kg`),
+    row('میانگین فروش به هر مشتری',
+        `<b class="profit-green">${fmtMoney(avgNetA, 2)}</b>
+         <div class="sub2">خالص · ${fmt1(avgKgA)} kg · ناخالص ${fmtMoney(avgGrossA, 2)}</div>`,
+        `<b class="profit-green">${fmtMoney(avgNetB, 2)}</b>
+         <div class="sub2">خالص · ${fmt1(avgKgB)} kg · ناخالص ${fmtMoney(avgGrossB, 2)}</div>`),
+    row('مجموع مبالغ تخفیف',
+        `<span class="disc-red">${fmtMoney(totA.disc)}</span>`,
+        `<span class="disc-red">${fmtMoney(totB.disc)}</span>`),
+    `<tr>
+       <td class="m-label">توزیع تخفیف در هر پله</td>
+       <td>${distHTML(statsA, tiersA, baseMargin, 'disc', totA.disc)}</td>
+       <td>${distHTML(statsB, tiersB, baseMargin, 'disc', totB.disc)}</td>
+     </tr>`,
+    row('مجموع سود',
+        `<b class="profit-green">${fmtMoney(totA.profit)}</b>`,
+        `<b class="profit-green">${fmtMoney(totB.profit)}</b>`),
+    `<tr>
+       <td class="m-label">توزیع سود در هر پله</td>
+       <td>${distHTML(statsA, tiersA, baseMargin, 'profit', totA.profit)}</td>
+       <td>${distHTML(statsB, tiersB, baseMargin, 'profit', totB.profit)}</td>
+     </tr>`
+  ].join('');
+}
+
+/* =====================================================================
+   ۶) نمودارها و انیمیشن هم‌زمان (هر روز ۰٫۱ ثانیه)
+   ===================================================================== */
+function stopAnimation(){
+  if (anim && anim.timer) clearInterval(anim.timer);
+  anim = null;
+  const sb = document.getElementById('skipBtn');
+  if (sb) sb.style.display = 'none';
+}
+
+function initCharts(res){
+  const rows = res.rows, n = rows.length;
+  if (!n) return false;
+
+  /* ---------- نمودار سود تجمعی ---------- */
+  const ps = document.getElementById('profitChart');
+  const PW = Math.max(520, ps.clientWidth || 900), PH = 240;
+  const PL = 66, PR = 22, PT = 20, PB = 26;
+  const pW = PW - PL - PR, pH = PH - PT - PB;
+
+  const maxY = Math.max(1, ...rows.map(r => Math.max(r.cumA, r.cumB)));
+  const xsP = i => n === 1 ? PL + pW / 2 : PL + pW * i / (n - 1);
+  const ysP = v => PT + pH - pH * clamp(v, 0, maxY) / maxY;
+
+  let gridP = '';
+  for (let i = 0; i <= 4; i++){
+    const y = PT + pH * i / 4;
+    gridP += `<line x1="${PL}" y1="${y.toFixed(1)}" x2="${PW-PR}" y2="${y.toFixed(1)}" stroke="#eef2f7"/>`;
+    gridP += `<text x="${PL-7}" y="${(y+3).toFixed(1)}" font-size="9.5" fill="#94a3b8"
+                    text-anchor="end">${moneyShort(maxY*(1-i/4))}</text>`;
+  }
+  const curUnit = state.currency === 'IRR' ? 'ریال' : 'دلار';
+  ps.setAttribute('viewBox', `0 0 ${PW} ${PH}`);
+  ps.innerHTML = `
+    ${gridP}
+    <line x1="${PL}" y1="${PT+pH}" x2="${PW-PR}" y2="${PT+pH}" stroke="#cbd5e1"/>
+    <text x="${PL}" y="${PT-5}" font-size="10" fill="#94a3b8">سود تجمعی (${curUnit})</text>
+    <path id="pPathA" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round"/>
+    <path id="pPathB" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle id="tipA" r="3.5" fill="#2563eb" style="display:none"/>
+    <circle id="tipB" r="3.5" fill="#dc2626" style="display:none"/>
+  `;
+
+  /* ---------- نمودار فروش روزانه ---------- */
+  const ss = document.getElementById('salesChart');
+  const SW = Math.max(520, ss.clientWidth || 900), SH = 240;
+  const SL = 54, SR = 18, ST = 20, SB = 26;
+  const sW = SW - SL - SR, sH = SH - ST - SB;
+
+  const maxKg = Math.max(1, ...rows.map(r => Math.max(r.a.weight, r.b.weight)));
+  const xsS = i => n === 1 ? SL + sW / 2 : SL + sW * i / (n - 1);
+  const ysS = v => ST + sH - sH * clamp(v, 0, maxKg) / maxKg;
+
+  const slot = sW / Math.max(1, n);
+  const bw = Math.max(0.6, Math.min(9, slot * 0.34));
+  const gap = Math.max(0.3, bw * 0.15);
+
+  let gridS = '';
+  for (let i = 0; i <= 4; i++){
+    const y = ST + sH * i / 4;
+    gridS += `<line x1="${SL}" y1="${y.toFixed(1)}" x2="${SW-SR}" y2="${y.toFixed(1)}" stroke="#eef2f7"/>`;
+    gridS += `<text x="${SL-7}" y="${(y+3).toFixed(1)}" font-size="9.5" fill="#94a3b8"
+                    text-anchor="end">${fmt0(maxKg*(1-i/4))}</text>`;
+  }
+  ss.setAttribute('viewBox', `0 0 ${SW} ${SH}`);
+  ss.innerHTML = `
+    ${gridS}
+    <line x1="${SL}" y1="${ST+sH}" x2="${SW-SR}" y2="${ST+sH}" stroke="#cbd5e1"/>
+    <text x="${SL}" y="${ST-5}" font-size="10" fill="#94a3b8">کیلوگرم فروش روزانه</text>
+    <g id="salesBars"></g>
+  `;
+
+  anim = {
+    res, n, k: 0,
+    dA: '', dB: '',
+    timer: null,
+    p: {
+      xs: xsP, ys: ysP,
+      pathA: ps.querySelector('#pPathA'),
+      pathB: ps.querySelector('#pPathB'),
+      tipA:  ps.querySelector('#tipA'),
+      tipB:  ps.querySelector('#tipB')
+    },
+    s: {
+      xs: xsS, ys: ysS,
+      bottom: ST + sH,
+      bw, gap,
+      bars: ss.querySelector('#salesBars')
+    }
+  };
+  return true;
+}
+
+function animStep(){
+  if (!anim) return;
+  const a = anim;
+  if (a.k >= a.n){ finishAnim(a); return; }
+  a.k++;
+  const r = a.res.rows[a.k - 1];
+
+  /* --- سود تجمعی --- */
+  const xp = a.p.xs(a.k - 1).toFixed(1);
+  const yA = a.p.ys(r.cumA).toFixed(1);
+  const yB = a.p.ys(r.cumB).toFixed(1);
+
+  a.dA += (a.k === 1 ? 'M' : 'L') + xp + ',' + yA;
+  a.dB += (a.k === 1 ? 'M' : 'L') + xp + ',' + yB;
+  a.p.pathA.setAttribute('d', a.dA);
+  a.p.pathB.setAttribute('d', a.dB);
+
+  a.p.tipA.style.display = '';
+  a.p.tipB.style.display = '';
+  a.p.tipA.setAttribute('cx', xp); a.p.tipA.setAttribute('cy', yA);
+  a.p.tipB.setAttribute('cx', xp); a.p.tipB.setAttribute('cy', yB);
+
+  /* --- فروش روزانه --- */
+  const xc = a.s.xs(a.k - 1);
+  const bw = a.s.bw, gap = a.s.gap;
+  const yAbar = a.s.ys(r.a.weight);
+  const yBbar = a.s.ys(r.b.weight);
+
+  let html = '';
+  html += `<rect x="${(xc - bw - gap/2).toFixed(2)}" y="${yAbar.toFixed(2)}"
+             width="${bw.toFixed(2)}" height="${Math.max(0, a.s.bottom - yAbar).toFixed(2)}"
+             fill="#2563eb" fill-opacity="0.8">
+             <title>روز ${r.day} · پایه: ${fmt0(r.a.weight)} kg</title></rect>`;
+  html += `<rect x="${(xc + gap/2).toFixed(2)}" y="${yBbar.toFixed(2)}"
+             width="${bw.toFixed(2)}" height="${Math.max(0, a.s.bottom - yBbar).toFixed(2)}"
+             fill="#dc2626" fill-opacity="0.8">
+             <title>روز ${r.day} · آزمایشی: ${fmt0(r.b.weight)} kg</title></rect>`;
+  a.s.bars.insertAdjacentHTML('beforeend', html);
+
+  if (a.k >= a.n) finishAnim(a);
+}
+
+function finishAnim(a){
+  if (a.timer){ clearInterval(a.timer); a.timer = null; }
+  const sb = document.getElementById('skipBtn');
+  if (sb) sb.style.display = 'none';
+}
+
+function skipAnimation(){
+  if (!anim) return;
+  const a = anim;
+  if (a.timer){ clearInterval(a.timer); a.timer = null; }
+
+  let dA = a.dA, dB = a.dB, bars = '';
+
+  while (a.k < a.n){
+    a.k++;
+    const r = a.res.rows[a.k - 1];
+
+    const xp = a.p.xs(a.k - 1).toFixed(1);
+    dA += (a.k === 1 ? 'M' : 'L') + xp + ',' + a.p.ys(r.cumA).toFixed(1);
+    dB += (a.k === 1 ? 'M' : 'L') + xp + ',' + a.p.ys(r.cumB).toFixed(1);
+
+    const xc = a.s.xs(a.k - 1);
+    const bw = a.s.bw, gap = a.s.gap;
+    const yAbar = a.s.ys(r.a.weight);
+    const yBbar = a.s.ys(r.b.weight);
+
+    bars += `<rect x="${(xc - bw - gap/2).toFixed(2)}" y="${yAbar.toFixed(2)}"
+               width="${bw.toFixed(2)}" height="${Math.max(0, a.s.bottom - yAbar).toFixed(2)}"
+               fill="#2563eb" fill-opacity="0.8">
+               <title>روز ${r.day} · پایه: ${fmt0(r.a.weight)} kg</title></rect>`;
+    bars += `<rect x="${(xc + gap/2).toFixed(2)}" y="${yBbar.toFixed(2)}"
+               width="${bw.toFixed(2)}" height="${Math.max(0, a.s.bottom - yBbar).toFixed(2)}"
+               fill="#dc2626" fill-opacity="0.8">
+               <title>روز ${r.day} · آزمایشی: ${fmt0(r.b.weight)} kg</title></rect>`;
+  }
+
+  a.p.pathA.setAttribute('d', dA);
+  a.p.pathB.setAttribute('d', dB);
+  a.p.tipA.style.display = 'none';
+  a.p.tipB.style.display = 'none';
+  if (bars) a.s.bars.insertAdjacentHTML('beforeend', bars);
+
+  finishAnim(a);
+}
+
+function drawCharts(res, animate){
+  stopAnimation();
+  if (!initCharts(res)) return;
+  if (!animate){ skipAnimation(); return; }
+
+  document.getElementById('skipBtn').style.display = '';
+  animStep();
+  if (anim && anim.k < anim.n){
+    anim.timer = setInterval(animStep, 100);   /* ۰٫۱ ثانیه برای هر روز */
+  }
+}
+
+/* =====================================================================
+   ۷) اجرا / بازنشانی / خروجی
+   ===================================================================== */
+function renderAll(res, animate){
+  stopAnimation();
+  renderKPIs(res);
+  renderCompareTable(res);
+  drawCharts(res, animate);
+}
+
+function run(animate = true){
+  normalizeState();
+  syncInputs();
+  setDirty(false);
+
+  const res = simulate();
+  lastResult = res;
+  renderAll(res, animate);
+}
+
+function resetAll(){
+  stopAnimation();
+  state = defaultState();
+  syncInputs();
+  setDirty(false);
+  run(false);
+}
+
+document.getElementById('runBtn').addEventListener('click', () => run(true));
+document.getElementById('resetBtn').addEventListener('click', resetAll);
+document.getElementById('skipBtn').addEventListener('click', skipAnimation);
+
+document.getElementById('csvBtn').addEventListener('click', () => {
+  if (!lastResult) return;
+  const cur = state.currency;
+  const mult = v => cur === 'IRR' ? v * (Number(state.fxRate) || 0) : v;
+  const csvMoney = v => cur === 'IRR' ? mult(v).toFixed(0) : mult(v).toFixed(2);
+
+  const head = [
+    'day',
+    'baseline_customers', 'experiment_customers',
+    'baseline_kg', 'experiment_kg',
+    `baseline_discount_${cur}`, `experiment_discount_${cur}`,
+    `baseline_profit_${cur}`, `experiment_profit_${cur}`,
+    `cum_baseline_profit_${cur}`, `cum_experiment_profit_${cur}`
+  ];
+  const lines = [head.join(',')];
+  for (const r of lastResult.rows){
+    lines.push([
+      r.day,
+      r.a.cust, r.b.cust,
+      r.a.weight.toFixed(1), r.b.weight.toFixed(1),
+      csvMoney(r.a.disc),   csvMoney(r.b.disc),
+      csvMoney(r.a.profit), csvMoney(r.b.profit),
+      csvMoney(r.cumA),     csvMoney(r.cumB)
+    ].join(','));
+  }
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `sfi_d5_seed${lastResult.seed}_${cur}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+/* =====================================================================
+   ۸) اتصال ورودی‌ها
+   ===================================================================== */
+function bindNumber(id, apply){
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+    const v = Number(el.value);
+    if (isFinite(v)) apply(v);
+    setDirty(true);
+  });
+}
+bindNumber('price',      v => state.shared.price = Math.max(0, v));
+bindNumber('baseMargin', v => state.shared.baseMargin = clamp(v, 0, 100));
+bindNumber('seed',       v => state.shared.seed = Math.floor(v));
+bindNumber('days',       v => state.shared.days = clampInt(v, 1, 3650));
+
+['A','B'].forEach(p => {
+  bindNumber('custLambda' + p, v => state.policies[p].custLambda = Math.max(0, v));
+  bindNumber('custMean'   + p, v => state.policies[p].custMean   = Math.max(0, v));
+  bindNumber('custSd'     + p, v => state.policies[p].custSd     = Math.max(0, v));
+});
+
+/* جدول پله‌ها */
+function onTierInput(e){
+  const inp = e.target;
+  if (inp.tagName !== 'INPUT') return;
+  const p = inp.dataset.p, i = +inp.dataset.i, k = inp.dataset.k;
+  const v = Number(inp.value);
+  if (isFinite(v)) state.policies[p].tiers[i][k] = v;
+  setDirty(true);
+}
+function onTierClick(e){
+  const btn = e.target.closest('[data-del]');
+  if (!btn) return;
+  const p = btn.dataset.p;
+  if (state.policies[p].tiers.length <= 1) return;
+  state.policies[p].tiers.splice(+btn.dataset.del, 1);
+  renderTierInputs(p);
+  setDirty(true);
+}
+
+['A','B'].forEach(p => {
+  document.getElementById('tierBody' + p).addEventListener('input', onTierInput);
+  document.getElementById('tierBody' + p).addEventListener('click', onTierClick);
+
+  document.getElementById('addTier' + p).addEventListener('click', () => {
+    const tiers = state.policies[p].tiers;
+    const last = tiers[tiers.length - 1];
+    const nextMin  = last ? Math.max(1, Math.round(last.min * 1.6)) : 5;
+    const nextDisc = last ? Math.min(95, Math.round((last.disc + 4) * 10) / 10) : 5;
+    const nextMarg = last ? Math.max(1, Math.round((last.margin - 1) * 10) / 10) : 10;
+    tiers.push({ min: nextMin, disc: nextDisc, margin: nextMarg });
+    renderTierInputs(p);
+    setDirty(true);
+  });
+});
+
+/* واحد پول */
+document.getElementById('curSeg').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-cur]');
+  if (!btn) return;
+  state.currency = btn.dataset.cur;
+  document.querySelectorAll('#curSeg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.cur === state.currency);
+  });
+  document.getElementById('fxWrap').style.display = state.currency === 'IRR' ? '' : 'none';
+  if (lastResult) renderAll(lastResult, false);   /* فقط بازنمایی، بدون شبیه‌سازی مجدد */
+});
+
+document.getElementById('fxRate').addEventListener('input', e => {
+  const v = Number(e.target.value);
+  if (isFinite(v)) state.fxRate = Math.max(0, v);
+  if (state.currency === 'IRR' && lastResult) renderAll(lastResult, false);
+});
+
+/* بازترسیم نمودارها هنگام تغییر اندازه صفحه */
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (lastResult && (!anim || !anim.timer)) drawCharts(lastResult, false);
+  }, 200);
+});
+
+/* =====================================================================
+   ۹) شروع — نمایش نتایج پیش‌فرض بدون انیمیشن
+   ===================================================================== */
+syncInputs();
+run(false);
+</script>
+</body>
+</html>
